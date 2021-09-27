@@ -14,12 +14,6 @@ const validationBody = [
 
 module.exports = (router) => {
   router.post("/", validationBody, ErrorValidation, async (req, res) => {
-    // Params for generateToken()
-    const body = {
-      email: req.body.email,
-      password: req.body.password,
-    };
-
     const user = User(sequelize, DataTypes);
     try {
       const getUser = await user.findOne({
