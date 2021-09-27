@@ -8,6 +8,10 @@ let returnValue = {
 
 module.exports = (routes) => {
     routes.get('/', (req, res) => {
+
+        returnValue.data = {
+            encrypt: create
+        }
         res.json(returnValue).status(200);
     })
 }
