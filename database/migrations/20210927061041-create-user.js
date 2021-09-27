@@ -9,16 +9,42 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      last_name: {
+      npwp: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      age: {
-        type: Sequelize.INTEGER
+      email: {
+        allowNull: false,
+        type: Sequelize.STRING
       },
-      active: {
+      phone: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      username: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      password: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      is_active: {
+        allowNull: false,
         type: Sequelize.BOOLEAN
+      },
+      phone: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      role_id: {
+        allowNull: false,
+        type: Sequelize.INTEGER,
+        references: 'role',
+        referencesKey: 'id_role'
       },
       createdAt: {
         allowNull: false,
