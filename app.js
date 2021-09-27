@@ -5,7 +5,7 @@ const enrouten = require('express-enrouten');
 const bodyParser = require('body-parser');
 
 const app = express();
-const config = require('./config');
+const config = require('./config.js');
 
 const port = config.get('PORT');
 
