@@ -4,10 +4,10 @@ const {createHashText, checkHashText } = require('../../helper/bcrypt');
 const User = require('../../database/models/user');
 const sequelize = require('../../configs/database');
 const {DataTypes} = require('sequelize');
-const { use } = require('nconf');
+const { generateToken } = require('../../helper/jwt');
 
 let returnValue = {
-    Message: '',
+    message: '',
     status: false,
     data: {}
 };
@@ -34,17 +34,21 @@ const checkInputRegister = [
     body('password').notEmpty().custom(value => passwordFormat(value)).withMessage("Password is Required"),
     body('phone').notEmpty().custom(checkPhoneNumber).withMessage("Phone Number is Required").trim(),
     body('confirmPassword').custom((value, {req}) => {
+        if(value.length == 0){
+            throw new Error("Confirm Password Cannot Empty");
+        }
         if(value !== req.body.password){
             throw new Error('Password Confirmation dose not match password');
         }
 
         return true;
-    }).withMessage("Confirm Password Value Is Empty")
+    })
 ]
 
 module.exports = (routes) => {
     routes.post('/', checkInputRegister, async (req, res) => {
-
+        let transaction;
+        
         const validation = validationResult(req);
         // console.log(val);
         if(!validation.isEmpty()){
@@ -52,32 +56,86 @@ module.exports = (routes) => {
             return;
         }
 
-        const obj = {
+        const dataToInput = {
             name: req.body.name,
             address: req.body.address,
             npwp: req.body.npwp,
             email: req.body.email,
             mobile_phone: req.body.mobile_phone,
             username: req.body.username,
-            password: req.body.password,
+            password: createHashText(req.body.password), // Hashing
             is_active: 1,
             phone: req.body.phone
         }
+        try {
+            transaction = await sequelize.transaction();
+            
+            const user = User(sequelize, DataTypes);
 
-        const user = User(sequelize, DataTypes);
-        // console.log(user)
-        const us = user.build(obj)
-        await us.save();
-        // await user.save();
-        // return;
-        res.json({
-            asd: user 
-        }).status(200);
+            const processSave = user.build(dataToInput)
+            const dataToFetch = await processSave.save({
+                transaction: transaction,
+            });
+
+            returnValue.message = 'Registeration Success';
+            returnValue.status = true;
+            returnValue = {
+                token: generateToken({ // Generete Token
+                    email: req.body.email,
+                    id: dataToFetch.id
+                })
+            }
+            
+            await transaction.commit(); // Accept all Change
+
+            res.json(returnValue).status(200);
+        } catch (error) {
+            await transaction.rollback(); // Revert All Change
+            returnValue.message = 'Regsiteration Seems Failed, Please Try Again Later';
+            returnValue.status = false,
+            returnValue.data = error.message;
+            res.json(returnValue).status(500);
+        }
     })
 
-    routes.get('/test', (req, res) => {
-        res.json({
-            asd: checkHashText('$2b$10$2YFH/MxUsPq8wMD6qofV4u3Nk7ZlCfVbnB1Tgy.u2FUC5LEx6w9xi','123')
-        }).status(200)
+    /**
+     * Testing Purpose: Delet User
+     */
+    routes.delete('/:id/delete', async(req,res) => {
+        try {
+            const defineUser = User(sequelize, DataTypes);
+            const define = await defineUser.destroy({
+                where:{
+                    id: req.params.id,
+                }
+            });
+
+            res.json({
+                define: define
+            }).status(200)
+        } catch (error) {
+            returnValue.message = 'Failed Delete User';
+            returnValue.status = false,
+            returnValue.data = error
+            res.json(returnValue).status(500);
+        }
+    })
+
+    /**
+     * Testing Bcrypt Password
+     */
+    routes.get('/test', async (req, res) => {
+        try {
+            const user = User(sequelize, DataTypes);
+            const result = await user.findAll();
+            
+            res.json({
+                message: 'Success Fetch All Data',
+                status: true,
+                data: result
+            })
+        } catch (error) {
+            
+        }
     })
 }
