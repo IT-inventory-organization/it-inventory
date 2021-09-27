@@ -30,7 +30,7 @@ module.exports = (router) => {
       if (!getUser) {
         return res.status(404).json({
           status: false,
-          message: "Login failed, please check email or password!",
+          message: "User not found!",
           data: [],
         });
       }
@@ -47,7 +47,7 @@ module.exports = (router) => {
       } else {
         return res.status(401).json({
           status: false,
-          message: "Login failed, please check email or password!",
+          message: "Login failed, enter the correct password!",
           data: [],
         });
       }
