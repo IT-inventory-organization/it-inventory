@@ -3,6 +3,10 @@ const {
   Model,
   DataTypes
 } = require('sequelize');
+const Sequelize = require('sequelize');
+// const sequelize = require('../../configs/database');
+
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -17,6 +21,7 @@ module.exports = (sequelize, DataTypes) => {
   User.init({
     name: DataTypes.STRING,
     npwp: DataTypes.STRING,
+    address: DataTypes.STRING,
     email: DataTypes.STRING,
     mobile_phone: DataTypes.STRING,
     username: DataTypes.STRING,
@@ -25,9 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     phone: DataTypes.STRING,
     role_id: {
       type: DataTypes.STRING,
-      defaultValue: 2,
-      references: 'role',
-      referencesKey: 'id_role'
+      defaultValue: 2
     }
   }, {
     sequelize,

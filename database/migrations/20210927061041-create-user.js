@@ -12,6 +12,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
+      address: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
       npwp: {
         allowNull: false,
         type: Sequelize.STRING
@@ -42,9 +46,7 @@ module.exports = {
       },
       role_id: {
         allowNull: false,
-        type: Sequelize.INTEGER,
-        references: 'role',
-        referencesKey: 'id_role'
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
