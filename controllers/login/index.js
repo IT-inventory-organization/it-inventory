@@ -1,6 +1,6 @@
 const { Op } = require("sequelize");
 const { body, validationResult } = require("express-validator");
-const { generateToken } = require("../helper/jwt");
+const { generateToken } = require("../../helper/jwt");
 
 const validationBody = [body("email").notEmpty(), body("password").notEmpty()];
 
