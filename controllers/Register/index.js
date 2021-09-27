@@ -79,16 +79,13 @@ module.exports = (routes) => {
 
             returnValue.message = 'Registeration Success';
             returnValue.status = true;
-            returnValue = {
-                token: generateToken({ // Generete Token
-                    email: req.body.email,
-                    id: dataToFetch.id
-                })
-            }
+            returnValue.data = {
+                email: req.body.email
+            };
             
             await transaction.commit(); // Accept all Change
 
-            res.json(returnValue).status(200);
+            res.json(returnValue).status(201);
         } catch (error) {
             await transaction.rollback(); // Revert All Change
             returnValue.message = 'Regsiteration Seems Failed, Please Try Again Later';
