@@ -36,8 +36,20 @@ module.exports = (router) => {
       }
 
       const result = getUser.toJSON();
+
+      // Check user is active
+      if (!result.is_active) {
+        return res.status(401).json({
+          status: false,
+          message: "User is no longer active!",
+          data: [],
+        });
+      }
+
+      // Check password
       const checkPassword = checkHashText(result.password, req.body.password);
       if (checkPassword) {
+        // if the password is correct
         const payload = {
           token: generateToken({ email: result.email, user_id: result.id }),
           success: true,
@@ -45,6 +57,7 @@ module.exports = (router) => {
         };
         res.status(200).json(payload);
       } else {
+        // if the password is not correct
         return res.status(401).json({
           status: false,
           message: "Login failed, enter the correct password!",
@@ -52,6 +65,7 @@ module.exports = (router) => {
         });
       }
     } catch (error) {
+      // if there is a system error
       return res
         .status(500)
         .json({ message: error.message, status: false, data: [] });
