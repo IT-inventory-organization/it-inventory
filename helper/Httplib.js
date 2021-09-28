@@ -1,4 +1,4 @@
-const HttpStatus = {
+const httpStatus = {
   badRequest: 400,
   notFound: 404,
   internalServerError: 500,
@@ -9,4 +9,4 @@ const HttpStatus = {
   unauthorized: 403
 }
 
-module.exports = HttpStatus
+module.exports = httpStatus
