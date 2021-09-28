@@ -1,11 +1,16 @@
-const jwt = require('jsonwebtoken')
-const CONFIG = require('./config.js')
+const jwt = require("jsonwebtoken");
+const CONFIG = require("../config.js");
 
 const generateToken = (payload) => {
-  const token = jwt.sign(payload, CONFIG.GET("JWT_SECRET_KEY"))
-  return token
-}
+  const token = jwt.sign(payload, CONFIG.get("JWT_SECRET_KEY"));
+  return token;
+};
 
 const verifyToken = (token) => {
-  return jwt.verify(token, CONFIG.GET("JWT_SECRET_KEY"))
-}
+  return jwt.verify(token, CONFIG.get("JWT_SECRET_KEY"));
+};
+
+module.exports = {
+  generateToken,
+  verifyToken,
+};

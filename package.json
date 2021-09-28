@@ -9,7 +9,6 @@
     "migrate": "sequelize db:migrate",
     "migrate-undo-all": "sequelize db:migrate:undo:all",
     "migrate-undo-file": "sequelize db:migrate:undo"
-    
   },
   "repository": {
     "type": "git",
