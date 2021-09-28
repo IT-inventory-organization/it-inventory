@@ -28,10 +28,10 @@
 function checkPhoneNumber(value){
     let mobile_number = value;
         if(typeof mobile_number !== 'string'){
-            mobile_number = `${mobile_number}`;
+            mobile_number = ""+mobile_number;
         }
         if(!mobile_number.includes('+')){
-            throw new Error(`Mobile Phone Number Must Include Country Code`);
+            throw new Error(`Mobile Phone Number Must Include Country Code Ex: +62`);
         }
 
         return true

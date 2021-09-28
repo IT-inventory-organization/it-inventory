@@ -34,7 +34,7 @@ const loginAction = async (req, res) => {
     }
 
     const result = getUser.toJSON();
-
+    
     // Check user is active
     if (!result.is_active) {
       return res.status(401).json({
