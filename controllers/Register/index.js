@@ -3,8 +3,8 @@ const {passwordFormat, checkPhoneNumber}= require("../../helper/validation");
 const {createHashText } = require('../../helper/bcrypt');
 const User = require('../../database/models/user');
 const { Op } = require('sequelize');
-const {errorResponse, successResponse} = require('../../middlewares/Response')
-const httpStatus = require("../../middlewares/Httplib")
+const {errorResponse, successResponse} = require('../../helper/Response')
+const httpStatus = require("../../helper/Httplib")
 
 const checkInputRegister = [
     body('name').notEmpty().trim().withMessage("Name Is Required"),

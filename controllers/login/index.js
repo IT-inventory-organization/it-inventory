@@ -1,17 +1,24 @@
 const { Op } = require("sequelize");
-const { body } = require("express-validator");
+const { body, validationResult } = require("express-validator");
 const { generateToken } = require("../../helper/jwt");
-const ErrorValidation = require("../../middlewares/ErrorValidation");
+const { errorResponse, successResponse } = require("../../helper/Response");
+const httpStatus = require("../../helper/Httplib")
 const { checkHashText } = require("../../helper/bcrypt");
 const User = require("../../database/models/user");
 
 const validationBody = [
-  body("email").isLength({ min: 1 }).withMessage("A email is required"),
+  body("email").isLength({ min: 1 }).withMessage("Email/Npwp/username is required"),
   body("password").isLength({ min: 1 }).withMessage("A password is required"),
 ];
 
 const loginAction = async (req, res) => {
   try {
+    const validation = validationResult(req);
+
+    if(!validation.isEmpty()){
+        return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
+    }
+
     const getUser = await User.findOne({
       where: {
         [Op.or]: [
@@ -25,11 +32,7 @@ const loginAction = async (req, res) => {
 
     // if username, email and npwp don't exist
     if (!getUser) {
-      return res.status(404).json({
-        status: false,
-        message: "User not found!",
-        data: [],
-      });
+      return errorResponse(res, httpStatus.notFound, "User not found!")
     }
 
     const result = getUser.toJSON();
@@ -39,26 +42,18 @@ const loginAction = async (req, res) => {
       // if the password is correct
       const payload = {
         token: generateToken({ email: result.email, user_id: result.id }),
-        success: true,
-        message: "Login successfully!",
       };
-      return res.status(200).json(payload);
+      return successResponse(res, httpStatus.ok, "Login successfully", payload)
     } else {
       // if the password is not correct
-      return res.status(401).json({
-        status: false,
-        message: "Login failed, enter the correct password!",
-        data: [],
-      });
+      return errorResponse(res, httpStatus.unauthenticated, "Login failed, enter the correct password!")
     }
   } catch (error) {
     // if there is a system error
-    return res
-      .status(500)
-      .json({ message: error.message, status: false, data: [] });
+    return errorResponse(res, httpStatus.internalServerError, error.message)
   }
 };
 
 module.exports = (router) => {
-  router.post("/", validationBody, ErrorValidation, loginAction);
+  router.post("/", validationBody, loginAction);
 };
