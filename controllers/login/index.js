@@ -2,10 +2,8 @@ const { Op } = require("sequelize");
 const { body } = require("express-validator");
 const { generateToken } = require("../../helper/jwt");
 const ErrorValidation = require("../../middlewares/ErrorValidation");
-const { checkHashText, createHashText } = require("../../helper/bcrypt");
+const { checkHashText } = require("../../helper/bcrypt");
 const User = require("../../database/models/user");
-const sequelize = require("../../configs/database");
-const { DataTypes } = require("sequelize");
 
 const validationBody = [
   body("email").isLength({ min: 1 }).withMessage("A email is required"),
@@ -21,6 +19,7 @@ const loginAction = async (req, res) => {
           { npwp: req.body.email },
           { username: req.body.email },
         ],
+        is_active: true
       },
     });
 
@@ -34,26 +33,16 @@ const loginAction = async (req, res) => {
     }
 
     const result = getUser.toJSON();
-    
-    // Check user is active
-    if (!result.is_active) {
-      return res.status(401).json({
-        status: false,
-        message: "User is no longer active!",
-        data: [],
-      });
-    }
 
     // Check password
-    const checkPassword = checkHashText(result.password, req.body.password);
-    if (checkPassword) {
+    if (checkHashText(result.password, req.body.password)) {
       // if the password is correct
       const payload = {
         token: generateToken({ email: result.email, user_id: result.id }),
         success: true,
         message: "Login successfully!",
       };
-      res.status(200).json(payload);
+      return res.status(200).json(payload);
     } else {
       // if the password is not correct
       return res.status(401).json({
