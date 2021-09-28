@@ -1,10 +1,10 @@
 {
-  "PORT": "3000",
-  "DB_HOST": "104.248.156.113",
+  "PORT": "",
+  "DB_HOST": "127.0.0.1",
   "DB_PORT": "5432",
   "DB_NAME": "database-it-inventory",
-  "DB_USER": "user-it-inventory",
-  "DB_PASS": "user_sfsdf!@sfk123",
+  "DB_USER": "",
+  "DB_PASS": "",
   "DIALECT": "postgres",
   "JWT_SECRET_KEY": "TEST233"
 }
