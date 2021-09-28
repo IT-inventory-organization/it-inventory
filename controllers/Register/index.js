@@ -1,10 +1,7 @@
 const {body, validationResult } = require('express-validator');
-const {passwordFormat}= require("../../helper/validation");
-const {createHashText, checkHashText } = require('../../helper/bcrypt');
+const {passwordFormat, checkPhoneNumber}= require("../../helper/validation");
+const {createHashText } = require('../../helper/bcrypt');
 const User = require('../../database/models/user');
-const sequelize = require('../../configs/database');
-const {DataTypes} = require('sequelize');
-const { generateToken } = require('../../helper/jwt');
 
 let returnValue = {
     message: '',
@@ -12,17 +9,6 @@ let returnValue = {
     data: {}
 };
 
-function checkPhoneNumber(value){
-    let mobile_number = value;
-        if(typeof mobile_number !== 'string'){
-            mobile_number = `${mobile_number}`;
-        }
-        if(!mobile_number.includes('+')){
-            throw new Error(`Mobile Phone Number Must Include "+" Sign`);
-        }
-
-        return true
-}
 
 const checkInputRegister = [
     body('name').notEmpty().trim().withMessage("Name Is Required"),
@@ -47,10 +33,8 @@ const checkInputRegister = [
 
 module.exports = (routes) => {
     routes.post('/', checkInputRegister, async (req, res) => {
-        let transaction;
         
         const validation = validationResult(req);
-        // console.log(val);
         if(!validation.isEmpty()){
             res.json(validation.array()).status(400);
             return;
@@ -64,75 +48,24 @@ module.exports = (routes) => {
             mobile_phone: req.body.mobile_phone,
             username: req.body.username,
             password: createHashText(req.body.password), // Hashing
-            is_active: 1,
+            is_active: true,
             phone: req.body.phone
         }
         try {
-            transaction = await sequelize.transaction();
-            
-            const user = User(sequelize, DataTypes);
-
-            const processSave = user.build(dataToInput)
-            const dataToFetch = await processSave.save({
-                transaction: transaction,
-            });
+            await User.create(dataToInput);
 
             returnValue.message = 'Registeration Success';
             returnValue.status = true;
             returnValue.data = {
                 email: req.body.email
             };
-            
-            await transaction.commit(); // Accept all Change
 
-            res.json(returnValue).status(201);
+            return res.json(returnValue).status(201);
         } catch (error) {
-            await transaction.rollback(); // Revert All Change
             returnValue.message = 'Regsiteration Seems Failed, Please Try Again Later';
             returnValue.status = false,
             returnValue.data = error.message;
-            res.json(returnValue).status(500);
-        }
-    })
-
-    /**
-     * Testing Purpose: Delet User
-     */
-    routes.delete('/:id/delete', async(req,res) => {
-        try {
-            const defineUser = User(sequelize, DataTypes);
-            const define = await defineUser.destroy({
-                where:{
-                    id: req.params.id,
-                }
-            });
-
-            res.json({
-                define: define
-            }).status(200)
-        } catch (error) {
-            returnValue.message = 'Failed Delete User';
-            returnValue.status = false,
-            returnValue.data = error
-            res.json(returnValue).status(500);
-        }
-    })
-
-    /**
-     * Testing Bcrypt Password
-     */
-    routes.get('/test', async (req, res) => {
-        try {
-            const user = User(sequelize, DataTypes);
-            const result = await user.findAll();
-            
-            res.json({
-                message: 'Success Fetch All Data',
-                status: true,
-                data: result
-            })
-        } catch (error) {
-            
+            return res.json(returnValue).status(500);
         }
     })
 }
