@@ -31,7 +31,7 @@ function checkPhoneNumber(value){
             mobile_number = `${mobile_number}`;
         }
         if(!mobile_number.includes('+')){
-            throw new Error(`Mobile Phone Number Must Include Country Code`);
+            throw new Error(`Mobile Phone Number Must Include Country Code e.g: +62`);
         }
 
         return true

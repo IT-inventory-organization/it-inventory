@@ -19,6 +19,10 @@ module.exports = {
           name: 'Owner',
           createdAt: new Date(),
           updatedAt: new Date(),
+      }, {
+          name: 'Bea Cukai',
+          createdAt: new Date(),
+          updatedAt: new Date
       }
     ], {})
   },
