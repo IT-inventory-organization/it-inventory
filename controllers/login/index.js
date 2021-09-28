@@ -13,9 +13,8 @@ const validationBody = [
 ];
 
 const loginAction = async (req, res) => {
-  const user = User(sequelize, DataTypes);
   try {
-    const getUser = await user.findOne({
+    const getUser = await User.findOne({
       where: {
         [Op.or]: [
           { email: req.body.email },
