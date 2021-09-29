@@ -2,7 +2,9 @@ const reportDataPengajuan = require('../../database/models/datapengajuan')
 
 const createDataPengajuan = async (data, transaction) => {
     try {
-        const result = await reportDataPengajuan.create(data);
+        const result = await reportDataPengajuan.create(data, {
+            transaction: transaction
+        });
         return result;
     } catch (error) {
         throw error;
