@@ -24,7 +24,7 @@ const dataPengajuan = (req, res, next) => {
     }
 }
 
-const IdentitasPenerima = (req, res, next) => {
+const identitasPenerima = (req, res, next) => {
     try {
         const dataToInputIdentitasPenerima = {
             jenisIdentitasPenerima: req.body.jenisIdentitasPenerima,
@@ -44,7 +44,7 @@ const IdentitasPenerima = (req, res, next) => {
     }
 }
 
-const IdentitasPengirim = (req, res, next) => {
+const identitasPengirim = (req, res, next) => {
     try {
 
         const date = convertStrignToDateUTC(req.body.tanggalIjinBpkPengirim);
@@ -69,7 +69,7 @@ const IdentitasPengirim = (req, res, next) => {
     }
 }
 
-const TransaksiPerdagangan = (req, res, next) => {
+const transaksiPerdagangan = (req, res, next) => {
     try {
         const dataToInputTransaksiPerdagangan = {
             transaksi: req.body.transaksi,
@@ -119,8 +119,8 @@ const idReport = (req, res, next) => {
 
 module.exports = {
     dataPengajuan,
-    IdentitasPenerima,
-    IdentitasPengirim,
-    TransaksiPerdagangan,
+    identitasPenerima,
+    identitasPengirim,
+    transaksiPerdagangan,
     idReport
 }
