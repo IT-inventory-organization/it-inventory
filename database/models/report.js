@@ -27,6 +27,12 @@ const Report = db.define('Reports', {
     },
     onDelete: "cascade",
     onUpdate: "cascade"
+  },
+  typeReport: {
+    type: Sequelize.STRING,
+  },
+  BCDocumentType: {
+    type: Sequelize.STRING,
   }
 }, {
   tableName: 'Reports',

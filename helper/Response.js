@@ -12,6 +12,8 @@ const successResponse = (res, status, message, data) => {
   })
 }
 
+
+
 module.exports = {
   errorResponse,
   successResponse
