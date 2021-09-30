@@ -36,7 +36,7 @@ const updateDataHeader = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Report");
     } catch (error) {
-        transaction.rollback();
+        await transaction.rollback();
         
         return errorResponse(res, Http.internalServerError, "Failed To Edit The Report", error);
     }
