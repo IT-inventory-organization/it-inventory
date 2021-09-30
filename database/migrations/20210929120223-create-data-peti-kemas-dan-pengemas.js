@@ -1,7 +1,10 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('DataPetiKemasDanPengema', {
+    /**
+     * Typo in Naming Table
+     */
+    await queryInterface.createTable('DataPetiKemasDanPengemas', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -38,6 +41,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('DataPetiKemasDanPengema');
+    await queryInterface.dropTable('DataPetiKemasDanPengemas');
   }
 };

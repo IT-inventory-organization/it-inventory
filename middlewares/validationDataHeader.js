@@ -1,5 +1,5 @@
 const { body } = require('express-validator');
-
+const { checkFormat } = require('../helper/checkDateFormat');
 const validationReport = [
     body('pengajuanSebagai').trim().notEmpty().withMessage(`"Pengajuan Sebagai" Is Required`),
     body('kantorPengajuan').trim().notEmpty().withMessage(`"Kantor Pengajuan" Is Required`),
@@ -25,16 +25,7 @@ const validationIdentitasPengirim = [
     body('namaPengirim').trim().notEmpty().withMessage(`"Nama Pengirim" Is Required`),
     body('alamatPengirim').trim().notEmpty().withMessage(`"Alamat Pengirim" Is Required`),
     body('nomorIjinBpkPengirim').trim().notEmpty().withMessage(`"Nomor Ijin Bpk Pengirim" Is Required`),
-    body('tanggalIjinBpkPengirim').trim().notEmpty().withMessage(`"Tanggal Ijin Bpk Pengirim" Is Required`).custom(value => {
-        const regex = new RegExp(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/)
-        
-        if(!regex.test(value)){
-            throw Error('Date Format is Incorrect, Format example: dd-mm-yyyy');
-        }
-
-        return true;
-
-    }),
+    body('tanggalIjinBpkPengirim').trim().notEmpty().withMessage(`"Tanggal Ijin Bpk Pengirim" Is Required`).custom(checkFormat),
 ]
 
 const validationIdentitasPenerima = [
@@ -52,6 +43,39 @@ const validationTransaksiPerdagangan = [
     body('cif').trim().notEmpty().withMessage(`"CIF" Is Required`),
     body('voluntaryDeclaration').trim().notEmpty().withMessage(`"Voluntary Declaration" Is Required`),
     body('freight').trim().notEmpty().withMessage(`"Freight" Is Required`),
+];
+
+const validationDataPengangkutan = [
+    body('caraAngkut').trim().notEmpty().withMessage(`"Cara Angkut" Is Required`),
+    body('namaPengangkut').trim().notEmpty().withMessage(`"Nama Pengangkut" Is Required`),
+    body('bendera').trim().notEmpty().withMessage(`"Bendara" Is Required`),
+    body('nomorVoyFlightPol').trim().notEmpty().withMessage(`"Nomor Voy Flight Pol" Is Required`)
+];
+
+const validationDataPelabuhanMuatBongkar = [
+    body('pelabuhanMuat').trim().notEmpty().withMessage(`"Pelabuhan Muat" Is Required`),
+    body('pelabuhanTujuan').trim().notEmpty().withMessage(`"Pelabuhan Tujuan" Is Required`),
+    body('pelabuhanTransit').trim().notEmpty().withMessage(`"Pelabuhan Transit" Is Required`)
+];
+
+const validationBeratDanVolume = [
+    body('beratBersih').trim().notEmpty().withMessage(`"Berat Bersih" Is Required`),
+    body('beratKotor').trim().notEmpty().withMessage(`"Berat Kotor" Is Required`),
+    body('volume').trim().notEmpty().withMessage(`"Volume" Is Required`)
+];
+
+const validationDataPetiKemasDanPengemas = [
+    body('jumlahJenisKemasan').trim().notEmpty().withMessage(`"Jumlah Jenis Kemasan" Is Required`),
+    body('jumlahPetiKemas').trim().notEmpty().withMessage(`"Jumlah Peti Kemas" Is Required`),
+    body(`jumlahJenisBarang`).trim().notEmpty().withMessage(`"Jumlah Jenis Barang" Is Required`)
+];
+
+const validationDataPerkiraanTanggalPengeluaran = [
+    body('perkiraanTanggalPengeluaran').trim().notEmpty().withMessage(`"Perkiraan Tanggal Pengeluaran" Is Required`).custom(checkFormat)
+];
+
+const validationDataTempatPenimbunan = [
+    body('tempatPenimbunan').trim().notEmpty().withMessage(`"Tempat Penimbunan" Is Required`)
 ]
 
 module.exports = {
@@ -59,5 +83,11 @@ module.exports = {
     validationDataPengajuan,
     validationIdentitasPengirim,
     validationIdentitasPenerima,
-    validationTransaksiPerdagangan
+    validationTransaksiPerdagangan,
+    validationDataPengangkutan,
+    validationDataPelabuhanMuatBongkar,
+    validationBeratDanVolume,
+    validationDataPetiKemasDanPengemas,
+    validationDataPerkiraanTanggalPengeluaran,
+    validationDataTempatPenimbunan
 }

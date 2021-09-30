@@ -1,8 +1,15 @@
 const reportListBarang = require('../../database/models/listbarang')
 
-const createListBarang = (data) => {
-    const result = reportListBarang.create(data);
-    return result;
+const createListBarang = async (data, transaction) => {
+    try {
+        const result = await reportListBarang.create(data, {
+            transaction: transaction
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+    
 }
 
 const updateListBarang = async (data, idToUpdate , returning = false, transaction = null) => {

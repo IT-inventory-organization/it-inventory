@@ -11,11 +11,12 @@ const createDataBeratDanVolume = async (data, transaction) => {
     }
 }
 
-const updateDataBeratDanVolume = async (data, idToUpdate , returning = false, transaction = null) => {
+const updateDataBeratDanVolume = async (data, idToUpdate, idReport, returning = false, transaction = null) => {
     try {
         const result = await reportDataBeratDanVolume.update(data, {
             where:{ 
-                id: idToUpdate
+                id: idToUpdate,
+                reportId: idReport
             },
             returning: returning,
             transaction: transaction

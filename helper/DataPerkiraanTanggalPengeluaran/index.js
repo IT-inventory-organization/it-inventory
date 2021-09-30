@@ -11,11 +11,12 @@ const createPerkiraanTanggalPengeluaran = async (data, transaction) => {
     }
 }
 
-const updatePerkiraanTanggalPengeluaran = async (data, idToUpdate , returning = false, transaction = null) => {
+const updatePerkiraanTanggalPengeluaran = async (data, idToUpdate, idReport, returning = false, transaction = null) => {
     try {
         const result = await reportPerkiraanTanggalPengeluaran.update(data, {
             where:{ 
-                id: idToUpdate
+                id: idToUpdate,
+                reportId: idReport
             },
             returning: returning,
             transaction: transaction
