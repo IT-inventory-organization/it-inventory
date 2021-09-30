@@ -34,7 +34,13 @@ const { updateDataPelabuhanMuatBongkar } = require('../../helper/DataPelabuhanMu
 const { updateDataBeratDanVolume } = require('../../helper/DataBeratDanVolume');
 const { updateDataPetiKemasDanPengemas } = require('../../helper/DataPetiKemasDanPengemas');
 const { updateDataTempatPenimbunan } = require('../../helper/DataTempatPenimbunan');
-const { updatePerkiraanTanggalPengeluaran }= require('../../helper/DataPerkiraanTanggalPengeluaran')
+const { updatePerkiraanTanggalPengeluaran }= require('../../helper/DataPerkiraanTanggalPengeluaran');
+const { updateListBarang } = require('../../helper/ListBarang');
+const { updateListDokumen } = require('../../helper/ListDokumen');
+const { dataBarang } = require('../../helper/bundleDataBarang');
+const { dataDokumen } = require('../../helper/bundleDataLanjutan');
+const { validationDokumen } = require('../../middlewares/validationDataLanjutan');
+const { validationListBarang } = require('../../middlewares/validationDataBarang')
 const Http = require('../../helper/Httplib');
 const sequelize = require('../../configs/database');
 
@@ -87,6 +93,41 @@ const updateDataHeader = async (req, res) => {
     }
 }
 
+const updateListDokumenLanjutan = async (req, res) => {
+    try {
+
+        const {DataToInput: {listDokumen}} = req;
+        const {id} = req.params;
+        const listDokumenResult = await updateListDokumen(listDokumen, id, false, null);
+
+        return successResponse(res, Http.created, "Success Updating Document", {idListDokumen: listDokumenResult});
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "Failed To Update Document");
+    }
+}
+
+const updateDataLanjutan = async (req, res) => {
+    
+}
+
+const updateDataBarang = async (req, res) => {
+    try {
+        const {DataToInput: {listBarang}} = req;
+
+        const dataBarangUpdate = await updateListBarang(listBarang, req.params.id, true, null);
+
+        const dataToReturn = {
+            idListBarang: dataBarangUpdate.id,
+            reportId: dataBarangUpdate.reportId
+        }
+
+        return successResponse(res, Http.created, 'Success Update Data', dataToReturn);
+    } catch (error) {
+        return errorResponse(res, Http.internalServerError, "Failed To Update Item Document")
+    }
+}
+
 module.exports = (routes) => {
     routes.put(
         '/data-header/:id',
@@ -114,4 +155,23 @@ module.exports = (routes) => {
         idReport,
         updateDataHeader
     );
+
+    routes.put('/data-barang/:id',
+        validationListBarang,
+        validationResponse,
+        dataBarang,
+        updateDataBarang
+    );
+
+    routes.put('/data-lanjutan/:id',
+        updateDataLanjutan
+    );
+
+    routes.put('/listDokumen/:id',
+        validationDokumen,
+        validationResponse,
+        dataDokumen,
+        updateListDokumenLanjutan
+    )
+
 }

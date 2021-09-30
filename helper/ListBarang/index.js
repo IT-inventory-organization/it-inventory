@@ -1,9 +1,11 @@
+const { Op } = require('sequelize');
 const reportListBarang = require('../../database/models/listbarang')
 
 const createListBarang = async (data, transaction) => {
     try {
         const result = await reportListBarang.create(data, {
-            transaction: transaction
+            transaction: transaction,
+            returning: true
         });
         return result;
     } catch (error) {
@@ -27,7 +29,23 @@ const updateListBarang = async (data, idToUpdate , returning = false, transactio
     }
 }
 
+const deleteListBarang = async(idParams, returning = false, transaction = false) => {
+    try {
+        const result = await reportListBarang.destroy({
+            where: {
+                id: idParams,
+            },
+            returning: returning,
+            transaction: transaction
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createListBarang,
-    updateListBarang
+    updateListBarang,
+    deleteListBarang
 }

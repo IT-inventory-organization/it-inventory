@@ -31,7 +31,7 @@ const dataDokumen = (req, res, next) => {
         
         next();
     } catch (error) {
-        
+        // console.error(error)
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
     }
 }

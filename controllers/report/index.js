@@ -46,7 +46,8 @@ const { createDataTempatPenimbunan } = require('../../helper/DataTempatPenimbuna
 const { createPerkiraanTanggalPengeluaran } = require('../../helper/DataPerkiraanTanggalPengeluaran');
 const { createListDokumen } = require('../../helper/ListDokumen');
 const { createDataPetiKemas } = require("../../helper/DataPetiKemas")
-const { createListBarang } = require("../../helper/ListBarang")
+const { createListBarang } = require("../../helper/ListBarang");
+const { validationArrListBarang }= require("../../middlewares/validationDataBarang")
 const Encryption = require('../../helper/encription');
 
 const validationReport = [
@@ -90,7 +91,7 @@ const addReport = async (req, res) => {
     }
 }
 
-
+// Callback Add Data Header
 const addDataHeader = async (req, res) => {
     let transaction
 
@@ -135,6 +136,7 @@ const addDataHeader = async (req, res) => {
     }
 }
 
+// Callback Add Data Lanjutan
 const addDataLanjutan = async (req, res) => {
     let transaction
 
@@ -157,28 +159,30 @@ const addDataLanjutan = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        // console.error(error);
+        
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
 
+// Callback Add Data Barang
 const addDataBarang = async (req, res) => {
     let transaction
     
     try {
         transaction = await sequelize.transaction();
         const { DataToInput: {listBarang}} = req;
-        
-        const promises = []
-        listBarang.forEach(async (element) => {
-            // console.log('asd',element)
-            promises.push(await createListBarang(element))
-        });
-        // return;
-        const result = await Promise.all(promises)
 
+        // return;
+        const promises = [];
+
+        // Loop Dengan Async
+        for (let index = 0; index < listBarang.length; index++) {
+            let res = await createListBarang(listBarang[index], transaction);
+            promises.push(res);
+        }
+        
         const dataToReturn = {
-            listBarang: result.map(ele => ele.id),
+            listBarang: promises.map( ele => ele.id),
             reportId: listBarang[0].reportId,
         };
 
@@ -187,7 +191,7 @@ const addDataBarang = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        console.error(error);
+        // console.error(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -202,12 +206,14 @@ const decrypt = async(req, res) => {
 }
 
 module.exports = (routes) => {
-    // const validationDtaLanjutan = []
+    // Create report
     routes.post('/', // --> url
         validationReport,
         validationResponse,
         addReport
     );
+
+    // Create Data Header
     routes.post('/data-header',
         validationDataPengajuan,
         validationIdentitasPengirim,
@@ -232,6 +238,8 @@ module.exports = (routes) => {
         dataPerkiraanTanggalPengeluaran,
         addDataHeader
     );
+
+    // Create Data Lanjutan
     routes.post('/data-lanjutan',
         validationDokumen, 
         validationPetiKemas,
@@ -240,15 +248,18 @@ module.exports = (routes) => {
         petiKemas,
         addDataLanjutan
     );
+
+    // Create Data Barang
     routes.post('/data-barang',
-        // validationListBarang,
-        // validationResponse,
+        validationArrListBarang,
+        validationResponse,
         dataBarang,
         addDataBarang
     );
     
     /**
      * Testign purpose
+     * Check Hasil Decrypt
      */
-    routes.post('/test', decrypt)
+    routes.post('/test', decrypt);
 }
