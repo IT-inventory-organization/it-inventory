@@ -1,24 +1,27 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    /**
-     * Typo in Naming Table
-     */
-    await queryInterface.createTable('DataPetiKemasDanPengemas', {
+    await queryInterface.createTable('listBarang', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      jumlahJenisKemasan: {
-        type: Sequelize.INTEGER
+      posTarif: {
+        type: Sequelize.DECIMAL
       },
-      jumlahPetiKemas: {
-        type: Sequelize.INTEGER
+      uraian: {
+        type: Sequelize.STRING
       },
-      jumlahJenisBarang: {
-        type: Sequelize.INTEGER
+      nettoBrutoVolume: {
+        type: Sequelize.DECIMAL
+      },
+      satuanKemasan: {
+        type: Sequelize.DECIMAL
+      },
+      nilaiPabeanHargaPenyerahan: {
+        type: Sequelize.DECIMAL
       },
       reportId: {
         allowNull: false,
@@ -41,6 +44,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('DataPetiKemasDanPengemas');
+    await queryInterface.dropTable('listBarang');
   }
 };

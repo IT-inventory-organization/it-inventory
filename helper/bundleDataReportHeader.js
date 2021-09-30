@@ -1,21 +1,31 @@
 const Http = require("./Httplib");
 const {convertStrignToDateUTC} = require("./convert");
 const {errorResponse} = require("./Response");
+const Encryption = require('./encription');
 
 const dataPengajuan = (req, res, next) => {
     try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+
         const dataToInputPengajuan = {
-            kantorPabeanAsal: req.body.kantorPabeanAsal,
-            kategoryPemberitahuan: req.body.kategoryPemberitahuan,
-            kategoryPengeluaran: req.body.kategoryPengeluaran,
-            tujuanPengeluan: req.body.tujuanPengeluaran,
-            asalBarang: req.body.asalBarang,
-            caraPembayaran: req.body.caraPembayaran,
-            reportId: req.body.reportId
+            kantorPabeanAsal: Decrypt.kantorPabeanAsal,
+            kategoryPemberitahuan: Decrypt.kategoryPemberitahuan,
+            kategoryPengeluaran: Decrypt.kategoryPengeluaran,
+            tujuanPengeluan: Decrypt.tujuanPengeluaran,
+            asalBarang: Decrypt.asalBarang,
+            caraPembayaran: Decrypt.caraPembayaran,
+            reportId: Decrypt.reportId
         }
     
         req.DataToInput = { 
-            Pengajuan: dataToInputPengajuan
+            pengajuan: dataToInputPengajuan
         };
 
         next();
@@ -24,43 +34,62 @@ const dataPengajuan = (req, res, next) => {
     }
 }
 
-const IdentitasPenerima = (req, res, next) => {
+const identitasPenerima = (req, res, next) => {
     try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+
         const dataToInputIdentitasPenerima = {
-            jenisIdentitasPenerima: req.body.jenisIdentitasPenerima,
-            nomorIdentitasPenerima: req.body.nomorIdentitasPenerima,
-            namaPenerima: req.body.namaPenerima,
-            alamatPenerima: req.body.alamatPenerima,
-            reportId: req.body.reportId
+            jenisIdentitasPenerima: Decrypt.jenisIdentitasPenerima,
+            nomorIdentitasPenerima: Decrypt.nomorIdentitasPenerima,
+            namaPenerima: Decrypt.namaPenerima,
+            alamatPenerima: Decrypt.alamatPenerima,
+            reportId: Decrypt.reportId
         };
 
         req.DataToInput = { 
             ...req.DataToInput, 
-            IdentitasPenerima: dataToInputIdentitasPenerima
+            identitasPenerima: dataToInputIdentitasPenerima
         }
+
+        // console.info(dataToInputIdentitasPenerima);return;
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
     }
 }
 
-const IdentitasPengirim = (req, res, next) => {
+const identitasPengirim = (req, res, next) => {
     try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
 
-        const date = convertStrignToDateUTC(req.body.tanggalIjinBpkPengirim);
+        const date = convertStrignToDateUTC(Decrypt.tanggalIjinBpkPengirim);
         const dataToInputIdentitasPengirim = {
-            jenisIdentitasPengirim: req.body.jenisIdentitasPengirim,
-            nomorIdentitasPengirim: req.body.nomorIdentitasPengirim,
-            namaPengirim: req.body.namaPengirim,
-            alamatPengirim: req.body.alamatPengirim,
-            nomorIjinBpkPengirim: req.body.nomorIjinBpkPengirim,
+            jenisIdentitasPengirim: Decrypt.jenisIdentitasPengirim,
+            nomorIdentitasPengirim: Decrypt.nomorIdentitasPengirim,
+            namaPengirim: Decrypt.namaPengirim,
+            alamatPengirim: Decrypt.alamatPengirim,
+            nomorIjinBpkPengirim: Decrypt.nomorIjinBpkPengirim,
             tanggalIjinBpkPengirim: date,
-            reportId: req.body.reportId
+            reportId: Decrypt.reportId
         }
 
         req.DataToInput = {
             ...req.DataToInput,
-            IdentitasPengirim: dataToInputIdentitasPengirim
+            identitasPengirim: dataToInputIdentitasPengirim
         }
 
         next();
@@ -69,23 +98,203 @@ const IdentitasPengirim = (req, res, next) => {
     }
 }
 
-const TransaksiPerdagangan = (req, res, next) => {
+const transaksiPerdagangan = (req, res, next) => {
     try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+
         const dataToInputTransaksiPerdagangan = {
-            transaksi: req.body.transaksi,
-            transaksiLainnya: req.body.transaksiLainnya,
-            valuta: req.body.valuta,
-            kursNDPBM: req.body.kursNDPBM,
-            cif: req.body.cif,
-            voluntaryDeclaration: req.body.voluntaryDeclaration,
-            freight: req.body.freight,
-            reportId: req.body.reportId
+            transaksi: Decrypt.transaksi,
+            transaksiLainnya: Decrypt.transaksiLainnya,
+            valuta: Decrypt.valuta,
+            kursNDPBM: Decrypt.kursNDPBM,
+            cif: Decrypt.cif,
+            voluntaryDeclaration: Decrypt.voluntaryDeclaration,
+            freight: Decrypt.freight,
+            reportId: Decrypt.reportId
         }
 
         req.DataToInput = {
             ...req.DataToInput,
-            TransaksiPerdagangan: dataToInputTransaksiPerdagangan
+            transaksiPerdagangan: dataToInputTransaksiPerdagangan
         }
+        
+        next();
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
+    }
+}
+
+const dataPengangkut = (req, res, next) => {
+    try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+
+        const dataToInputDataPengangkut = {
+            caraAngkut: Decrypt.caraAngkut,
+            namaPengangkut: Decrypt.namaPengangkut,
+            bendera: Decrypt.bendera,
+            nomorVoyFlightPol: Decrypt.nomorVoyFlightPol,
+            reportId: Decrypt.reportId
+        }
+
+        req.DataToInput = {
+            ...req.DataToInput,
+            pengangkutan: dataToInputDataPengangkut
+        }
+
+        next();
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
+    }
+}
+
+const dataPelabuhanMuatBongkar = (req, res, next) => {
+    try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+
+        const dataToInputDataPelabuhanMuatBongkar = {
+            pelabuhanMuat: Decrypt.pelabuhanMuat,
+            pelabuhanTujuan: Decrypt.pelabuhanTujuan,
+            pelabuhanTransit: Decrypt.pelabuhanTransit,
+            reportId: Decrypt.reportId
+        }
+
+        req.DataToInput = {
+            ...req.DataToInput,
+            pelabuhanMuatBongkar: dataToInputDataPelabuhanMuatBongkar
+        };
+        
+        next();
+
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
+    }
+}
+
+const beratDanVolume = (req, res, next) => {
+    try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+        const dataToInputBeratDanVolume = {
+            beratBersih: Decrypt.beratBersih,
+            beratKotor: Decrypt.beratKotor,
+            volume: Decrypt.volume,
+            reportId: Decrypt.reportId
+        }
+
+        req.DataToInput = {
+            ...req.DataToInput,
+            beratDanVolume: dataToInputBeratDanVolume
+        }
+
+        next();
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
+    }
+}
+
+const dataPetiKemasDanPengemas = (req, res, next) => {
+    try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+        const dataToInputDataPetiKemasDanPengemas = {
+            jumlahJenisKemasan: Decrypt.jumlahJenisKemasan,
+            jumlahPetiKemas: Decrypt.jumlahPetiKemas,
+            jumlahJenisBarang: Decrypt.jumlahJenisBarang,
+            reportId: Decrypt.reportId
+        }
+
+        req.DataToInput = {
+            ...req.DataToInput,
+            petiKemasDanPengemas: dataToInputDataPetiKemasDanPengemas
+        }
+
+        next();
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error)
+    }
+}
+
+const dataPerkiraanTanggalPengeluaran = (req, res, next) => {
+    try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+        const date = convertStrignToDateUTC(Decrypt.perkiraanTanggalPengeluaran);
+
+        const dataToInputDataPerkiraanTanggalPengeluaran = {
+            perkiraanTanggalPengeluaran: date,
+            reportId: Decrypt.reportId
+        }
+
+        req.DataToInput = {
+            ...req.DataToInput,
+            perkiraanTanggalPengeluaran: dataToInputDataPerkiraanTanggalPengeluaran
+        }
+        
+        next();
+
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
+    }
+}
+
+const dataTempatPenimbunan = (req, res, next) => {
+    try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
+        const dataToInputDataTempatPenimbunan = {
+            tempatPenimbunan: Decrypt.tempatPenimbunan,
+            reportId: Decrypt.reportId
+        }
+        req.DataToInput = {
+            ...req.DataToInput,
+            tempatPenimbunan: dataToInputDataTempatPenimbunan
+        }
+        
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
@@ -99,11 +308,26 @@ const TransaksiPerdagangan = (req, res, next) => {
  */
 const idReport = (req, res, next) => {
     try {
+        /**
+         * Testing Purpose
+         */
+        const Encrypt = Encryption.AESEncrypt(req.body);
+        /**
+         * End Testing Purpose
+         */
+        const Decrypt = Encryption.AESDecrypt(Encrypt);
         const dataToSearchId = {
-            dataPengajuanId: req.body.dataPengajuanId,
-            identitasPenerimaId: req.body.identitasPenerimaId,
-            identitasPengirimId: req.body.identitasPengirimId,
-            TransaksiPerdaganganId: req.body.TransaksiPerdaganganId
+            reportId: Decrypt.reportId,
+            dataPengajuanId: Decrypt.dataPengajuanId,
+            identitasPenerimaId: Decrypt.identitasPenerimaId,
+            identitasPengirimId: Decrypt.identitasPengirimId,
+            transaksiPerdaganganId: Decrypt.transaksiPerdaganganId,
+            pengangkutanId: Decrypt.pengangkutanResultId,
+            pelabuhanMuatBongkarId: Decrypt.pelabuhanMuatBongkarId,
+            beratDanVolumeId: Decrypt.beratDanVolumeId,
+            petiKemasDanPengemasId: Decrypt.petiKemasDanPengemasId,
+            tempatPenimbunanId: Decrypt.tempatPenimbunanId,
+            perkiraanTanggalId: Decrypt.perkiraanTanggalId
         }
 
         req.DataToInput = {
@@ -119,8 +343,14 @@ const idReport = (req, res, next) => {
 
 module.exports = {
     dataPengajuan,
-    IdentitasPenerima,
-    IdentitasPengirim,
-    TransaksiPerdagangan,
+    identitasPenerima,
+    identitasPengirim,
+    transaksiPerdagangan,
+    dataPengangkut,
+    dataPelabuhanMuatBongkar,
+    beratDanVolume,
+    dataPetiKemasDanPengemas,
+    dataPerkiraanTanggalPengeluaran,
+    dataTempatPenimbunan,
     idReport
 }

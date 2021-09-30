@@ -9,9 +9,15 @@ const { errorResponse, successResponse } = require('../../helper/Response');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const {
     dataPengajuan,
-    IdentitasPenerima,
-    IdentitasPengirim,
-    TransaksiPerdagangan
+    identitasPenerima,
+    identitasPengirim,
+    transaksiPerdagangan,
+    dataPengangkut,
+    dataPelabuhanMuatBongkar,
+    beratDanVolume,
+    dataPetiKemasDanPengemas,
+    dataPerkiraanTanggalPengeluaran,
+    dataTempatPenimbunan
 } = require('../../helper/bundleDataReportHeader');
 
 const sequelize = require('../../configs/database')
@@ -19,8 +25,29 @@ const {
     validationDataPengajuan, 
     validationIdentitasPengirim, 
     validationIdentitasPenerima,
-    validationTransaksiPerdagangan
-} = require('../../middlewares/validationReportInput');
+    validationTransaksiPerdagangan,
+    validationDataPengangkutan,
+    validationDataPelabuhanMuatBongkar,
+    validationBeratDanVolume,
+    validationDataPetiKemasDanPengemas,
+    validationDataPerkiraanTanggalPengeluaran,
+    validationDataTempatPenimbunan
+} = require('../../middlewares/validationDataHeader');
+
+const { validationDokumen, validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
+const { validationListBarang } = require('../../middlewares/validationDataBarang');
+const { dataBarang } = require('../../helper/bundleDataBarang');
+const { dataDokumen, petiKemas } = require('../../helper/bundleDataLanjutan');
+const { createDataPengangkutan } = require('../../helper/DataPengangkutan');
+const { createDataPelabuhanMuatBongkar } = require('../../helper/DataPelabuhanMuatBongkar');
+const { createDataBeratDanVolume } = require('../../helper/DataBeratDanVolume');
+const { createDataPetiKemasDanPengemas } = require('../../helper/DataPetiKemasDanPengemas');
+const { createDataTempatPenimbunan } = require('../../helper/DataTempatPenimbunan');
+const { createPerkiraanTanggalPengeluaran } = require('../../helper/DataPerkiraanTanggalPengeluaran');
+const { createListDokumen } = require('../../helper/ListDokumen');
+const { createDataPetiKemas } = require("../../helper/DataPetiKemas")
+const { createListBarang } = require("../../helper/ListBarang")
+const Encryption = require('../../helper/encription');
 
 const validationReport = [
     body('pengajuanSebagai').trim().notEmpty().withMessage(`"Pengajuan Sebagai" Is Required`),
@@ -36,7 +63,7 @@ const validationReport = [
  * TODO: Validation, 
  * TODO: Create Report,
  * TODO: Create & Update Data Header(Penganjuan, identitas pengirim & penerima, Tranasksi Perdagangan) 
- * [29/09/2021]
+ * [29/09/2021][30/09/2021]
  */
 const addReport = async (req, res) => {
     try {
@@ -63,30 +90,71 @@ const addReport = async (req, res) => {
     }
 }
 
+
 const addDataHeader = async (req, res) => {
     let transaction
 
     try {
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {Pengajuan, IdentitasPenerima, IdentitasPengirim, TransaksiPerdagangan}} = req;
+        const { DataToInput: {pengajuan, identitasPenerima, identitasPengirim, transaksiPerdagangan, pengangkutan, pelabuhanMuatBongkar, beratDanVolume, petiKemasDanPengemas, tempatPenimbunan, perkiraanTanggalPengeluaran}} = req;
         
-        const dataPengajuan = await createDataPengajuan(Pengajuan, transaction); // Simpan Ke Table Data Pengajuan
-        const identitasPenerimaResult = await createReportIdentitasPenerima(IdentitasPenerima, transaction); // Simpan Ke Table Identitas Penerima
-        const identitasPengirimResult = await createReportIdentitasPengirim(IdentitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
-        const TransaksiPerdaganganResult = await createReportTransaksiPerdagangan(TransaksiPerdagangan, transaction); // Simpan Ke Table Transaksi Perdagangan
+        const dataPengajuan = await createDataPengajuan(pengajuan, transaction); // Simpan Ke Table Data Pengajuan
+        const identitasPenerimaResult = await createReportIdentitasPenerima(identitasPenerima, transaction); // Simpan Ke Table Identitas Penerima
+        const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
+        const transaksiPerdaganganResult = await createReportTransaksiPerdagangan(transaksiPerdagangan, transaction); // Simpan Ke Table Transaksi Perdagangan
+        // console.info('data',perkiraanTanggalPengeluaran);
+        const pengangkutanResult = await createDataPengangkutan(pengangkutan, transaction);
+        const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(pelabuhanMuatBongkar, transaction);
+        const beratDanVolumeResult = await createDataBeratDanVolume(beratDanVolume, transaction);
+        const petiKemasDanPengemasResult = await createDataPetiKemasDanPengemas(petiKemasDanPengemas, transaction);
+        const tempatPenimbunanResult = await createDataTempatPenimbunan(tempatPenimbunan, transaction);
+        const perkiraanTanggalResult = await createPerkiraanTanggalPengeluaran(perkiraanTanggalPengeluaran, transaction);
 
         const dataToReturn = {
             dataPengajuanId: dataPengajuan.id,
             reportId: dataPengajuan.reportId,
             identitasPenerimaId: identitasPenerimaResult.id,
             identitasPengirimId: identitasPengirimResult.id,
-            TransaksiPerdaganganId: TransaksiPerdaganganResult.id
+            transaksiPerdaganganId: transaksiPerdaganganResult.id,
+            pengangkutanId: pengangkutanResult.id,
+            pelabuhanMuatBongkarId: pelabuhanMuatBongkarResult.id,
+            beratDanVolumeId: beratDanVolumeResult.id,
+            petiKemasDanPengemasId: petiKemasDanPengemasResult.id,
+            tempatPenimbunanId: tempatPenimbunanResult.id,
+            perkiraanTanggalId: perkiraanTanggalResult.id
+        };
+
+        await transaction.commit();
+
+        return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
+    } catch (error) {
+        await transaction.rollback();
+        // console.error(error.message);
+        return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
+    }
+}
+
+const addDataLanjutan = async (req, res) => {
+    let transaction
+
+    try {
+        transaction = await sequelize.transaction();
+
+        const { DataToInput: {listDokumen, petiKemas}} = req;
+        
+        const listDokumenResult = await createListDokumen(listDokumen, transaction);
+        const petiKemasResult = await createDataPetiKemas(petiKemas, transaction)
+
+        const dataToReturn = {
+            listDokument: listDokumenResult.id,
+            reportId: listDokumenResult.reportId,
+            petiKemas: petiKemasResult.id,
         };
 
         await transaction.commit()
 
-        return successResponse(res, Http.created, "Success Adding A Data From Data Header", dataToReturn);
+        return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
         // console.error(error);
@@ -94,28 +162,93 @@ const addDataHeader = async (req, res) => {
     }
 }
 
+const addDataBarang = async (req, res) => {
+    let transaction
+    
+    try {
+        transaction = await sequelize.transaction();
+        const { DataToInput: {listBarang}} = req;
+        
+        const promises = []
+        listBarang.forEach(async (element) => {
+            // console.log('asd',element)
+            promises.push(await createListBarang(element))
+        });
+        // return;
+        const result = await Promise.all(promises)
+
+        const dataToReturn = {
+            listBarang: result.map(ele => ele.id),
+            reportId: listBarang[0].reportId,
+        };
+
+        await transaction.commit()
+
+        return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
+    } catch (error) {
+        await transaction.rollback();
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
+    }
+}
+
+/**
+ * Testing Purpose 
+ */
+const decrypt = async(req, res) => {
+    res.json(
+        Encryption.AESDecrypt(req.body.tes)
+    )
+}
+
 module.exports = (routes) => {
-    routes.post(
-        '/', // --> url
+    // const validationDtaLanjutan = []
+    routes.post('/', // --> url
         validationReport,
         validationResponse,
         addReport
     );
-    routes.post(
-        '/DataHeader',
+    routes.post('/data-header',
         validationDataPengajuan,
         validationIdentitasPengirim,
         validationIdentitasPenerima,
         validationTransaksiPerdagangan,
+        validationDataPengangkutan,
+        validationDataPelabuhanMuatBongkar,
+        validationBeratDanVolume,
+        validationDataPetiKemasDanPengemas,
+        validationDataTempatPenimbunan,
+        validationDataPerkiraanTanggalPengeluaran,
         validationResponse, // --> Middleware
         dataPengajuan,
-        IdentitasPengirim,
-        IdentitasPenerima,
-        TransaksiPerdagangan,
+        identitasPengirim,
+        identitasPenerima,
+        transaksiPerdagangan,
+        dataPengangkut,
+        dataPelabuhanMuatBongkar,
+        beratDanVolume,
+        dataPetiKemasDanPengemas,
+        dataTempatPenimbunan,
+        dataPerkiraanTanggalPengeluaran,
         addDataHeader
     );
+    routes.post('/data-lanjutan',
+        validationDokumen, 
+        validationPetiKemas,
+        validationResponse,
+        dataDokumen,
+        petiKemas,
+        addDataLanjutan
+    );
+    routes.post('/data-barang',
+        // validationListBarang,
+        // validationResponse,
+        dataBarang,
+        addDataBarang
+    );
+    
     /**
      * Testign purpose
      */
-
+    routes.post('/test', decrypt)
 }

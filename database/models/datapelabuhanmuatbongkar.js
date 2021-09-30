@@ -1,16 +1,43 @@
 'use strict';
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
+/**
+ * Mengganti Model
+ */
+// const reportDataPelabuhanMuatBongkar = db.define('DataPelabuhanMuatBongkar', {
+//   beratBersih: {
+//     type: Sequelize.DECIMAL
+//   },
+//   beratKotor: {
+//     type: Sequelize.DECIMAL
+//   },
+//   volume: {
+//     type: Sequelize.DECIMAL
+//   },
+//   reportId: {
+//     allowNull: false,
+//     type: Sequelize.INTEGER,
+//     references: {
+//       model: "Reports",
+//       key: "id"
+//     },
+//     onDelete: 'cascade',
+//     onUpdate: 'cascade'
+//   },
+// }, {
+//   tableName: 'DataPelabuhanMuatBongkar',
+//   freezeTableName:true,
+// })
 
 const reportDataPelabuhanMuatBongkar = db.define('DataPelabuhanMuatBongkar', {
-  beratBersih: {
-    type: Sequelize.DECIMAL
+  pelabuhanMuat: {
+    type: Sequelize.STRING
   },
-  beratKotor: {
-    type: Sequelize.DECIMAL
+  pelabuhanTujuan: {
+    type: Sequelize.STRING
   },
-  volume: {
-    type: Sequelize.DECIMAL
+  pelabuhanTransit: {
+    type: Sequelize.STRING
   },
   reportId: {
     allowNull: false,
