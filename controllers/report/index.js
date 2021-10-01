@@ -34,8 +34,7 @@ const {
     validationDataTempatPenimbunan
 } = require('../../middlewares/validationDataHeader');
 
-const { validationDokumen, validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
-const { validationListBarang } = require('../../middlewares/validationDataBarang');
+const { validationArrListDokumen, validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
 const { dataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen, petiKemas } = require('../../helper/bundleDataLanjutan');
 const { createDataPengangkutan } = require('../../helper/DataPengangkutan');
@@ -68,7 +67,6 @@ const validationReport = [
  */
 const addReport = async (req, res) => {
     try {
-
         const dataObj = {
             pengajuanSebagai: req.body.pengajuanSebagai,
             kantorPengajuan: req.body.kantorPengajuan,
@@ -77,6 +75,7 @@ const addReport = async (req, res) => {
             userId: req.body.userId,
             typeReport: req.body.typeReport,
             BCDocumentType: req.body.BCDocumentType,
+            isDelete: false
         };
 
         const result = await createReport(dataObj, null);
@@ -104,7 +103,7 @@ const addDataHeader = async (req, res) => {
         const identitasPenerimaResult = await createReportIdentitasPenerima(identitasPenerima, transaction); // Simpan Ke Table Identitas Penerima
         const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
         const transaksiPerdaganganResult = await createReportTransaksiPerdagangan(transaksiPerdagangan, transaction); // Simpan Ke Table Transaksi Perdagangan
-        // console.info('data',perkiraanTanggalPengeluaran);
+        
         const pengangkutanResult = await createDataPengangkutan(pengangkutan, transaction);
         const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(pelabuhanMuatBongkar, transaction);
         const beratDanVolumeResult = await createDataBeratDanVolume(beratDanVolume, transaction);
@@ -145,21 +144,27 @@ const addDataLanjutan = async (req, res) => {
 
         const { DataToInput: {listDokumen, petiKemas}} = req;
         
-        const listDokumenResult = await createListDokumen(listDokumen, transaction);
+        const promises = [];
+
+        for (let i = 0; i < listDokumen.length; i++) {
+            let result = await createListDokumen(listDokumen[i], transaction);
+            promises.push(result)
+            
+        }
         const petiKemasResult = await createDataPetiKemas(petiKemas, transaction)
 
         const dataToReturn = {
-            listDokument: listDokumenResult.id,
-            reportId: listDokumenResult.reportId,
+            listDokumen: promises.map(el => el.id),
+            reportId: petiKemas.reportId,
             petiKemas: petiKemasResult.id,
         };
 
-        await transaction.commit()
+        await transaction.commit();
 
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        
+        console.error(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -172,9 +177,13 @@ const addDataBarang = async (req, res) => {
         transaction = await sequelize.transaction();
         const { DataToInput: {listBarang}} = req;
 
-        // return;
+        
         const promises = [];
+        // listBarang.forEach(async el => {
+        //     promises.push(await createListBarang(el, transaction));
+        // })
 
+        // const result = await Promise.all(promises);
         // Loop Dengan Async
         for (let index = 0; index < listBarang.length; index++) {
             let res = await createListBarang(listBarang[index], transaction);
@@ -241,7 +250,7 @@ module.exports = (routes) => {
 
     // Create Data Lanjutan
     routes.post('/data-lanjutan',
-        validationDokumen, 
+        validationArrListDokumen,
         validationPetiKemas,
         validationResponse,
         dataDokumen,

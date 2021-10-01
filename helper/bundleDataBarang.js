@@ -18,6 +18,9 @@ const dataBarang = (req, res, next) => {
          * End Testing
          */
         const Decrypt = Encryption.AESDecrypt(Encrypt);
+        for (let i = 0; i < Decrypt.length; i++) {
+            Decrypt[i].isDelete = false;
+        }
 
         req.DataToInput = {
             listBarang: Decrypt

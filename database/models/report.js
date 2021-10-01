@@ -1,8 +1,10 @@
 'use strict';
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
+const reportIdentitasPenerima = require('./identitaspenerima'); 
+const reportIdentitasPengirim = require('./identitaspengirim')
 
-const Report = db.define('Reports', {
+const Report = db.define('Report', {
   pengajuanSebagai: {
     type: Sequelize.STRING,
     allowNull: false
@@ -33,9 +35,13 @@ const Report = db.define('Reports', {
   },
   BCDocumentType: {
     type: Sequelize.STRING,
+  },
+  isDelete: {
+    type: Sequelize.BOOLEAN,
   }
 }, {
   tableName: 'Reports',
+  freezeTableName:true,
 })
 
 module.exports = Report;

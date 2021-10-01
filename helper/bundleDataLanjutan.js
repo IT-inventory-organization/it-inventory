@@ -13,17 +13,21 @@ const dataDokumen = (req, res, next) => {
          * End Testing
          */
         const Decrypt = Encryption.AESDecrypt(Encypt);
-        
-        const date = convertStrignToDateUTC(Decrypt.tanggalDokumen)
-        const cDataDokumen = {
-            kodeDokumen: Decrypt.kodeDokumen,
-            nomorDokumen: Decrypt.nomorDokumen,
-            tanggalDokumen: date,
-            hsCode: Decrypt.hsCode,
-            reportId: Decrypt.reportId
-            
-        }
 
+        for (let i = 0; i < Decrypt.tableDokumen.length; i++) {
+            Decrypt.tableDokumen[i].tanggalDokumen = convertStrignToDateUTC(Decrypt.tableDokumen[i].tanggalDokumen);
+            Decrypt.tableDokumen[i].isDelete = false; //
+        }
+        // const cDataDokumen = {
+        //     kodeDokumen: Decrypt.kodeDokumen,
+        //     nomorDokumen: Decrypt.nomorDokumen,
+        //     tanggalDokumen: date,
+        //     hsCode: Decrypt.hsCode,
+        //     reportId: Decrypt.reportId
+        // }
+
+        const cDataDokumen = [ ...Decrypt.tableDokumen ];
+        // console.info(cDataDokumen);return;
         req.DataToInput = {
             ...req.DataToInput,
             listDokumen: cDataDokumen,

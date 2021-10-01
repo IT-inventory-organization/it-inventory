@@ -31,13 +31,17 @@ const updateListBarang = async (data, idToUpdate , returning = false, transactio
 
 const deleteListBarang = async(idParams, returning = false, transaction = false) => {
     try {
-        const result = await reportListBarang.destroy({
-            where: {
-                id: idParams,
-            },
-            returning: returning,
-            transaction: transaction
-        });
+        const result = await reportListBarang.update(
+            {
+                isDelete: true,
+            },{
+                where: {
+                    id: idParams,
+                },
+                returning: returning,
+                transaction: transaction
+            }
+        );
         return result;
     } catch (error) {
         throw error;

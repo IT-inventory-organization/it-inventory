@@ -28,13 +28,18 @@ const updateListDokumen = async (data, idToUpdate , returning = false, transacti
 
 const deleteListDokumen = async (idToDelete, returning = false, transaction = null) => {
     try {
-        const result = await reportListDokumen.destroy({
-            where: {
-                id: idToDelete
-            },
-            returning: returning,
-            transaction: transaction
-        })
+        const result = await reportListDokumen.update(
+            {
+                isDelete: true
+            },{
+                where: {
+                    id: idToDelete
+                },
+                returning: returning,
+                transaction: transaction
+            }
+        );
+        return result;
     } catch (error) {
         throw error;
     }
@@ -42,5 +47,6 @@ const deleteListDokumen = async (idToDelete, returning = false, transaction = nu
 
 module.exports = {
     createListDokumen,
-    updateListDokumen
+    updateListDokumen,
+    deleteListDokumen
 }

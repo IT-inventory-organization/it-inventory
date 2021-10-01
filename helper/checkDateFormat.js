@@ -11,3 +11,4 @@ const checkFormat = (value) => {
 module.exports = {
     checkFormat
 }
+

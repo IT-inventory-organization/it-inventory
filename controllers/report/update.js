@@ -37,10 +37,11 @@ const { updateDataTempatPenimbunan } = require('../../helper/DataTempatPenimbuna
 const { updatePerkiraanTanggalPengeluaran }= require('../../helper/DataPerkiraanTanggalPengeluaran');
 const { updateListBarang } = require('../../helper/ListBarang');
 const { updateListDokumen } = require('../../helper/ListDokumen');
+const { updateDataPetiKemas } = require('../../helper/DataPetiKemas');
 const { dataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen } = require('../../helper/bundleDataLanjutan');
 const { validationDokumen } = require('../../middlewares/validationDataLanjutan');
-const { validationListBarang } = require('../../middlewares/validationDataBarang')
+const { validationListBarang } = require('../../middlewares/validationDataBarang');
 const Http = require('../../helper/Httplib');
 const sequelize = require('../../configs/database');
 
@@ -75,8 +76,6 @@ const updateDataHeader = async (req, res) => {
         const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, identitasPengirimId, reportId, false, transaction);
         const identitasPenerimaUpdate = await updateReportIdentitasPenerima(identitasPenerima, identitasPenerimaId, reportId, false, transaction);
         const transaksiPerdaganganUpdate = await updateReportTransaksiPerdagangan(transaksiPerdagangan, transaksiPerdaganganId, reportId, false, transaction);
-
-        // console.info(req.DataToInput);
         
         const dataPengangkutanUpdate = await updateDataPengangkutan(pengangkutan, pengangkutanId, reportId, false, transaction); // Success
         const pelabuhanMuatBongkarUpdate = await updateDataPelabuhanMuatBongkar(pelabuhanMuatBongkar, pelabuhanMuatBongkarId, reportId, false, transaction); 
@@ -98,9 +97,9 @@ const updateListDokumenLanjutan = async (req, res) => {
 
         const {DataToInput: {listDokumen}} = req;
         const {id} = req.params;
-        const listDokumenResult = await updateListDokumen(listDokumen, id, false, null);
+        const listDokumenResult = await updateListDokumen(listDokumen, id, true, null);
 
-        return successResponse(res, Http.created, "Success Updating Document", {idListDokumen: listDokumenResult});
+        return successResponse(res, Http.created, "Success Updating Document", {idListDokumen: listDokumenResult.id});
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "Failed To Update Document");
@@ -108,7 +107,15 @@ const updateListDokumenLanjutan = async (req, res) => {
 }
 
 const updateDataLanjutan = async (req, res) => {
-    
+    try {
+        const {DataToInput: {petiKemas}} = req;
+        const {id} = req.params;
+        const petiKemasResult = await updateDataPetiKemas(petiKemas, id, false, null);
+
+        return successResponse(res, Http.created, "Success Updating Peti Kemas")
+    } catch (error) {
+        
+    }
 }
 
 const updateDataBarang = async (req, res) => {
@@ -122,9 +129,9 @@ const updateDataBarang = async (req, res) => {
             reportId: dataBarangUpdate.reportId
         }
 
-        return successResponse(res, Http.created, 'Success Update Data', dataToReturn);
+        return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        return errorResponse(res, Http.internalServerError, "Failed To Update Item Document")
+        return errorResponse(res, Http.internalServerError, "Failed To Update Item")
     }
 }
 

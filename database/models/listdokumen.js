@@ -15,6 +15,9 @@ const reportListDokumen = db.define('ListDokumen', {
   hsCode: {
     type: Sequelize.STRING
   },
+  isDelete: {
+    type: Sequelize.BOOLEAN
+  },
   reportId: {
     allowNull: false,
     type: Sequelize.INTEGER,

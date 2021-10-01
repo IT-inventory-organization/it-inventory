@@ -50,6 +50,9 @@ const reportListBarang = db.define('listBarang', {
   nilaiPabeanHargaPenyerahan: {
     type: Sequelize.DECIMAL
   },
+  isDelete: {
+    type: Sequelize.BOOLEAN
+  },
   reportId: {
     type: Sequelize.INTEGER,
     references: {

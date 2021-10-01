@@ -1,8 +1,9 @@
 'use strict';
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
+const Report = require('./report');
 
-const reportIdentitasPenerima = db.define('IdentitasPenerima', {
+const reportIdentitasPenerima = db.define('reportIdentitasPenerima', {
   jenisIdentitasPenerima: {
     type: Sequelize.STRING
   },
