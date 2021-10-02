@@ -6,8 +6,14 @@ const authorization = async (model, id, req) => {
     where: {id},
     include: Report
   })
-  if (result.Report.userId === req.currentUser) {
-    return true
+  if(result.Report) {
+    if (result.Report.userId === req.currentUser) {
+      return true
+    }
+  } else {
+    if(result.userId === req.currentUser) {
+      return true
+    }
   }
   return false
 }

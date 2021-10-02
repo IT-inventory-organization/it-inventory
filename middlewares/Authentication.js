@@ -1,8 +1,8 @@
 const {verifyToken} = require("../helpers/jwt");
 const User = require("../database/models/user");
-const User = require("../database/models/user");
 const { errorResponse } = require("../helper/Response");
 const httpStatus = require("../helper/Httplib");
+const Role = require("../database/models/role");
 
 const authentication = async (req, res, next) =>{
   const {token} = req.headers
@@ -16,9 +16,10 @@ const authentication = async (req, res, next) =>{
   try {
     const decode = verifyToken(token);
     const {id} = decode;
-    const User = await User.findByPk(id);
+    const user = await User.findOne({where: {id}, include:[Role]});
     if (user){
       req.currentUser = user.id;
+      req.currentRole = user.Role.name
       next();
     } else {
       return errorResponse(res, httpStatus.badRequest, "Please login first");
