@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const UserActivity = db.define('UserActivity', {
-  userID: {
+  userId: {
     type: Sequelize.INTEGER,
     references: {
       model: "Users",
@@ -25,7 +25,7 @@ const UserActivity = db.define('UserActivity', {
     type: Sequelize.STRING,
   },
 }, {
-  tableName: 'UserActivities',
+  tableName: 'UserActivities'
 });
 
 module.exports = UserActivity;

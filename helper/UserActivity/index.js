@@ -5,16 +5,19 @@ const UserActivity = require("../../database/models/useractivity")
 const createUserActivity = async(userId, reportId, activity) => {
   try {
     const payload = {
-      userId, reportId, activity
+      userId: userId,
+      reportId: reportId,
+      activity:activity
     }
     const result = await UserActivity.create(payload)
-    return true
+    return result
   } catch (error) {
     return false
   }
 }
 
-const getUserActivity = async() => {
+const getUserActivity = async(req) => {
+  if(req.currentRole !== "Owner")
   try {
     const result = await UserActivity.findAll({
       include: [Report, User]
@@ -25,4 +28,7 @@ const getUserActivity = async() => {
   }
 }
 
-module.exports = {}
+module.exports = {
+  getUserActivity,
+  createUserActivity
+}

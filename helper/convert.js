@@ -8,7 +8,6 @@ const convertStrignToDateUTC = (dateString) => {
 
     const date = new Date(arrDate[2], +(arrDate[1] - 1), arrDate[0]).toUTCString();
 
-    // console.log(date);
     return date;
 }
 

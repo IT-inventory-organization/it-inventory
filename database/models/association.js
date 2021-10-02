@@ -30,6 +30,7 @@ const setAssociations = function() {
   Report.hasOne(reportTransaksiPerdagangan, {foreignKey: 'reportId'});
   Report.hasMany(reportListBarang, {foreignKey: 'reportId'});
   Report.hasMany(reportListDokumen, {foreignKey: 'reportId'});
+  Report.belongsTo(User, {foreignKey: "userId"})
 
   reportIdentitasPenerima.belongsTo(Report, {foreignKey: 'reportId'});
   reportIdentitasPengirim.belongsTo(Report, {foreignKey: 'reportId'});
@@ -49,9 +50,10 @@ const setAssociations = function() {
   User.belongsTo(Role, {foreignKey: 'role_id'})
 
   User.hasMany(UserActivity, {foreignKey: "userId"})
-  Report.hasOne(UserActivity)
+  Report.hasMany(UserActivity, {foreignKey: "reportId"})
   UserActivity.belongsTo(User, {foreignKey: "userId"})
   UserActivity.belongsTo(Report, {foreignKey: "reportId"})
+  User.hasMany(Report, {foreignKey: "userId"})
 };
 
 module.exports = setAssociations;
