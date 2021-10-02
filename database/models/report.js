@@ -1,8 +1,6 @@
 'use strict';
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
-const reportIdentitasPenerima = require('./identitaspenerima'); 
-const reportIdentitasPengirim = require('./identitaspengirim')
 
 const Report = db.define('Report', {
   pengajuanSebagai: {
@@ -30,6 +28,9 @@ const Report = db.define('Report', {
     onDelete: "cascade",
     onUpdate: "cascade"
   },
+  status: {
+    type: Sequelize.STRING
+  },
   typeReport: {
     type: Sequelize.STRING,
   },
@@ -41,7 +42,7 @@ const Report = db.define('Report', {
   }
 }, {
   tableName: 'Reports',
-  freezeTableName:true,
+  freezeTableName: true
 })
 
 module.exports = Report;

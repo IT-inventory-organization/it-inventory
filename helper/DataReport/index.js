@@ -2,6 +2,8 @@ const { Op } = require('sequelize');
 const Report = require('../../database/models/report');
 const reportIdentitasPenerima = require('../../database/models/identitaspenerima');
 const reportIdentitasPengirim = require('../../database/models/identitaspengirim');
+const reportListBarang = require('../../database/models/listbarang');
+const reportListDokumen = require('../../database/models/listdokumen');
 
 
 const createReport = async (data, transaction) => {
@@ -22,9 +24,8 @@ const getReportByType = async (type, transaction = null) => {
                     {'isDelete': false}
                 ]
             },
-            transaction: transaction
+            transaction: transaction,
         });
-
         return result;
     } catch (error) {
         throw error;
@@ -38,6 +39,10 @@ const getReportByType = async (type, transaction = null) => {
 const getRecentActivities = async (type, transaction = null) => {
     try {
         const result = await Report.findAll({
+            include: [
+                reportIdentitasPenerima, reportIdentitasPengirim,
+                reportListDokumen
+            ],
             where: {
                 [Op.and]: [
                     {'jenisPemberitahuan': type},
@@ -50,7 +55,6 @@ const getRecentActivities = async (type, transaction = null) => {
             limit: 5,
             transaction: transaction,
         });
-        // console.log(result)
         return result;
     } catch (error) {
         throw error;

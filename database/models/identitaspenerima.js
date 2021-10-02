@@ -1,7 +1,6 @@
 'use strict';
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
-const Report = require('./report');
 
 const reportIdentitasPenerima = db.define('reportIdentitasPenerima', {
   jenisIdentitasPenerima: {
@@ -28,7 +27,6 @@ const reportIdentitasPenerima = db.define('reportIdentitasPenerima', {
   },
 }, {
   tableName: 'IdentitasPenerima',
-  freezeTableName:true,
 })
 
 module.exports = reportIdentitasPenerima;
