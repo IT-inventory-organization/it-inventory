@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const Report = db.define('Reports', {
+const Report = db.define('Report', {
   pengajuanSebagai: {
     type: Sequelize.STRING,
     allowNull: false
@@ -28,14 +28,21 @@ const Report = db.define('Reports', {
     onDelete: "cascade",
     onUpdate: "cascade"
   },
+  status: {
+    type: Sequelize.STRING
+  },
   typeReport: {
     type: Sequelize.STRING,
   },
   BCDocumentType: {
     type: Sequelize.STRING,
+  },
+  isDelete: {
+    type: Sequelize.BOOLEAN,
   }
 }, {
   tableName: 'Reports',
+  freezeTableName: true
 })
 
 module.exports = Report;

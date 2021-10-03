@@ -7,7 +7,7 @@ const httpStatus = {
   created: 201,
   accepted: 202,
   unauthorized: 403,
-  updated: 204,
+  noContent: 204,
 }
 
 module.exports = httpStatus

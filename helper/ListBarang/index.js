@@ -1,8 +1,17 @@
+const { Op } = require('sequelize');
 const reportListBarang = require('../../database/models/listbarang')
 
-const createListBarang = (data) => {
-    const result = reportListBarang.create(data);
-    return result;
+const createListBarang = async (data, transaction) => {
+    try {
+        const result = await reportListBarang.create(data, {
+            transaction: transaction,
+            returning: true
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+    
 }
 
 const updateListBarang = async (data, idToUpdate , returning = false, transaction = null) => {
@@ -20,7 +29,27 @@ const updateListBarang = async (data, idToUpdate , returning = false, transactio
     }
 }
 
+const deleteListBarang = async(idParams, returning = false, transaction = false) => {
+    try {
+        const result = await reportListBarang.update(
+            {
+                isDelete: true,
+            },{
+                where: {
+                    id: idParams,
+                },
+                returning: returning,
+                transaction: transaction
+            }
+        );
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createListBarang,
-    updateListBarang
+    updateListBarang,
+    deleteListBarang
 }

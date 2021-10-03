@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const reportIdentitasPenerima = db.define('IdentitasPenerima', {
+const reportIdentitasPenerima = db.define('reportIdentitasPenerima', {
   jenisIdentitasPenerima: {
     type: Sequelize.STRING
   },
@@ -27,7 +27,6 @@ const reportIdentitasPenerima = db.define('IdentitasPenerima', {
   },
 }, {
   tableName: 'IdentitasPenerima',
-  freezeTableName:true,
 })
 
 module.exports = reportIdentitasPenerima;

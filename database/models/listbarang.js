@@ -2,24 +2,56 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
+// const reportListBarang = db.define('listBarang', {
+//   jenisIdentitasPengirim: {
+//     type: Sequelize.STRING
+//   },
+//   nomorIdentitasPengirim: {
+//     type: Sequelize.STRING
+//   },
+//   namaPengirim: {
+//     type: Sequelize.STRING
+//   },
+//   alamatPengirim: {
+//     type: Sequelize.STRING
+//   },
+//   nomorIjinBpkPengirim: {
+//     type: Sequelize.STRING
+//   },
+//   tanggalIjinBpkPengirim: {
+//     type: Sequelize.DATEONLY
+//   },
+//   reportId: {
+//     type: Sequelize.INTEGER,
+//     references: {
+//       model: "Reports",
+//       key: "id"
+//     },
+//     onDelete: "cascade",
+//     onUpdate: "cascade"
+//   }
+// }, {
+//   tableName: 'listBarang',
+//   freezeTableName:true,
+// })
 const reportListBarang = db.define('listBarang', {
-  jenisIdentitasPengirim: {
+  posTarif: {
+    type: Sequelize.DECIMAL
+  },
+  uraian: {
     type: Sequelize.STRING
   },
-  nomorIdentitasPengirim: {
-    type: Sequelize.STRING
+  nettoBrutoVolume: {
+    type: Sequelize.DECIMAL
   },
-  namaPengirim: {
-    type: Sequelize.STRING
+  satuanKemasan: {
+    type: Sequelize.DECIMAL
   },
-  alamatPengirim: {
-    type: Sequelize.STRING
+  nilaiPabeanHargaPenyerahan: {
+    type: Sequelize.DECIMAL
   },
-  nomorIjinBpkPengirim: {
-    type: Sequelize.STRING
-  },
-  tanggalIjinBpkPengirim: {
-    type: Sequelize.DATEONLY
+  isDelete: {
+    type: Sequelize.BOOLEAN
   },
   reportId: {
     type: Sequelize.INTEGER,

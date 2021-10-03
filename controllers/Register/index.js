@@ -66,7 +66,6 @@ async function Register(req, res){
 
         return successResponse(res, httpStatus.created, "Registration Success", {email: req.body.email})
     } catch (error) {
-        console.log(error)
         return errorResponse(res, httpStatus.internalServerError, 'Registeration Seems Failed, Please Try Again Later', error.message)
     }
 }

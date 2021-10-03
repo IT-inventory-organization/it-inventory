@@ -26,7 +26,27 @@ const updateListDokumen = async (data, idToUpdate , returning = false, transacti
     }
 }
 
+const deleteListDokumen = async (idToDelete, returning = false, transaction = null) => {
+    try {
+        const result = await reportListDokumen.update(
+            {
+                isDelete: true
+            },{
+                where: {
+                    id: idToDelete
+                },
+                returning: returning,
+                transaction: transaction
+            }
+        );
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createListDokumen,
-    updateListDokumen
+    updateListDokumen,
+    deleteListDokumen
 }

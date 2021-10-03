@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 
 const app = express();
 const config = require('./config.js');
+const setAssociations = require('./database/models/association.js');
+
+setAssociations();
 
 const port = config.get('PORT');
 

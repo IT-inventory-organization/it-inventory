@@ -1,3 +1,5 @@
+const Encryption = require('./encription');
+
 const errorResponse = (res, status, message, data) => {
   return res.status(status).json({
     success: false, 
@@ -5,10 +7,18 @@ const errorResponse = (res, status, message, data) => {
     data: data || null
   })
 }
-
-const successResponse = (res, status, message, data) => {
+/**
+ * TODO: Create Encrypt Data 
+ */
+const successResponse = async (res, status, message, data) => {
+  let EncyptData = null; 
+  if(data != null){
+    EncyptData = await Encryption.AESEncrypt(data);
+  }
   return res.status(status).json({
-    succes: true, message, data:data || null
+    success: true, 
+    message, 
+    data: EncyptData
   })
 }
 

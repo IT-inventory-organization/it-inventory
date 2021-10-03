@@ -5,6 +5,7 @@ const { errorResponse, successResponse } = require("../../helper/Response");
 const httpStatus = require("../../helper/Httplib")
 const { checkHashText } = require("../../helper/bcrypt");
 const User = require("../../database/models/user");
+const Role = require("../../database/models/role");
 
 const validationBody = [
   body("email").isLength({ min: 1 }).withMessage("Email/Npwp/username is required"),
@@ -27,7 +28,7 @@ const loginAction = async (req, res) => {
           { username: req.body.email },
         ],
         is_active: true
-      },
+      }
     });
 
     // if username, email and npwp don't exist
@@ -40,10 +41,8 @@ const loginAction = async (req, res) => {
     // Check password
     if (checkHashText(result.password, req.body.password)) {
       // if the password is correct
-      const payload = {
-        token: generateToken({ email: result.email, user_id: result.id }),
-      };
-      return successResponse(res, httpStatus.ok, "Login successfully", payload)
+      const token = generateToken({ email: result.email, user_id: result.id })
+      return res.status(httpStatus.ok).json({success: true, message: "Success login", data: token})
     } else {
       // if the password is not correct
       return errorResponse(res, httpStatus.unauthenticated, "Login failed, enter the correct password!")

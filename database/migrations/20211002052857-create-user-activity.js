@@ -1,27 +1,23 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    /**
-     * Typo in Naming Table
-     */
-    await queryInterface.createTable('DataPetiKemasDanPengemas', {
+    await queryInterface.createTable('UserActivities', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      jumlahJenisKemasan: {
-        type: Sequelize.INTEGER
-      },
-      jumlahPetiKemas: {
-        type: Sequelize.INTEGER
-      },
-      jumlahJenisBarang: {
-        type: Sequelize.INTEGER
+      userId: {
+        type: Sequelize.INTEGER,
+        references: {
+          model: "Users",
+          key: "id"
+        },
+        onDelete: 'cascade',
+        onUpdate: 'cascade'
       },
       reportId: {
-        allowNull: false,
         type: Sequelize.INTEGER,
         references: {
           model: "Reports",
@@ -29,6 +25,9 @@ module.exports = {
         },
         onDelete: 'cascade',
         onUpdate: 'cascade'
+      },
+      activity: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -41,6 +40,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('DataPetiKemasDanPengemas');
+    await queryInterface.dropTable('UserActivities');
   }
 };
