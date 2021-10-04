@@ -41,8 +41,8 @@ const getCountReportByType = async (req, res) => {
 
 const getAll = async(req, res) => {
     try {
-        const {pageSize, pageNo, sortBy, search} = req.query
-        const result = await getAllReport(req, pageSize, pageNo, sortBy, search)
+        const {pageSize, pageNo, sortBy, searchQuery} = req.query
+        const result = await getAllReport(req, pageSize, pageNo, sortBy, searchQuery)
         if(result.error) {
             throw new Error(result.error)
         }
@@ -70,7 +70,7 @@ const getOne = async (req, res) => {
             await createUserActivity(req.currentUser, id, "View One Report");
         }
 
-        return successResponse(res, httpStatus.ok, result);
+        return successResponse(res, httpStatus.ok, "", result);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
     }

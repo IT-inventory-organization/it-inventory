@@ -15,11 +15,11 @@ const validationBody = [
 const loginAction = async (req, res) => {
   try {
     const validation = validationResult(req);
-
+    
     if(!validation.isEmpty()){
         return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
     }
-
+    
     const getUser = await User.findOne({
       where: {
         [Op.or]: [
@@ -30,12 +30,13 @@ const loginAction = async (req, res) => {
         is_active: true
       }
     });
+    console.info(getUser)
 
     // if username, email and npwp don't exist
     if (!getUser) {
       return errorResponse(res, httpStatus.notFound, "User not found!")
     }
-
+    console.info(getUser)
     const result = getUser.toJSON();
 
     // Check password

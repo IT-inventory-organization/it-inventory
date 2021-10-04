@@ -72,6 +72,17 @@ const deleteReport = async(idType) => {
     }
 }
 
+/**
+ * searchQuery == null && Role === Admin --> 
+ * 
+ * @param {Request} req 
+ * @param {*} pageSize 
+ * @param {*} pageNo 
+ * @param {*} sortBy 
+ * @param {*} searchQuery 
+ * @returns 
+ */
+
 const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) => {
     try {
         let searchUser = 'WHERE ';
@@ -83,32 +94,28 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) =
         switch (sortBy) {
             case "oldest":
                 orderQuery+=`ORDER BY "RP"."createdAt" ASC`;
-
                 break;
             default: 
                 orderQuery+=`ORDER BY "RP"."createdAt" DESC`;
-
                 break;
         }
  
-        if(req.currentRole !== "Admin" && req.currentRole !== "Owner") {
+        if(req.currentRole !== "Admin" && req.currentRole !== "Owner") { // Jika User
             searchUser+=`"RP"."userId" = ${req.currentUser}`;
         }
 
-        if(qtSearch != null){
+        if(searchQuery != null){
             if(req.currentRole !== "Admin" && req.currentRole !== "Owner"){
                 qtSearch+=`AND `;
             }
-            qtSearch+=`"RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR
-            "RP"."id"::text ILIKE '%${searchQuery}%' OR
-            TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR
-            "US"."id"::text ILIKE '%${searchQuery}%' OR
-            TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR
-            "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR
-            "IPN"."namaPenerima" ILIKE '%${searchQuery}%' OR
-            "RP".status::text ILIKE '%${searchQuery}%'`
+            qtSearch+=`"RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR "IPN"."namaPenerima" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%'`
         }
-            
+
+        if(req.currentRole === "Admin" || req.currentRole === "Owner"){
+            if(searchQuery == null){
+                searchUser=' '
+            }
+        }
         // const result = await Report.findAndCountAll(query);
         const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
 
@@ -196,20 +203,3 @@ module.exports = {
     getAllReport,
     getOneReport,
 }
-
-// const get = () => {
-//     const resilt = await report.findAll({ 
-//         attributes: {
-//             'jenisInvetory'
-//         },
-//         includes: [
-//             {
-//                 model: reportIdentitasPenerima,
-//                 attributes: {
-//                     'jenisInvetory'
-//                 }
-//             },
-
-//         ]
-//     })
-// }
