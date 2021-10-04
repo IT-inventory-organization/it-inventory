@@ -37,7 +37,12 @@ const createReport = async (data, transaction) => {
 
 const countReportByType = async (type, req) => {
     try {
-        const res = sequelize.query(`SELECT "count"("jenisPemberitahuan"),"jenisPemberitahuan" FROM "Reports" WHERE status = '${type}' AND "userId" = ${req.currentUser} GROUP BY "jenisPemberitahuan"`);
+        let searchBasedUserId = '';
+        if(req.currentRole !== 'Admin' && req.currentRole !== 'Owner') {
+            searchBasedUserId=`AND "userId" = ${req.currentUser}`;
+        }
+
+        const res = sequelize.query(`SELECT "count"("jenisPemberitahuan"),"jenisPemberitahuan" FROM "Reports" WHERE status = '${type}' ${searchBasedUserId} GROUP BY "jenisPemberitahuan"`);
         // const result = await Report.count({
         //     where: {
         //         [Op.and]: [

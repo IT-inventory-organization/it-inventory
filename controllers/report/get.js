@@ -48,21 +48,21 @@ const getAll = async(req, res) => {
         }
         if(req.currentRole !== "Owner") {
             try {
-                const resultActivity = await createUserActivity(req.currentUser, reportId = null, "Viewing Data Report")
+                await createUserActivity(req.currentUser, reportId = null, "Viewing Data Report")
             } catch (error) {
                 
             } finally {
     
             }
         }
-        return successResponse(res, httpStatus.badRequest, "", result)
+        return successResponse(res, httpStatus.ok, "", result);
     } catch (err) {
-        return errorResponse(res, httpStatus.internalServerError, err.message)
+        return errorResponse(res, httpStatus.internalServerError, "Failed View Data Report");
     }
 }
 
 const getOne = async (req, res) => {
-    const {id} = req.params
+    const {id} = req.params;
     try {
         const result = await getOneReport(req, id);
 

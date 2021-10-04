@@ -83,7 +83,6 @@ const updateDataHeader = async (req, res) => {
             await createUserActivity(req.currentUser, null, `Updating "Data Header" Report`);
         }
 
-
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
@@ -119,7 +118,6 @@ const updateDataLanjutan = async (req, res) => {
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, null, `Updating "Data Lanjutan" Report`);
         }
-
 
         return successResponse(res, Http.created, "Success Updating Peti Kemas")
     } catch (error) {
