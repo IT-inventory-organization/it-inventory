@@ -1,7 +1,6 @@
 /**
- * 
- * @param {String} password 
  * Check Password if its Correct with the format
+ * @param {String} password 
  * @returns A Correct Format Password
  */
  function passwordFormat(password) {

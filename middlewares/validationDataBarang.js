@@ -9,12 +9,12 @@ const validationListBarang = [
 ];
 
 const validationArrListBarang = [
-    body('*.posTarif').notEmpty().trim().withMessage(`"Pos Tarif" Is Required`),
-    body('*.uraian').notEmpty().trim().withMessage(`"Uraian" Is Required`),
-    body('*.nettoBrutoVolume').notEmpty().trim().withMessage(`"Netto, Bruto, Volume" Is Required`),
-    body('*.satuanKemasan').notEmpty().trim().withMessage(`"Satuan Kemasan"`),
-    body('*.nilaiPabeanHargaPenyerahan').notEmpty().trim().withMessage(`"Nilai Pabean Harga Penyerahan" Is Required`),
-    body('*.reportId').notEmpty().trim()
+    body('barang.*.posTarif').notEmpty().trim().withMessage(`"Pos Tarif" Is Required`),
+    body('barang.*.uraian').notEmpty().trim().withMessage(`"Uraian" Is Required`),
+    body('barang.*.nettoBrutoVolume').notEmpty().trim().withMessage(`"Netto, Bruto, Volume" Is Required`),
+    body('barang.*.satuanKemasan').notEmpty().trim().withMessage(`"Satuan Kemasan"`),
+    body('barang.*.nilaiPabeanHargaPenyerahan').notEmpty().trim().withMessage(`"Nilai Pabean Harga Penyerahan" Is Required`),
+    // body('barang.*.reportId').notEmpty().trim()
 ]
 
 module.exports = {

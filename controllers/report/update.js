@@ -44,13 +44,8 @@ const { validationDokumen } = require('../../middlewares/validationDataLanjutan'
 const { validationListBarang } = require('../../middlewares/validationDataBarang');
 const Http = require('../../helper/Httplib');
 const sequelize = require('../../configs/database');
-
-/**
- * Not Ready Yet
- * @param {*} req 
- * @param {*} res 
- * @returns 
- */
+const authentication = require('../../middlewares/authentication');
+const { createUserActivity } = require('../../helper/UserActivity');
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -84,6 +79,11 @@ const updateDataHeader = async (req, res) => {
         const tempatPenimbunanUpdate = await updateDataTempatPenimbunan(tempatPenimbunan, tempatPenimbunanId, reportId, false, transaction);
         const perkiraanTanggalPengeluaranUpdate = await updatePerkiraanTanggalPengeluaran(perkiraanTanggalPengeluaran, perkiraanTanggalId, reportId, true, transaction);
 
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, null, `Updating "Data Header" Report`);
+        }
+
+
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
@@ -99,6 +99,10 @@ const updateListDokumenLanjutan = async (req, res) => {
         const {id} = req.params;
         const listDokumenResult = await updateListDokumen(listDokumen, id, true, null);
 
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, null, `Updating "List Dokumen" Report`);
+        }
+
         return successResponse(res, Http.created, "Success Updating Document", {idListDokumen: listDokumenResult.id});
     } catch (error) {
         console.error(error);
@@ -111,6 +115,11 @@ const updateDataLanjutan = async (req, res) => {
         const {DataToInput: {petiKemas}} = req;
         const {id} = req.params;
         const petiKemasResult = await updateDataPetiKemas(petiKemas, id, false, null);
+
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, null, `Updating "Data Lanjutan" Report`);
+        }
+
 
         return successResponse(res, Http.created, "Success Updating Peti Kemas")
     } catch (error) {
@@ -129,6 +138,11 @@ const updateDataBarang = async (req, res) => {
             reportId: dataBarangUpdate.reportId
         }
 
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, null, `Updating "Data Barang" Report`);
+        }
+
+
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
         return errorResponse(res, Http.internalServerError, "Failed To Update Item")
@@ -138,6 +152,7 @@ const updateDataBarang = async (req, res) => {
 module.exports = (routes) => {
     routes.put(
         '/data-header/:id',
+        authentication,
         validationDataPengajuan, 
         validationIdentitasPengirim, 
         validationIdentitasPenerima,
@@ -164,6 +179,7 @@ module.exports = (routes) => {
     );
 
     routes.put('/data-barang/:id',
+        authentication,
         validationListBarang,
         validationResponse,
         dataBarang,
@@ -171,10 +187,12 @@ module.exports = (routes) => {
     );
 
     routes.put('/data-lanjutan/:id',
+        authentication,
         updateDataLanjutan
     );
 
     routes.put('/listDokumen/:id',
+        authentication,
         validationDokumen,
         validationResponse,
         dataDokumen,

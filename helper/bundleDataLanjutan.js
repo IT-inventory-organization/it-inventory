@@ -16,8 +16,10 @@ const dataDokumen = (req, res, next) => {
 
         for (let i = 0; i < Decrypt.tableDokumen.length; i++) {
             Decrypt.tableDokumen[i].tanggalDokumen = convertStrignToDateUTC(Decrypt.tableDokumen[i].tanggalDokumen);
+            Decrypt.tableDokumen[i].reportId = Decrypt.reportId;
             Decrypt.tableDokumen[i].isDelete = false; //
         }
+        // console.log(Decrypt);
         // const cDataDokumen = {
         //     kodeDokumen: Decrypt.kodeDokumen,
         //     nomorDokumen: Decrypt.nomorDokumen,

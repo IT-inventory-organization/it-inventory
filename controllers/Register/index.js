@@ -16,7 +16,7 @@ const checkInputRegister = [
     body('password').notEmpty().custom(value => passwordFormat(value)).withMessage("Password is Required").trim(),
     body('phone').notEmpty().custom(checkPhoneNumber).withMessage("Phone Number is Required").trim(),
     body('confirmPassword').custom((value, {req}) => {
-        if(value.length == 0){
+        if(typeof value === 'undefined' || value.length == 0){
             throw new Error("Confirm Password Cannot Empty");
         }
         if(value !== req.body.password){
