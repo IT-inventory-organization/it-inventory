@@ -14,6 +14,7 @@ const validationArrListBarang = [
     body('barang.*.nettoBrutoVolume').notEmpty().trim().withMessage(`"Netto, Bruto, Volume" Is Required`),
     body('barang.*.satuanKemasan').notEmpty().trim().withMessage(`"Satuan Kemasan"`),
     body('barang.*.nilaiPabeanHargaPenyerahan').notEmpty().trim().withMessage(`"Nilai Pabean Harga Penyerahan" Is Required`),
+    body('barang.*.hsCode').notEmpty().trim().withMessage("HS Code Is Required")
     // body('barang.*.reportId').notEmpty().trim()
 ]
 

@@ -17,9 +17,9 @@ module.exports = {
       tanggalDokumen: {
         type: Sequelize.DATEONLY
       },
-      hsCode: {
-        type: Sequelize.STRING
-      },
+      // hsCode: {
+      //   type: Sequelize.STRING
+      // },
       reportId: {
         allowNull: false,
         type: Sequelize.INTEGER,

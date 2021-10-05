@@ -12,9 +12,9 @@ const reportListDokumen = db.define('ListDokumen', {
   tanggalDokumen: {
     type: Sequelize.DATEONLY
   },
-  hsCode: {
-    type: Sequelize.STRING
-  },
+  // hsCode: {
+  //   type: Sequelize.STRING
+  // },
   isDelete: {
     type: Sequelize.BOOLEAN
   },

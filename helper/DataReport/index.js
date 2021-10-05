@@ -15,6 +15,7 @@ const reportDataPetiKemasDanPengemas = require('../../database/models/datapetike
 const reportDataTempatPenimbunan = require('../../database/models/datatempatpenimbunan');
 const reportTransaksiPerdagangan = require('../../database/models/transaksiperdagangan');
 const User = require('../../database/models/user');
+const req = require('express/lib/request');
 
 const createReport = async (data, transaction) => {
     try {
@@ -32,6 +33,19 @@ const createReport = async (data, transaction) => {
         return result;
     } catch (error) {
         throw Error(error.message);
+    }
+}
+
+const countAllReport = async(req) => {
+    try {
+        let searchBasedUserId = '';
+        if(req.currentRole !== 'Admin' && req.currentRole !== 'Owner') {
+            searchBasedUserId=`WHERE "userId" = ${req.currentUser}`;
+        }
+        const res = sequelize.query(`SELECT "count"("jenisPemberitahuan"),"jenisPemberitahuan" FROM "Reports" ${searchBasedUserId} GROUP BY "jenisPemberitahuan"`);
+        return res;
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -121,10 +135,9 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) =
                 searchUser=' '
             }
         }
-        // const result = await Report.findAndCountAll(query);
+
         const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
 
-        // const result = await Report.findAndCountAll(query);
         const data = {
             data: res[0],
             data_size: res[0].length,
@@ -134,6 +147,45 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) =
         return data;
     } catch (error) {
         return {error}
+    }
+}
+
+const getAllReportByType = async (req, pageSize, pageNo, type = null) => {
+    try {
+        let searchUser = '';
+        let typeQuery = '';
+        const limit = pageSize ? +pageSize : 10
+        const offset = pageNo ? (+pageNo - 1) * pageSize : 0;
+
+        if(req.currentRole !== "Admin" && req.currentRole !== "Owner") { // Jika User
+            searchUser+=`AND "RP"."userId" = ${req.currentUser}`;
+        }
+
+        if(type != null){
+            // if(req.currentRole !== "Admin" && req.currentRole !== "Owner") { 
+                typeQuery+=`AND `;
+            // }
+            switch (type) {
+                case 'Import':
+                case 'import':
+                    typeQuery += `"RP"."jenisPemberitahuan" = 'Import'`;
+                    break;
+                case 'Export':
+                case 'export':
+                    typeQuery += `"RP"."jenisPemberitahuan" = 'Export'`;
+                    break;
+                default:
+                    typeQuery = ``;
+                    break;
+            }
+        }
+        
+        const sql = `SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP".status = 'merah' ${searchUser} ${typeQuery} LIMIT ${limit} OFFSET ${offset}`;
+
+        const result = await sequelize.query(sql);
+        return result;
+    } catch (error) {
+        return error;
     }
 }
 
@@ -207,4 +259,6 @@ module.exports = {
     deleteReport,
     getAllReport,
     getOneReport,
+    countAllReport,
+    getAllReportByType
 }
