@@ -16,7 +16,7 @@ const validationDataPengajuan = [
     body('tujuanPengeluaran').trim().notEmpty().withMessage(`"Tujuan Pengeluaran" Is Required`),
     body('asalBarang').trim().notEmpty().withMessage(`"Asal Barang" Is Required`),
     body('caraPembayaran').trim().notEmpty().withMessage(`"Cara Pembayaran" Is Required`),
-    body('reportId').trim().notEmpty().withMessage(`"Report Id" Is Required`),
+    // body('reportId').trim().notEmpty().withMessage(`"Report Id" Is Required`),
 ]
 
 const validationIdentitasPengirim = [

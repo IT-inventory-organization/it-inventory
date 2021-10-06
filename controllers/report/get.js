@@ -84,6 +84,7 @@ const getOne = async (req, res) => {
 
         return successResponse(res, httpStatus.ok, result);
     } catch (error) {
+        console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
     }
 }

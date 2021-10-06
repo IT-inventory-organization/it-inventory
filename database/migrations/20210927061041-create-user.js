@@ -46,13 +46,7 @@ module.exports = {
       },
       role_id: {
         allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'Roles',
-          key: 'id'
-        },
-        onDelete: 'cascade',
-        onUpdate: 'cascade'
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

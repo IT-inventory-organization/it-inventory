@@ -68,9 +68,9 @@
 	</HEADER_PUNGUTAN> /***/ Gk Ada
 	<DETIL> 
 		<BARANG>
-			<SERI_BRG>1</SERI_BRG>
-			<HS_CODE>42029990</HS_CODE>
-			<UR_BRG>TAS</UR_BRG>
+			<SERI_BRG>1</SERI_BRG> // Gk Ada
+			<HS_CODE>42029990</HS_CODE> // Gk Ada (Adanya Di List Dokumen)
+			<UR_BRG>TAS</UR_BRG> // Ada
 			<KD_NEG_ASAL>ID</KD_NEG_ASAL>
 			<JML_KMS>1</JML_KMS>
 			<JNS_KMS>PK</JNS_KMS>

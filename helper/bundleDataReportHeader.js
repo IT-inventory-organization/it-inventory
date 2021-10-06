@@ -316,13 +316,14 @@ const idReport = (req, res, next) => {
          * End Testing Purpose
          */
         const Decrypt = Encryption.AESDecrypt(Encrypt);
+        
         const dataToSearchId = {
-            reportId: Decrypt.reportId,
+            // reportId: Decrypt.reportId,
             dataPengajuanId: Decrypt.dataPengajuanId,
             identitasPenerimaId: Decrypt.identitasPenerimaId,
             identitasPengirimId: Decrypt.identitasPengirimId,
             transaksiPerdaganganId: Decrypt.transaksiPerdaganganId,
-            pengangkutanId: Decrypt.pengangkutanResultId,
+            pengangkutanId: Decrypt.pengangkutanId,
             pelabuhanMuatBongkarId: Decrypt.pelabuhanMuatBongkarId,
             beratDanVolumeId: Decrypt.beratDanVolumeId,
             petiKemasDanPengemasId: Decrypt.petiKemasDanPengemasId,

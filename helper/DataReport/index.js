@@ -1,4 +1,4 @@
-const { Op, Sequelize } = require('sequelize');
+const { Op } = require('sequelize');
 const sequelize = require('../../configs/database');
 const Report = require('../../database/models/report');
 const reportIdentitasPenerima = require('../../database/models/identitaspenerima');
@@ -15,7 +15,6 @@ const reportDataPetiKemasDanPengemas = require('../../database/models/datapetike
 const reportDataTempatPenimbunan = require('../../database/models/datatempatpenimbunan');
 const reportTransaksiPerdagangan = require('../../database/models/transaksiperdagangan');
 const User = require('../../database/models/user');
-const req = require('express/lib/request');
 
 const createReport = async (data, transaction) => {
     try {
@@ -31,6 +30,17 @@ const createReport = async (data, transaction) => {
 
         // }
         return result;
+    } catch (error) {
+        throw Error(error.message);
+    }
+}
+
+const updateReport = async(id, data) => {
+    try {
+        const result = await Report.update(data, { 
+            where: { id: id },
+        });
+        return result
     } catch (error) {
         throw Error(error.message);
     }
@@ -195,7 +205,7 @@ const getOneReport = async(req, id) => {
         query.where = {id}
         query.include = [
             {
-                model: reportListBarang
+                model: reportListBarang,
             }, 
             {
                 model: reportDataPerkiraanTanggalPengeluaran
@@ -207,7 +217,7 @@ const getOneReport = async(req, id) => {
                 model: reportIdentitasPengirim
             },
             {
-                model: reportListDokumen
+                model: reportListDokumen,
             },
             {
                 model: reportDataBeratDanVolume,
@@ -242,14 +252,42 @@ const getOneReport = async(req, id) => {
                 [Op.and]: [
                     {id},
                     {userId: req.currentUser}
-                ]
+                ],
             }
-           
+            query.include[0] = {
+                ...query.include[0],
+                where: {
+                    isDelete: false
+                }
+            },
+            query.include[4] = {
+                ...query.include[4],
+                where: {
+                    isDelete: false
+                }
+            }
         }
         const result = await Report.findOne(query)
         return result
     } catch (error) {
+        console.error(error)
         throw new Error("Fail fetch data, please try again later, or refresh your browser")
+    }
+}
+
+const updateStatus = async(id, status) => {
+    try {
+        const result = await Report.update({
+            status: status,
+            isEditable: false
+        }, {
+            where: { 
+                id: id
+            }
+        })
+        return result;
+    } catch (error) {
+        throw error.message;
     }
 }
 
@@ -260,5 +298,7 @@ module.exports = {
     getAllReport,
     getOneReport,
     countAllReport,
-    getAllReportByType
+    getAllReportByType,
+    updateReport,
+    updateStatus
 }

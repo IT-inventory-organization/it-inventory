@@ -53,7 +53,7 @@ const setAssociations = function() {
   Report.hasMany(UserActivity, {foreignKey: "reportId"})
   UserActivity.belongsTo(User, {foreignKey: "userId"})
   UserActivity.belongsTo(Report, {foreignKey: "reportId"})
-  User.hasMany(Report, {foreignKey: "userId"})
+  User.hasMany(Report, {foreignKey: "userId"});
 };
 
 module.exports = setAssociations;

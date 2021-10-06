@@ -1,4 +1,3 @@
-const { body } = require('express-validator');
 const Http = require('../../helper/Httplib');
 const { createReport } = require('../../helper/DataReport');
 const { createDataPengajuan } = require('../../helper/DataPengajuan');
@@ -34,6 +33,7 @@ const {
     validationDataTempatPenimbunan
 } = require('../../middlewares/validationDataHeader');
 
+const validationReport = require('../../middlewares/validationDataReport')
 const { validationArrListDokumen, validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
 const { dataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen, petiKemas } = require('../../helper/bundleDataLanjutan');
@@ -51,14 +51,6 @@ const authentication = require('../../middlewares/authentication');
 const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 
-const validationReport = [
-    body('pengajuanSebagai').trim().notEmpty().withMessage(`"Pengajuan Sebagai" Is Required`),
-    body('kantorPengajuan').trim().notEmpty().withMessage(`"Kantor Pengajuan" Is Required`),
-    body('jenisPemberitahuan').trim().notEmpty().withMessage(`"Jenis Pemberitahuan" Is Required`),
-    body('jenisKeluar').trim().notEmpty().withMessage(`"Jenis Keluar" Is Required`),
-    body('typeReport').trim().notEmpty().withMessage(`"Tipe Report" is Required`),
-    body('BCDocumentType').trim().notEmpty().withMessage(`"Jenis Dokumen BC" Is Required`)
-];
 
 const addReport = async (req, res) => {
     try {
@@ -152,9 +144,9 @@ const addDataLanjutan = async (req, res) => {
 
         for (let i = 0; i < listDokumen.length; i++) {
             let result = await createListDokumen(listDokumen[i], transaction);
-            promises.push(result)
-            
+            promises.push(result)  
         }
+        
         const petiKemasResult = await createDataPetiKemas(petiKemas, transaction)
 
         const dataToReturn = {
@@ -172,7 +164,6 @@ const addDataLanjutan = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        console.error(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
