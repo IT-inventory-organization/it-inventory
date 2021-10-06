@@ -53,6 +53,7 @@ const { createUserActivity } = require('../../helper/UserActivity');
 
 
 const addReport = async (req, res) => {
+    const {type} = req.params;
     try {
         const dataObj = {
             pengajuanSebagai: req.body.pengajuanSebagai,
@@ -60,7 +61,7 @@ const addReport = async (req, res) => {
             jenisPemberitahuan: req.body.jenisPemberitahuan,
             jenisKeluar: req.body.jenisKeluar,
             userId: req.currentUser,
-            typeReport: req.body.typeReport,
+            typeReport: type,
             BCDocumentType: req.body.BCDocumentType,
             isDelete: false
         };

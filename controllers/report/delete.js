@@ -8,8 +8,8 @@ const deleteReportDoc = async (req, res) => {
     try {
         const { id } = req.params;
 
-        await deleteReport(id);
-        // return;
+        await deleteReport(id, req);
+        
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, null, `Deleting Report Document`);
         }

@@ -15,6 +15,7 @@ const reportDataPetiKemasDanPengemas = require('../../database/models/datapetike
 const reportDataTempatPenimbunan = require('../../database/models/datatempatpenimbunan');
 const reportTransaksiPerdagangan = require('../../database/models/transaksiperdagangan');
 const User = require('../../database/models/user');
+const authorization = require("../authorization")
 
 const createReport = async (data, transaction) => {
     try {
@@ -85,8 +86,12 @@ const countReportByType = async (type, req) => {
     }
 }
 
-const deleteReport = async(idType) => {
+const deleteReport = async(idType, req) => {
     try {
+        if(!authorization(Report, idType, req)){
+            throw new Error('User Is Not Authorized To Delete This Data');
+        }
+        
         const result = Report.update({
             isDelete: true,
         },{
