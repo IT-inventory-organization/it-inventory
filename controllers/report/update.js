@@ -126,7 +126,6 @@ const updateDataLanjutan = async (req, res) => {
         })
     } catch (error) {
         await transaction.rollback();
-        console.error(error)
         return errorResponse(res, Http.internalServerError, "Failed To Update Document");
     }
 }

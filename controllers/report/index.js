@@ -219,7 +219,7 @@ const decrypt = async(req, res) => {
 
 module.exports = (routes) => {
     // Create report
-    routes.post('/', // --> url
+    routes.post('/:type', // --> url
         authentication,
         validationReport,
         validationResponse,

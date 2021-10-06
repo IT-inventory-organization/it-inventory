@@ -12,6 +12,27 @@ const validationBody = [
   body("password").isLength({ min: 1 }).withMessage("A password is required"),
 ];
 
+const getUserData = async (email) => {
+  try {
+    return await User.findOne({
+      where: {
+        [Op.or]: [
+          { email: email },
+          { npwp: email },
+          { username: email },
+        ],
+        is_active: true
+      },
+      include: {
+        model: Role,
+        attributes: ['name']
+      }
+    });
+  } catch (error) {
+    throw error
+  }
+}
+
 const loginAction = async (req, res) => {
   try {
     const validation = validationResult(req);
@@ -20,27 +41,21 @@ const loginAction = async (req, res) => {
         return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
     }
     
-    const getUser = await User.findOne({
-      where: {
-        [Op.or]: [
-          { email: req.body.email },
-          { npwp: req.body.email },
-          { username: req.body.email },
-        ],
-        is_active: true
-      }
-    });
-    console.info(getUser)
+    const getUser = await getUserData(req.body.email);
 
     // if username, email and npwp don't exist
     if (!getUser) {
       return errorResponse(res, httpStatus.notFound, "User not found!")
     }
-    console.info(getUser)
+
     const result = getUser.toJSON();
 
     // Check password
     if (checkHashText(result.password, req.body.password)) {
+      // User Biasa
+      if(result.Role.name !== "User"){
+        return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
+      }
       // if the password is correct
       const token = generateToken({ email: result.email, user_id: result.id })
       return res.status(httpStatus.ok).json({success: true, message: "Success login", data: token})
@@ -50,10 +65,77 @@ const loginAction = async (req, res) => {
     }
   } catch (error) {
     // if there is a system error
-    return errorResponse(res, httpStatus.internalServerError, error.message)
+    return errorResponse(res, httpStatus.internalServerError, "Login failed!")
   }
 };
 
+const loginActionBeaCukai = async(req, res) => {
+  try {
+    const validation = validationResult(req);
+    
+    if(!validation.isEmpty()){
+        return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
+    }
+
+    const getUser = await getUserData(req.body.email);
+
+    if (!getUser) {
+      return errorResponse(res, httpStatus.notFound, "User not found!")
+    }
+    
+    const result = getUser.toJSON();
+
+    
+    if (checkHashText(result.password, req.body.password)) {
+      // Bea Cukai
+      if(result.Role.name !== "Admin"){ 
+        return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
+      }  
+      // if the password is correct
+      const token = generateToken({ email: result.email, user_id: result.id })
+      return res.status(httpStatus.ok).json({success: true, message: "Login Success", data: token})
+    } else {
+      // if the password is not correct
+      return errorResponse(res, httpStatus.unauthenticated, "Login failed, enter the correct password!")
+    }
+  } catch (error) {
+    return errorResponse(res, httpStatus.internalServerError, "Login failed")
+  }
+}
+
+const loginActionOwner = async(req, res)=> {
+  try {
+    const validation = validationResult(req);
+
+    if(!validation.isEmpty()) {
+      return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
+    }
+
+    const getUser = await getUserData(req.body.email);
+
+    if(!getUser){
+      return errorResponse(res, httpStatus.notFound, "User not found!");
+    }
+
+    const result = getUser.toJSON();
+
+    if(checkHashText(result.password, req.body.password)){
+      if(result.Role.name !== 'Owner'){
+        return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
+      }
+
+      const token = generateToken({email: result.email, user_id: result.id});
+      return res.status(httpStatus.ok).json({success: true, message: "Login Success", data: token});
+    }else{
+      return errorResponse(res, httpStatus.unauthenticated, "Login failed, Enter the correct Password");
+    }
+  } catch (error) {
+    return errorResponse(res, httpStatus.internalServerError, "Login failed");
+  }
+}
+
 module.exports = (router) => {
   router.post("/", validationBody, loginAction);
+  router.post("/bea-cukai", validationBody, loginActionBeaCukai);
+  router.post("/owner", validationBody, loginActionOwner);
 };
