@@ -18,13 +18,17 @@ const dataBarang = (req, res, next) => {
          * End Testing
          */
         const Decrypt = Encryption.AESDecrypt(Encrypt);
-        for (let i = 0; i < Decrypt.length; i++) {
-            Decrypt[i].isDelete = false;
-        }
 
-        req.DataToInput = {
-            listBarang: Decrypt
+        for (let i = 0; i < Decrypt.barang.length; i++) {
+            Decrypt.barang[i].isDelete = false;
+            Decrypt.barang[i].reportId = Decrypt.reportId; 
         }
+        
+        req.DataToInput = {
+            listBarang: Decrypt.barang,
+            reportId: Decrypt.reportId
+        }
+        
         next();
     } catch (error) {
         

@@ -11,12 +11,12 @@ const validationReport = [
 
 const validationDataPengajuan = [
     body('kantorPabeanAsal').trim().notEmpty().withMessage(`"Kantor Pabean Asal" Is Required`),
-    body('kategoryPemberitahuan').trim().notEmpty().withMessage(`"Kantor Pengajuan" Is Required`),
-    body('kategoryPengeluaran').trim().notEmpty().withMessage(`"Jenis Pemberitahuan" Is Required`),
-    body('tujuanPengeluaran').trim().notEmpty().withMessage(`"Jenis Keluar" Is Required`),
+    body('kategoryPemberitahuan').trim().notEmpty().withMessage(`"Kategori Pemberitahuan" Is Required`),
+    body('kategoryPengeluaran').trim().notEmpty().withMessage(`"Kategori Pengeluaran" Is Required`),
+    body('tujuanPengeluaran').trim().notEmpty().withMessage(`"Tujuan Pengeluaran" Is Required`),
     body('asalBarang').trim().notEmpty().withMessage(`"Asal Barang" Is Required`),
     body('caraPembayaran').trim().notEmpty().withMessage(`"Cara Pembayaran" Is Required`),
-    body('reportId').trim().notEmpty().withMessage(`"Report Id" Is Required`),
+    // body('reportId').trim().notEmpty().withMessage(`"Report Id" Is Required`),
 ]
 
 const validationIdentitasPengirim = [

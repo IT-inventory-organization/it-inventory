@@ -1,4 +1,3 @@
-const { body } = require('express-validator');
 const Http = require('../../helper/Httplib');
 const { createReport } = require('../../helper/DataReport');
 const { createDataPengajuan } = require('../../helper/DataPengajuan');
@@ -34,6 +33,7 @@ const {
     validationDataTempatPenimbunan
 } = require('../../middlewares/validationDataHeader');
 
+const validationReport = require('../../middlewares/validationDataReport')
 const { validationArrListDokumen, validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
 const { dataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen, petiKemas } = require('../../helper/bundleDataLanjutan');
@@ -44,27 +44,14 @@ const { createDataPetiKemasDanPengemas } = require('../../helper/DataPetiKemasDa
 const { createDataTempatPenimbunan } = require('../../helper/DataTempatPenimbunan');
 const { createPerkiraanTanggalPengeluaran } = require('../../helper/DataPerkiraanTanggalPengeluaran');
 const { createListDokumen } = require('../../helper/ListDokumen');
-const { createDataPetiKemas } = require("../../helper/DataPetiKemas")
+const { createDataPetiKemas } = require("../../helper/DataPetiKemas");
 const { createListBarang } = require("../../helper/ListBarang");
-const { validationArrListBarang }= require("../../middlewares/validationDataBarang")
+const { validationArrListBarang }= require("../../middlewares/validationDataBarang");
+const authentication = require('../../middlewares/authentication');
 const Encryption = require('../../helper/encription');
-
-const validationReport = [
-    body('pengajuanSebagai').trim().notEmpty().withMessage(`"Pengajuan Sebagai" Is Required`),
-    body('kantorPengajuan').trim().notEmpty().withMessage(`"Kantor Pengajuan" Is Required`),
-    body('jenisPemberitahuan').trim().notEmpty().withMessage(`"Jenis Pemberitahuan" Is Required`),
-    body('jenisKeluar').trim().notEmpty().withMessage(`"Jenis Keluar" Is Required`),
-    body('typeReport').trim().notEmpty().withMessage(`"Tipe Report" is Required`),
-    body('BCDocumentType').trim().notEmpty().withMessage(`"Jenis Dokumen BC" Is Required`)
-];
+const { createUserActivity } = require('../../helper/UserActivity');
 
 
-/**
- * TODO: Validation, 
- * TODO: Create Report,
- * TODO: Create & Update Data Header(Penganjuan, identitas pengirim & penerima, Tranasksi Perdagangan) 
- * [29/09/2021][30/09/2021]
- */
 const addReport = async (req, res) => {
     try {
         const dataObj = {
@@ -72,7 +59,7 @@ const addReport = async (req, res) => {
             kantorPengajuan: req.body.kantorPengajuan,
             jenisPemberitahuan: req.body.jenisPemberitahuan,
             jenisKeluar: req.body.jenisKeluar,
-            userId: req.body.userId,
+            userId: req.currentUser,
             typeReport: req.body.typeReport,
             BCDocumentType: req.body.BCDocumentType,
             isDelete: false
@@ -84,8 +71,13 @@ const addReport = async (req, res) => {
             userId: result.userId
         };
 
+        if(req.currentRole !== "Owner"){
+            await createUserActivity(req.currentUser, result.id, "Create New Report");
+        }
+
         return successResponse(res, Http.created, "Success Adding A Report", dataReturn)
     } catch (error) {
+        console.error(error)
         return errorResponse(res, Http.internalServerError, "Failed To Add A Report", error);
     }
 }
@@ -125,6 +117,10 @@ const addDataHeader = async (req, res) => {
             perkiraanTanggalId: perkiraanTanggalResult.id
         };
 
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, dataPengajuan.reportId, `Create Report "Data Header"`);
+        }
+
         await transaction.commit();
 
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
@@ -148,9 +144,9 @@ const addDataLanjutan = async (req, res) => {
 
         for (let i = 0; i < listDokumen.length; i++) {
             let result = await createListDokumen(listDokumen[i], transaction);
-            promises.push(result)
-            
+            promises.push(result)  
         }
+        
         const petiKemasResult = await createDataPetiKemas(petiKemas, transaction)
 
         const dataToReturn = {
@@ -159,12 +155,15 @@ const addDataLanjutan = async (req, res) => {
             petiKemas: petiKemasResult.id,
         };
 
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, petiKemas.reportId, `Create Report "Data Lanjutan"`);
+        }
+
         await transaction.commit();
 
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        console.error(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -175,7 +174,7 @@ const addDataBarang = async (req, res) => {
     
     try {
         transaction = await sequelize.transaction();
-        const { DataToInput: {listBarang}} = req;
+        const { DataToInput: {listBarang, reportId}} = req;
 
         
         const promises = [];
@@ -192,15 +191,19 @@ const addDataBarang = async (req, res) => {
         
         const dataToReturn = {
             listBarang: promises.map( ele => ele.id),
-            reportId: listBarang[0].reportId,
+            reportId: reportId,
         };
+
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, listBarang[0].reportId, `Create Report "Data Barang"`);
+        }
 
         await transaction.commit()
 
         return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        // console.error(error);
+        
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -216,7 +219,8 @@ const decrypt = async(req, res) => {
 
 module.exports = (routes) => {
     // Create report
-    routes.post('/', // --> url
+    routes.post('/:type', // --> url
+        authentication,
         validationReport,
         validationResponse,
         addReport
@@ -224,6 +228,7 @@ module.exports = (routes) => {
 
     // Create Data Header
     routes.post('/data-header',
+        authentication,
         validationDataPengajuan,
         validationIdentitasPengirim,
         validationIdentitasPenerima,
@@ -250,6 +255,7 @@ module.exports = (routes) => {
 
     // Create Data Lanjutan
     routes.post('/data-lanjutan',
+        authentication,
         validationArrListDokumen,
         validationPetiKemas,
         validationResponse,
@@ -260,6 +266,7 @@ module.exports = (routes) => {
 
     // Create Data Barang
     routes.post('/data-barang',
+        authentication,
         validationArrListBarang,
         validationResponse,
         dataBarang,

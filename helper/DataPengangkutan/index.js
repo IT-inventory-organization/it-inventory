@@ -16,7 +16,7 @@ const updateDataPengangkutan = async (data, idToUpdate, idReport, returning = fa
         const result = await reportDataPengangkutan.update(data, {
             where:{ 
                 id: idToUpdate,
-                reportId: idReport,
+                reportId: idReport
             },
             returning: returning,
             transaction: transaction

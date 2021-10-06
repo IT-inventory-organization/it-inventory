@@ -7,7 +7,7 @@ const generateToken = (payload) => {
 };
 
 const verifyToken = async (token) => {
-  const decode = await jwt.verify(token, CONFIG.get("JWT_SECRET_KEY"))
+  const decode = jwt.verify(token, CONFIG.get("JWT_SECRET_KEY"))
   return decode
 };
 

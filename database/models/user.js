@@ -33,9 +33,9 @@ const User = db.define('Users', {
   },
   role_id: {
     type: Sequelize.INTEGER,
-    defaultValue: 2,
+    defaultValue: 3,
     references: {
-      models: 'Roles',
+      model: 'Roles',
       key: 'id'
     },
     onUpdate: 'cascade',

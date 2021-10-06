@@ -19,6 +19,10 @@ const Report = db.define('Report', {
     type: Sequelize.STRING,
     allowNull: false
   },
+  isEditable: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: true
+  },
   userId: {
     type: Sequelize.INTEGER,
     references: {

@@ -1,4 +1,5 @@
-const reportDataPengajuan = require('../../database/models/datapengajuan')
+const reportDataPengajuan = require('../../database/models/datapengajuan');
+const authorization = require('../authorization');
 
 const createDataPengajuan = async (data, transaction) => {
     try {

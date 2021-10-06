@@ -18,7 +18,7 @@ const authentication = async (req, res, next) =>{
       req.currentUser = user.id;
       req.currentRole = user.Role.name
       next();
-    } else {
+    } else {  
       return errorResponse(res, httpStatus.badRequest, "Please login first");
     }
   } catch (err) {

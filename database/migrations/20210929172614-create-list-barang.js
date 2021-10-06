@@ -23,6 +23,9 @@ module.exports = {
       nilaiPabeanHargaPenyerahan: {
         type: Sequelize.DECIMAL
       },
+      hsCode: {
+        type: Sequelize.STRING
+      },
       reportId: {
         allowNull: false,
         type: Sequelize.INTEGER,

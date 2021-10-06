@@ -5,14 +5,14 @@ const validationDokumen = [
     body('kodeDokumen').trim().notEmpty().withMessage(`"Kode Dokumen" Is Required`),
     body('nomorDokumen').trim().notEmpty().withMessage(`"Nomor Dokumen" Is Required`),
     body('tanggalDokumen').trim().notEmpty().withMessage(`"Tanggal Dokumen" Is Required`).custom(checkFormat),
-    body('hsCode').trim().notEmpty().withMessage(`HS Code Is Required`)
+    // body('hsCode').trim().notEmpty().withMessage(`HS Code Is Required`)
 ];
 
 const validationArrListDokumen = [
     body('tableDokumen.*.kodeDokumen').trim().notEmpty().withMessage(`"Kode Dokumen" Is Required`),
     body('tableDokumen.*.nomorDokumen').trim().notEmpty().withMessage(`"Nomor Dokumen" Is Required`),
     body('tableDokumen.*.tanggalDokumen').trim().notEmpty().withMessage(`"Tanggal Dokumen" Is Required`),
-    body('tableDokumen.*.hsCode').trim().notEmpty().withMessage(`HS Code Is Required`)
+    // body('tableDokumen.*.hsCode').trim().notEmpty().withMessage(`HS Code Is Required`)
 ]
 
 const validationPetiKemas = [
