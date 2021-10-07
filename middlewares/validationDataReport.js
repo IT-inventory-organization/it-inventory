@@ -4,7 +4,6 @@ const validationReport = [
     body('kantorPengajuan').trim().notEmpty().withMessage(`"Kantor Pengajuan" Is Required`),
     body('jenisPemberitahuan').trim().notEmpty().withMessage(`"Jenis Pemberitahuan" Is Required`),
     body('jenisKeluar').trim().notEmpty().withMessage(`"Jenis Keluar" Is Required`),
-    body('typeReport').trim().notEmpty().withMessage(`"Tipe Report" is Required`),
     body('BCDocumentType').trim().notEmpty().withMessage(`"Jenis Dokumen BC" Is Required`)
 ];
 

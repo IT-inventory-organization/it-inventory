@@ -4,12 +4,17 @@ const configSecurity = {
   mode: CryptoJS.mode.ECB,
   padding: CryptoJS.pad.Pkcs7
 };
-const keyPromise = config.get("KEY_ENCRYPT");
+
+const keyPromise = CryptoJS.enc.Utf8.parse(config.get("KEY_ENCRYPT"));
 
 module.exports = {
   AESDecrypt: (data) => {
+    data = CryptoJS.enc.Base64.parse(data);
     const decrypt = CryptoJS.AES.decrypt(
-      data,
+      {
+        ciphertext: data,
+        salt: ''
+      },
       keyPromise,
       configSecurity
     );

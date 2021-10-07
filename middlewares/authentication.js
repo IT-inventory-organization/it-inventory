@@ -5,7 +5,8 @@ const httpStatus = require("../helper/Httplib");
 const Role = require("../database/models/role");
 
 const authentication = async (req, res, next) =>{
-  const bearerToken = req.headers.authorization
+  const bearerToken = req.headers.authorization;
+  
   if(!bearerToken) {
     return errorResponse(res, httpStatus.badRequest, "Please login first");
   }
@@ -14,6 +15,7 @@ const authentication = async (req, res, next) =>{
     const decode = await verifyToken(token);
     const {user_id: id} = decode;
     const user = await User.findOne({where: {id}, include:[Role]});
+    // console.info(decode)
     if (user){
       req.currentUser = user.id;
       req.currentRole = user.Role.name

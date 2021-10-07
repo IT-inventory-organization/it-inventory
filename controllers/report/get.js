@@ -53,21 +53,18 @@ const getCountReportByType = async (req, res) => {
 
 const getAll = async(req, res) => {
     try {
-        const {pageSize, pageNo, sortBy, search} = req.query
-        const result = await getAllReport(req, pageSize, pageNo, sortBy, search)
+        const {pageSize, pageNo, sortBy, search, type} = req.query;
+        const result = await getAllReport(req, pageSize, pageNo, sortBy, search, type);
+        
         if(result.error) {
             throw new Error(result.error)
         }
+        
         if(req.currentRole !== "Owner") {
-            try {
-                const resultActivity = await createUserActivity(req.currentUser, reportId = null, "Viewing Data Report")
-            } catch (error) {
-                
-            } finally {
-    
-            }
+            await createUserActivity(req.currentUser, reportId = null, "Viewing Data Report")
         }
-        return successResponse(res, httpStatus.badRequest, "", result)
+
+        return successResponse(res, httpStatus.ok, "Success Viewing Data Report", result)
     } catch (err) {
         return errorResponse(res, httpStatus.internalServerError, err.message)
     }
@@ -106,6 +103,7 @@ const removeSpace = (val) => {
     val = ""+val;
     return val.replace(/ /g, "");
 }
+
 const getXMLReport = async (req, res) => {
     const {id} = req.params;
     

@@ -47,6 +47,13 @@ const updateReport = async(id, data) => {
     }
 }
 
+const checkAuthorization = async(req, idReport, transaction) => {
+    if(! await authorization(Report, idReport, req)){
+        throw new Error(`User is Not Authorized To Change The Data`);
+    }
+    return;
+}
+
 const countAllReport = async(req) => {
     try {
         let searchBasedUserId = '';
@@ -88,10 +95,10 @@ const countReportByType = async (type, req) => {
 
 const deleteReport = async(idType, req) => {
     try {
-        if(!authorization(Report, idType, req)){
+        if(!await authorization(Report, idType, req)){
             throw new Error('User Is Not Authorized To Delete This Data');
         }
-        
+
         const result = Report.update({
             isDelete: true,
         },{
@@ -117,11 +124,12 @@ const deleteReport = async(idType, req) => {
  * @returns 
  */
 
-const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) => {
+const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null) => {
     try {
         let searchUser = 'WHERE ';
         let qtSearch = '';
         let orderQuery = '';
+        let typeQuery = '';
         const limit = pageSize ? +pageSize : 10
         const offset = pageNo ? (+pageNo - 1) * pageSize : 0
 
@@ -145,13 +153,24 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) =
             qtSearch+=`"RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR "IPN"."namaPenerima" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%'`
         }
 
-        if(req.currentRole === "Admin" || req.currentRole === "Owner"){
-            if(searchQuery == null){
-                searchUser=' '
+        if(type != null){
+            if((req.currentRole !== 'Admin' && req.currentRole !== 'Owner') || searchQuery != null){
+                typeQuery+=`AND `
             }
+            typeQuery+=`"RP"."typeReport" = '${type}'`;
         }
 
-        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+        if(req.currentRole === "Admin" || req.currentRole === "Owner"){
+            if(searchQuery == null){
+                if(type == null){
+                    searchUser=' ';
+                }
+            }
+        }
+        // console.log(req.currentRole)
+        // console.log(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${typeQuery} ${orderQuery}  LIMIT ${limit} OFFSET ${offset}`)
+        
+        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${orderQuery} ${typeQuery} LIMIT ${limit} OFFSET ${offset}`);
 
         const data = {
             data: res[0],
@@ -161,7 +180,7 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) =
         }
         return data;
     } catch (error) {
-        return {error}
+        return error
     }
 }
 
@@ -305,5 +324,6 @@ module.exports = {
     countAllReport,
     getAllReportByType,
     updateReport,
-    updateStatus
+    updateStatus,
+    checkAuthorization
 }

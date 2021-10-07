@@ -51,9 +51,8 @@ const authentication = require('../../middlewares/authentication');
 const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 
-
 const addReport = async (req, res) => {
-    const {type} = req.params;
+    const {type} = req.query;
     try {
         const dataObj = {
             pengajuanSebagai: req.body.pengajuanSebagai,
@@ -89,24 +88,24 @@ const addDataHeader = async (req, res) => {
 
     try {
         transaction = await sequelize.transaction();
-
-        const { DataToInput: {pengajuan, identitasPenerima, identitasPengirim, transaksiPerdagangan, pengangkutan, pelabuhanMuatBongkar, beratDanVolume, petiKemasDanPengemas, tempatPenimbunan, perkiraanTanggalPengeluaran}} = req;
         
-        const dataPengajuan = await createDataPengajuan(pengajuan, transaction); // Simpan Ke Table Data Pengajuan
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
+        
+        const dataPengajuanResult = await createDataPengajuan(dataPengajuan, transaction); // Simpan Ke Table Data Pengajuan
         const identitasPenerimaResult = await createReportIdentitasPenerima(identitasPenerima, transaction); // Simpan Ke Table Identitas Penerima
         const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
         const transaksiPerdaganganResult = await createReportTransaksiPerdagangan(transaksiPerdagangan, transaction); // Simpan Ke Table Transaksi Perdagangan
         
-        const pengangkutanResult = await createDataPengangkutan(pengangkutan, transaction);
-        const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(pelabuhanMuatBongkar, transaction);
-        const beratDanVolumeResult = await createDataBeratDanVolume(beratDanVolume, transaction);
-        const petiKemasDanPengemasResult = await createDataPetiKemasDanPengemas(petiKemasDanPengemas, transaction);
-        const tempatPenimbunanResult = await createDataTempatPenimbunan(tempatPenimbunan, transaction);
-        const perkiraanTanggalResult = await createPerkiraanTanggalPengeluaran(perkiraanTanggalPengeluaran, transaction);
+        const pengangkutanResult = await createDataPengangkutan(dataPengangkutan, transaction);
+        const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, transaction);
+        const beratDanVolumeResult = await createDataBeratDanVolume(dataBeratDanVolume, transaction);
+        const petiKemasDanPengemasResult = await createDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, transaction);
+        const tempatPenimbunanResult = await createDataTempatPenimbunan(dataTempatPenimbunan, transaction);
+        const perkiraanTanggalResult = await createPerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, transaction);
 
         const dataToReturn = {
-            dataPengajuanId: dataPengajuan.id,
-            reportId: dataPengajuan.reportId,
+            dataPengajuanId: dataPengajuanResult.id,
+            reportId: dataPengajuanResult.reportId,
             identitasPenerimaId: identitasPenerimaResult.id,
             identitasPengirimId: identitasPengirimResult.id,
             transaksiPerdaganganId: transaksiPerdaganganResult.id,
@@ -127,8 +126,8 @@ const addDataHeader = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        // console.error(error.message);
-        return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
+        console.error(error.message);
+        return errorResponse(res, Http.internalServerError, "Failed To Add Data")
     }
 }
 
@@ -139,31 +138,32 @@ const addDataLanjutan = async (req, res) => {
     try {
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {listDokumen, petiKemas}} = req;
+        const { DataToInput: {dataDokumen, dataPetiKemas}} = req.body;
         
         const promises = [];
 
-        for (let i = 0; i < listDokumen.length; i++) {
-            let result = await createListDokumen(listDokumen[i], transaction);
+        for (let i = 0; i < dataDokumen.length; i++) {
+            let result = await createListDokumen(dataDokumen[i], transaction);
             promises.push(result)  
         }
         
-        const petiKemasResult = await createDataPetiKemas(petiKemas, transaction)
+        const petiKemasResult = await createDataPetiKemas(dataPetiKemas, transaction)
 
         const dataToReturn = {
-            listDokumen: promises.map(el => el.id),
+            dataDokumen: promises.map(el => el.id),
             reportId: petiKemas.reportId,
-            petiKemas: petiKemasResult.id,
+            dataPetiKemas: petiKemasResult.id,
         };
 
         if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, petiKemas.reportId, `Create Report "Data Lanjutan"`);
+            await createUserActivity(req.currentUser, dataPetiKemas.reportId, `Create Report "Data Lanjutan"`);
         }
 
         await transaction.commit();
 
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
+        console.error(error)
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
@@ -175,8 +175,7 @@ const addDataBarang = async (req, res) => {
     
     try {
         transaction = await sequelize.transaction();
-        const { DataToInput: {listBarang, reportId}} = req;
-
+        const { DataToInput: {dataBarang, reportId}} = req.body;
         
         const promises = [];
         // listBarang.forEach(async el => {
@@ -185,18 +184,18 @@ const addDataBarang = async (req, res) => {
 
         // const result = await Promise.all(promises);
         // Loop Dengan Async
-        for (let index = 0; index < listBarang.length; index++) {
-            let res = await createListBarang(listBarang[index], transaction);
+        for (let index = 0; index < dataBarang.length; index++) {
+            let res = await createListBarang(dataBarang[index], transaction);
             promises.push(res);
         }
         
         const dataToReturn = {
-            listBarang: promises.map( ele => ele.id),
+            dataBarang: promises.map( ele => ele.id),
             reportId: reportId,
         };
 
         if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, listBarang[0].reportId, `Create Report "Data Barang"`);
+            await createUserActivity(req.currentUser, reportId, `Create Report "Data Barang"`);
         }
 
         await transaction.commit()
@@ -204,7 +203,7 @@ const addDataBarang = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        
+        console.error(error)
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -220,7 +219,7 @@ const decrypt = async(req, res) => {
 
 module.exports = (routes) => {
     // Create report
-    routes.post('/:type', // --> url
+    routes.post('/', // --> url
         authentication,
         validationReport,
         validationResponse,
@@ -230,6 +229,16 @@ module.exports = (routes) => {
     // Create Data Header
     routes.post('/data-header',
         authentication,
+        dataPengajuan,
+        identitasPengirim,
+        identitasPenerima,
+        transaksiPerdagangan,
+        dataPengangkut,
+        dataPelabuhanMuatBongkar,
+        beratDanVolume,
+        dataPetiKemasDanPengemas,
+        dataTempatPenimbunan,
+        dataPerkiraanTanggalPengeluaran,
         validationDataPengajuan,
         validationIdentitasPengirim,
         validationIdentitasPenerima,
@@ -241,36 +250,26 @@ module.exports = (routes) => {
         validationDataTempatPenimbunan,
         validationDataPerkiraanTanggalPengeluaran,
         validationResponse, // --> Middleware
-        dataPengajuan,
-        identitasPengirim,
-        identitasPenerima,
-        transaksiPerdagangan,
-        dataPengangkut,
-        dataPelabuhanMuatBongkar,
-        beratDanVolume,
-        dataPetiKemasDanPengemas,
-        dataTempatPenimbunan,
-        dataPerkiraanTanggalPengeluaran,
         addDataHeader
     );
 
     // Create Data Lanjutan
     routes.post('/data-lanjutan',
         authentication,
+        dataDokumen,
+        petiKemas,
         validationArrListDokumen,
         validationPetiKemas,
         validationResponse,
-        dataDokumen,
-        petiKemas,
         addDataLanjutan
     );
 
     // Create Data Barang
     routes.post('/data-barang',
         authentication,
+        dataBarang,
         validationArrListBarang,
         validationResponse,
-        dataBarang,
         addDataBarang
     );
     

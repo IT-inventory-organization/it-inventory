@@ -1,4 +1,5 @@
-const reportListDokumen = require('../../database/models/listdokumen')
+const reportListDokumen = require('../../database/models/listdokumen');
+const authorization = require('../authorization');
 
 const createListDokumen = async (data, transaction) => {
     try {
@@ -26,18 +27,23 @@ const updateListDokumen = async (data, idToUpdate , returning = false, transacti
     }
 }
 
-const softDeleteListDokumen = async (reportId) => {
+const softDeleteListDokumen = async (reportId, req, transaction = null) => {
     try {
+        if(!await authorization(reportListDokumen, reportId, req, true)){
+            throw new Error(`Your Not Authorized`);
+        }
+        
         await reportListDokumen.update({
             isDelete: true
         }, {
             where:{
                 reportId: reportId,
-            }
+            },
+            transaction: transaction
         });
-
+        console.log('pass');
     } catch (error) {
-        return error.message;        
+        throw error;        
     }
 }
 

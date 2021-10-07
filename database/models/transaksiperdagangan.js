@@ -24,6 +24,9 @@ const reportTransaksiPerdagangan = db.define('TransaksiPerdagangan', {
   freight: {
     type: Sequelize.INTEGER
   },
+  hargaPenyerahan: {
+    type: Sequelize.DECIMAL
+  },
   reportId: {
     allowNull: false,
     type: Sequelize.INTEGER,
