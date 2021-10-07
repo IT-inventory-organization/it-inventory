@@ -9,12 +9,12 @@ const validationListBarang = [
 ];
 
 const validationArrListBarang = [
-    body('DataToInput.dataBarang.*.posTarif').notEmpty().trim().withMessage(`"Pos Tarif" Is Required`),
-    body('DataToInput.dataBarang.*.uraian').notEmpty().trim().withMessage(`"Uraian" Is Required`),
-    body('DataToInput.dataBarang.*.nettoBrutoVolume').notEmpty().trim().withMessage(`"Netto, Bruto, Volume" Is Required`),
-    body('DataToInput.dataBarang.*.satuanKemasan').notEmpty().trim().withMessage(`"Satuan Kemasan"`),
-    body('DataToInput.dataBarang.*.nilaiPabeanHargaPenyerahan').notEmpty().trim().withMessage(`"Nilai Pabean Harga Penyerahan" Is Required`),
-    body('DataToInput.dataBarang.*.hsCode').notEmpty().trim().withMessage("HS Code Is Required")
+    body('DataToInput.listDataBarang.*.posTarif').notEmpty().trim().withMessage(`"Pos Tarif" Is Required`),
+    body('DataToInput.listDataBarang.*.uraian').notEmpty().trim().withMessage(`"Uraian" Is Required`),
+    body('DataToInput.listDataBarang.*.nettoBrutoVolume').notEmpty().trim().withMessage(`"Netto, Bruto, Volume" Is Required`),
+    body('DataToInput.listDataBarang.*.satuanKemasan').notEmpty().trim().withMessage(`"Satuan Kemasan"`),
+    body('DataToInput.listDataBarang.*.nilaiPabeanHargaPenyerahan').notEmpty().trim().withMessage(`"Nilai Pabean Harga Penyerahan" Is Required`),
+    body('DataToInput.listDataBarang.*.hsCode').notEmpty().trim().withMessage("HS Code Is Required")
     // body('barang.*.reportId').notEmpty().trim()
 ]
 

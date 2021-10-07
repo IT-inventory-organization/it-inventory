@@ -30,18 +30,22 @@ const updateListDokumen = async (data, idToUpdate , returning = false, transacti
 const softDeleteListDokumen = async (reportId, req, transaction = null) => {
     try {
         if(!await authorization(reportListDokumen, reportId, req, true)){
-            throw new Error(`Your Not Authorized`);
+            throw new Error('User Is Not Authorized To Access Data');
         }
+                
         
-        await reportListDokumen.update({
+        const result = await reportListDokumen.update({
             isDelete: true
         }, {
             where:{
-                reportId: reportId,
+                reportId: reportId
             },
-            transaction: transaction
+            transaction: transaction,
+            returning: true,
         });
-        console.log('pass');
+        if(result == null){
+            throw new Error("Data Didn\'t Exist");
+        }
     } catch (error) {
         throw error;        
     }

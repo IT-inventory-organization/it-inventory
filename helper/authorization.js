@@ -10,30 +10,33 @@ const authorization = async (model, id, req, extraCondition = false) => {
   if (extraCondition) {
     query.include = [Report]
   }
-  
-  result = await model.findOne(query);
-  // console.log(result);
-  if(result == null){
-    query.where = {
-      reportId: id
-    }
+  try {
     result = await model.findOne(query);
-    
     if(result == null){
-      return false
+      query.where = {
+        reportId: id
+      }
+      result = await model.findOne(query);
+        
+      if(result == null){
+        return false
+      }
     }
+    
+    if('Report' in result) {
+      if (result.Report.userId === req.currentUser) {
+        return true
+      }
+    } else {
+      if(result.userId === req.currentUser) {
+        return true
+      }
+    }
+    return false
+  } catch (error) {
+    throw error
   }
-  
-  if('Report' in result) {
-    if (result.Report.userId === req.currentUser) {
-      return true
-    }
-  } else {
-    if(result.userId === req.currentUser) {
-      return true
-    }
-  }
-  return false
+
 }
 
 module.exports = authorization;

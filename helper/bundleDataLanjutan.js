@@ -2,7 +2,6 @@ const Http = require("./Httplib");
 const {convertStrignToDateUTC} = require("./convert");
 const {errorResponse} = require("./Response");
 const Encryption = require('./encription');
-const { lazyrouter } = require("express/lib/application");
 
 const dataDokumen = (req, res, next) => {
     try {

@@ -21,6 +21,9 @@ const updateDataPelabuhanMuatBongkar = async (data, idToUpdate, idReport, return
             returning: returning,
             transaction: transaction
         });
+        if(result[0] == 0){
+            throw new Error(`Data Didn't Exist`);
+        }
         return result;
     } catch (error) {
         throw error;

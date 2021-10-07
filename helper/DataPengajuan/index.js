@@ -22,6 +22,9 @@ const updateDataPengajuan = async (data, idToUpdate, idReport, returning = false
             returning: returning,
             transaction: transaction
         });
+        if(result[0] == 0){
+            throw new Error(`Data Didn't Exists`);
+        }
         return result;
     } catch (error) {
         throw error;
