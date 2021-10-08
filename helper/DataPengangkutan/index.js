@@ -1,4 +1,5 @@
-const reportDataPengangkutan = require('../../database/models/datapengangkutan')
+const reportDataPengangkutan = require('../../database/models/datapengangkutan');
+const Report = require('../../database/models/report');
 
 const createDataPengangkutan = async (data, transaction) => {
     try {
@@ -21,13 +22,39 @@ const updateDataPengangkutan = async (data, idToUpdate, idReport, returning = fa
             returning: returning,
             transaction: transaction
         });
+        if(result[0] == 0){
+            throw new Error(`Data Didn't Exist`);
+        }
         return result;
     } catch (error) {
         throw error;
     }
 }
 
+const getDataPengangkutan = async (idReport, type, transaction = null) => {
+    try {
+        const result = await reportDataPengangkutan.get({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type,
+                    }
+                }
+            ],
+            where: {
+                reportId: idReport,
+            },
+            transaction: transaction
+        });
+        return result;
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     createDataPengangkutan,
-    updateDataPengangkutan
+    updateDataPengangkutan,
+    getDataPengangkutan
 }

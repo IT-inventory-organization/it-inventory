@@ -6,10 +6,11 @@ const httpStatus = require("../../helper/Httplib")
 const { checkHashText } = require("../../helper/bcrypt");
 const User = require("../../database/models/user");
 const Role = require("../../database/models/role");
+const Encryption = require('../../helper/encription');
 
 const validationBody = [
-  body("email").isLength({ min: 1 }).withMessage("Email/Npwp/username is required"),
-  body("password").isLength({ min: 1 }).withMessage("A password is required"),
+  body("DataToInput.email").isLength({ min: 1 }).withMessage("Email/Npwp/username is required"),
+  body("DataToInput.password").isLength({ min: 1 }).withMessage("A password is required"),
 ];
 
 const getUserData = async (email) => {
@@ -33,15 +34,28 @@ const getUserData = async (email) => {
   }
 }
 
+const checkBody  = (email, password, res) => {
+  // console.log(email)
+  if(typeof email === 'undefined' || email.length == 0){
+    return errorResponse(res, httpStatus.badRequest, "Email / Npwp / Username is required");
+  }
+  if(typeof password === 'undefined' || password.length == 0){
+    return errorResponse(res, httpStatus.badRequest, "A Password Is Required");
+  }
+}
 const loginAction = async (req, res) => {
   try {
-    const validation = validationResult(req);
+    console.log(req.body);
+    const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
     
-    if(!validation.isEmpty()){
-        return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
-    }
+    req.body.DataToInput = {
+      ...Decrpypt
+    };
+    delete req.body.dataLogin;
+
+    checkBody(req.body.DataToInput.email, req.body.DataToInput.password, res);
     
-    const getUser = await getUserData(req.body.email);
+    const getUser = await getUserData(req.body.DataToInput.email);
 
     // if username, email and npwp don't exist
     if (!getUser) {
@@ -51,7 +65,7 @@ const loginAction = async (req, res) => {
     const result = getUser.toJSON();
 
     // Check password
-    if (checkHashText(result.password, req.body.password)) {
+    if (checkHashText(result.password, req.body.DataToInput.password)) {
       // User Biasa
       if(result.Role.name !== "User"){
         return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
@@ -65,19 +79,23 @@ const loginAction = async (req, res) => {
     }
   } catch (error) {
     // if there is a system error
+    console.log(error)
     return errorResponse(res, httpStatus.internalServerError, "Login failed!")
   }
 };
 
 const loginActionBeaCukai = async(req, res) => {
   try {
-    const validation = validationResult(req);
+    const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
     
-    if(!validation.isEmpty()){
-        return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
-    }
+    req.body.DataToInput = {
+      ...Decrpypt
+    };
+    delete req.body.dataLogin;
 
-    const getUser = await getUserData(req.body.email);
+    checkBody(req.body.DataToInput.email, req.body.DataToInput.password, res);
+
+    const getUser = await getUserData(req.body.DataToInput.email);
 
     if (!getUser) {
       return errorResponse(res, httpStatus.notFound, "User not found!")
@@ -86,7 +104,7 @@ const loginActionBeaCukai = async(req, res) => {
     const result = getUser.toJSON();
 
     
-    if (checkHashText(result.password, req.body.password)) {
+    if (checkHashText(result.password, req.body.DataToInput.password)) {
       // Bea Cukai
       if(result.Role.name !== "Admin"){ 
         return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
@@ -105,13 +123,16 @@ const loginActionBeaCukai = async(req, res) => {
 
 const loginActionOwner = async(req, res)=> {
   try {
-    const validation = validationResult(req);
+    const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
+    
+    req.body.DataToInput = {
+      ...Decrpypt
+    };
+    delete req.body.dataLogin;
 
-    if(!validation.isEmpty()) {
-      return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
-    }
+    checkBody(req.body.DataToInput.email, req.body.DataToInput.password, res);
 
-    const getUser = await getUserData(req.body.email);
+    const getUser = await getUserData(req.body.DataToInput.email);
 
     if(!getUser){
       return errorResponse(res, httpStatus.notFound, "User not found!");
@@ -119,7 +140,7 @@ const loginActionOwner = async(req, res)=> {
 
     const result = getUser.toJSON();
 
-    if(checkHashText(result.password, req.body.password)){
+    if(checkHashText(result.password, req.body.DataToInput.password)){
       if(result.Role.name !== 'Owner'){
         return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
       }

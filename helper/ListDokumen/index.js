@@ -1,4 +1,5 @@
-const reportListDokumen = require('../../database/models/listdokumen')
+const reportListDokumen = require('../../database/models/listdokumen');
+const authorization = require('../authorization');
 
 const createListDokumen = async (data, transaction) => {
     try {
@@ -26,18 +27,27 @@ const updateListDokumen = async (data, idToUpdate , returning = false, transacti
     }
 }
 
-const softDeleteListDokumen = async (reportId) => {
+const softDeleteListDokumen = async (reportId, req, transaction = null) => {
     try {
-        await reportListDokumen.update({
+        if(!await authorization(reportListDokumen, reportId, req, true)){
+            throw new Error('User Is Not Authorized To Access Data');
+        }
+                
+        
+        const result = await reportListDokumen.update({
             isDelete: true
         }, {
             where:{
-                reportId: reportId,
-            }
+                reportId: reportId
+            },
+            transaction: transaction,
+            returning: true,
         });
-
+        if(result == null){
+            throw new Error("Data Didn\'t Exist");
+        }
     } catch (error) {
-        return error.message;        
+        throw error;        
     }
 }
 

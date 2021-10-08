@@ -9,15 +9,15 @@ const validationDokumen = [
 ];
 
 const validationArrListDokumen = [
-    body('tableDokumen.*.kodeDokumen').trim().notEmpty().withMessage(`"Kode Dokumen" Is Required`),
-    body('tableDokumen.*.nomorDokumen').trim().notEmpty().withMessage(`"Nomor Dokumen" Is Required`),
-    body('tableDokumen.*.tanggalDokumen').trim().notEmpty().withMessage(`"Tanggal Dokumen" Is Required`),
+    body('DataToInput.dataDokumen.*.kodeDokumen').trim().notEmpty().withMessage(`"Kode Dokumen" Is Required`),
+    body('DataToInput.dataDokumen.*.nomorDokumen').trim().notEmpty().withMessage(`"Nomor Dokumen" Is Required`),
+    body('DataToInput.dataDokumen.*.tanggalDokumen').trim().notEmpty().withMessage(`"Tanggal Dokumen" Is Required`),
     // body('tableDokumen.*.hsCode').trim().notEmpty().withMessage(`HS Code Is Required`)
 ]
 
 const validationPetiKemas = [
-    body('dataKontainer').trim().notEmpty().withMessage(`"Data Kontainer" Is Required`),
-    body('volumeKontainer').trim().notEmpty().withMessage(`"Volume Kontainer" Is Required`)
+    body('DataToInput.dataPetiKemas.dataKontainer').trim().notEmpty().withMessage(`"Data Kontainer" Is Required`),
+    body('DataToInput.dataPetiKemas.volumeKontainer').trim().notEmpty().withMessage(`"Volume Kontainer" Is Required`)
 ];
 
 module.exports = {

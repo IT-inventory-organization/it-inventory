@@ -15,6 +15,7 @@ const reportDataPetiKemasDanPengemas = require('../../database/models/datapetike
 const reportDataTempatPenimbunan = require('../../database/models/datatempatpenimbunan');
 const reportTransaksiPerdagangan = require('../../database/models/transaksiperdagangan');
 const User = require('../../database/models/user');
+const authorization = require("../authorization")
 
 const createReport = async (data, transaction) => {
     try {
@@ -40,10 +41,21 @@ const updateReport = async(id, data) => {
         const result = await Report.update(data, { 
             where: { id: id },
         });
+        // console.log(result);
+        if(result[0] == 0){
+            throw new Error(`Data Didn't Exists`);
+        }
         return result
     } catch (error) {
-        throw Error(error.message);
+        throw error;
     }
+}
+
+const checkAuthorization = async(req, idReport, transaction) => {
+    if(! await authorization(Report, idReport, req)){
+        throw new Error(`User is Not Authorized To Change The Data`);
+    }
+    return;
 }
 
 const countAllReport = async(req) => {
@@ -85,8 +97,12 @@ const countReportByType = async (type, req) => {
     }
 }
 
-const deleteReport = async(idType) => {
+const deleteReport = async(idType, req) => {
     try {
+        if(!await authorization(Report, idType, req)){
+            throw new Error('User Is Not Authorized To Delete This Data');
+        }
+
         const result = Report.update({
             isDelete: true,
         },{
@@ -112,11 +128,12 @@ const deleteReport = async(idType) => {
  * @returns 
  */
 
-const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) => {
+const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null) => {
     try {
         let searchUser = 'WHERE ';
         let qtSearch = '';
         let orderQuery = '';
+        let typeQuery = '';
         const limit = pageSize ? +pageSize : 10
         const offset = pageNo ? (+pageNo - 1) * pageSize : 0
 
@@ -140,13 +157,24 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) =
             qtSearch+=`"RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR "IPN"."namaPenerima" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%'`
         }
 
-        if(req.currentRole === "Admin" || req.currentRole === "Owner"){
-            if(searchQuery == null){
-                searchUser=' '
+        if(type != null){
+            if((req.currentRole !== 'Admin' && req.currentRole !== 'Owner') || searchQuery != null){
+                typeQuery+=`AND `
             }
+            typeQuery+=`"RP"."typeReport" = '${type}'`;
         }
 
-        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+        if(req.currentRole === "Admin" || req.currentRole === "Owner"){
+            if(searchQuery == null){
+                if(type == null){
+                    searchUser=' ';
+                }
+            }
+        }
+        console.log()
+        console.log(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${typeQuery} ${orderQuery}  LIMIT ${limit} OFFSET ${offset}`)
+        
+        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInvetory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "US"."id" as "nomorDaftar", TO_CHAR("US"."createdAt", 'dd-mm-yyyy') as "tanggalDaftar", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") ${searchUser} ${qtSearch} ${orderQuery} ${typeQuery} LIMIT ${limit} OFFSET ${offset}`);
 
         const data = {
             data: res[0],
@@ -156,7 +184,7 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null) =
         }
         return data;
     } catch (error) {
-        return {error}
+        return error
     }
 }
 
@@ -291,6 +319,53 @@ const updateStatus = async(id, status) => {
     }
 }
 
+const getPerTable = async (model, idReport, type, transaction = null) => {
+    try {
+        const result = await model.findOne({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            include: [],
+            where: {
+                reportId: idReport
+            },
+            transaction: transaction
+        });
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getPerTableBarangDokumen = async (model, idReport, type, transaction = null) => {
+    try {
+        const result = await model.findAll({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            include: [],
+            where: {
+                reportId: idReport
+            },
+            transaction: transaction
+        });
+        return result
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createReport,
     countReportByType,
@@ -300,5 +375,8 @@ module.exports = {
     countAllReport,
     getAllReportByType,
     updateReport,
-    updateStatus
+    updateStatus,
+    checkAuthorization,
+    getPerTable,
+    getPerTableBarangDokumen
 }

@@ -8,15 +8,15 @@ const deleteReportDoc = async (req, res) => {
     try {
         const { id } = req.params;
 
-        await deleteReport(id);
-        // return;
+        await deleteReport(id, req);
+        
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, null, `Deleting Report Document`);
         }
 
         return successResponse(res, Http.ok, "Success Deleting Report Document");
     } catch (error) {
-        return errorResponse(res, Http.badRequest, "Failed To Delete Report Document");
+        return errorResponse(res, Http.internalServerError, "Failed To Delete Report Document");
     }
 }
 

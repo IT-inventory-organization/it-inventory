@@ -1,5 +1,6 @@
 const reportDataPengajuan = require('../../database/models/datapengajuan');
 const authorization = require('../authorization');
+const Report = require('../../database/models/report');
 
 const createDataPengajuan = async (data, transaction) => {
     try {
@@ -7,6 +8,32 @@ const createDataPengajuan = async (data, transaction) => {
             transaction: transaction
         });
         return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getDataPengajuan = async(idReport, type, transaction = null) => {
+    try {
+        const result = await reportDataPengajuan.get({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    },
+                    through: {
+                        attributes: []
+                    }
+                }
+            ],
+            where: {
+                reportId: idReport,
+            },
+            transaction: transaction
+        });
+
+        return result
     } catch (error) {
         throw error;
     }
@@ -22,6 +49,9 @@ const updateDataPengajuan = async (data, idToUpdate, idReport, returning = false
             returning: returning,
             transaction: transaction
         });
+        if(result[0] == 0){
+            throw new Error(`Data Didn't Exists`);
+        }
         return result;
     } catch (error) {
         throw error;
@@ -30,5 +60,6 @@ const updateDataPengajuan = async (data, idToUpdate, idReport, returning = false
 
 module.exports = {
     createDataPengajuan,
-    updateDataPengajuan
+    updateDataPengajuan,
+    getDataPengajuan
 }

@@ -5,63 +5,45 @@ const Encryption = require('./encription');
 
 const dataDokumen = (req, res, next) => {
     try {
-        /**
-         * Testing
-         */
-        const Encypt = Encryption.AESEncrypt(req.body)
-        /**
-         * End Testing
-         */
-        const Decrypt = Encryption.AESDecrypt(Encypt);
 
-        for (let i = 0; i < Decrypt.tableDokumen.length; i++) {
-            Decrypt.tableDokumen[i].tanggalDokumen = convertStrignToDateUTC(Decrypt.tableDokumen[i].tanggalDokumen);
-            Decrypt.tableDokumen[i].reportId = Decrypt.reportId;
-            Decrypt.tableDokumen[i].isDelete = false; //
+        const Decrypt = Encryption.AESDecrypt(req.body.dataLanjutan);
+        // console.log(Decrypt);return;
+        for (let i = 0; i < Decrypt.dataDokumen.length; i++) {
+            Decrypt.dataDokumen[i].tanggalDokumen = convertStrignToDateUTC(Decrypt.dataDokumen[i].tanggalDokumen);
+            Decrypt.dataDokumen[i].reportId = Decrypt.reportId;
+            Decrypt.dataDokumen[i].isDelete = false; //
         }
-        // console.log(Decrypt);
-        // const cDataDokumen = {
-        //     kodeDokumen: Decrypt.kodeDokumen,
-        //     nomorDokumen: Decrypt.nomorDokumen,
-        //     tanggalDokumen: date,
-        //     hsCode: Decrypt.hsCode,
-        //     reportId: Decrypt.reportId
-        // }
 
-        const cDataDokumen = [ ...Decrypt.tableDokumen ];
-        // console.info(cDataDokumen);return;
-        req.DataToInput = {
-            ...req.DataToInput,
-            listDokumen: cDataDokumen,
+        const cDataDokumen = [ ...Decrypt.dataDokumen ];
+
+        req.body.DataToInput = {
+            ...req.body.DataToInput,
+            dataDokumen: cDataDokumen,
         }
+        // console.log(req.body.DataToInput);return;
         
         next();
     } catch (error) {
-        // console.error(error)
-        return errorResponse(res, Http.badRequest, "Failed To Update Data", error);
+        
+        return errorResponse(res, Http.badRequest, error.message);
     }
 }
 
 const petiKemas = (req, res, next) => {
     try {
-        /**
-         * Testing
-         */
-        const Encypt = Encryption.AESEncrypt(req.body)
-        /**
-         * End Testing
-         */
-        const Decrypt = Encryption.AESDecrypt(Encypt);
+
+        const Decrypt = Encryption.AESDecrypt(req.body.dataLanjutan);
         const cPetiKemas = {
-            dataKontainer: Decrypt.dataKontainer,
-            volumeKontainer: Decrypt.volumeKontainer,
+            ...Decrypt.dataPetiKemas,
             reportId: Decrypt.reportId,
         }
 
-        req.DataToInput = {
-            ...req.DataToInput,
-            petiKemas: cPetiKemas
+        req.body.DataToInput = {
+            ...req.body.DataToInput,
+            dataPetiKemas: cPetiKemas,
         }
+        delete req.body.dataLanjutan;
+        // console.log(req.body.DataToInput);return;
         
         next();
     } catch (error) {

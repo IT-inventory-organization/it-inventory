@@ -1,4 +1,7 @@
 const convertStrignToDateUTC = (dateString) => {
+    if(dateString == null || typeof dateString == 'undefined'){
+        throw new Error(`Date Value Is Empty`);
+    }
     const regex = new RegExp(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/);
     if(!regex.test(dateString)) {
         throw Error('Format Date String is Ex: dd-mm-yyyy');

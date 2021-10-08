@@ -9,29 +9,22 @@ const dataBarang = (req, res, next) => {
             return errorResponse(res, Http.badRequest, "Failed To Add Data", "No Document is Provided");
         }
 
-        /**
-         * Testing Purpose
-         */
-        const Encrypt = Encryption.AESEncrypt(req.body);
-        
-        /**
-         * End Testing
-         */
-        const Decrypt = Encryption.AESDecrypt(Encrypt);
+        const Decrypt = Encryption.AESDecrypt(req.body.dataBarang);
 
-        for (let i = 0; i < Decrypt.barang.length; i++) {
-            Decrypt.barang[i].isDelete = false;
-            Decrypt.barang[i].reportId = Decrypt.reportId; 
+        for (let i = 0; i < Decrypt.listDataBarang.length; i++) {
+            Decrypt.listDataBarang[i].isDelete = false;
+            Decrypt.listDataBarang[i].reportId = Decrypt.reportId; 
         }
         
-        req.DataToInput = {
-            listBarang: Decrypt.barang,
+        req.body.DataToInput = {
+            listDataBarang: Decrypt.listDataBarang,
             reportId: Decrypt.reportId
         }
+        // console.log(req.body.DataToInput); return;
         
         next();
     } catch (error) {
-        
+        console.log(error);
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error)
     }
 };

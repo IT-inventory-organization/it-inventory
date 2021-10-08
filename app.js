@@ -3,6 +3,7 @@ const path = require('path');
 const express = require('express');
 const enrouten = require('express-enrouten');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 const config = require('./config.js');
@@ -12,6 +13,7 @@ setAssociations();
 
 const port = config.get('PORT');
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true

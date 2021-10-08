@@ -1,4 +1,5 @@
-const reportDataTempatPenimbunan = require('../../database/models/datatempatpenimbunan')
+const reportDataTempatPenimbunan = require('../../database/models/datatempatpenimbunan');
+const Report = require('../../database/models/report');
 
 const createDataTempatPenimbunan = async (data, transaction) => {
     try {
@@ -27,7 +28,30 @@ const updateDataTempatPenimbunan = async (data, idToUpdate, idReport, returning 
     }
 }
 
+const getDataTempatPenimbunan = async (idReport, type, transaction = null) => {
+    try {
+        const result = await reportDataTempatPenimbunan.get({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            where: {
+                reportId: idReport,
+            },
+            transaction: transaction
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createDataTempatPenimbunan,
-    updateDataTempatPenimbunan
+    updateDataTempatPenimbunan,
+    getDataTempatPenimbunan
 }
