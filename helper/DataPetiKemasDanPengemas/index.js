@@ -1,4 +1,5 @@
-const reportDataPetiKemasDanPengemas = require('../../database/models/datapetikemasdanpengemas')
+const reportDataPetiKemasDanPengemas = require('../../database/models/datapetikemasdanpengemas');
+const Report = require('../../database/models/report');
 
 const createDataPetiKemasDanPengemas = async (data, transaction) => {
     try {
@@ -27,6 +28,26 @@ const updateDataPetiKemasDanPengemas = async (data, idToUpdate, idReport, return
         return result;
     } catch (error) {
         throw error;
+    }
+}
+
+const getDataPetiKemasDanPengemas = async (idReport, type, transaction = null) => {
+    try {
+        const result = await reportDataPetiKemasDanPengemas.get({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            where: {
+                reportId: idReport,
+            }
+        })
+    } catch (error) {
+        throw error
     }
 }
 

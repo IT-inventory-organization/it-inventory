@@ -2,8 +2,22 @@ const { errorResponse, successResponse } = require('../../helper/Response');
 const { getAllReport, getOneReport } = require('../../helper/DataReport');
 const authentication = require('../../middlewares/Authentication');
 const httpStatus = require('../../helper/Httplib');
+const sequelize = require('../../configs/database')
 const { createUserActivity } = require('../../helper/UserActivity');
-const { countReportByType, countAllReport, getAllReportByType } = require('../../helper/DataReport');
+const { countReportByType, countAllReport, getAllReportByType, getPerTable, getPerTableBarangDokumen } = require('../../helper/DataReport');
+const reportDataPengajuan = require('../../database/models/datapengajuan');
+const reportIdentitasPenerima = require('../../database/models/identitaspenerima');
+const reportIdentitasPengirim = require('../../database/models/identitaspengirim');
+const reportTransaksiPerdagangan = require('../../database/models/transaksiperdagangan');
+const reportDataPengangkutan = require('../../database/models/datapengangkutan');
+const reportDataPelabuhanMuatBongkar = require('../../database/models/datapelabuhanmuatbongkar');
+const reportDataBeratDanVolume = require('../../database/models/databeratdanvolume');
+const reportDataPetiKemasDanPengemas = require('../../database/models/datapetikemasdanpengemas');
+const reportDataTempatPenimbunan = require('../../database/models/datatempatpenimbunan');
+const reportDataPerkiraanTanggalPengeluaran = require('../../database/models/dataperkiraantanggalpengeluaran');
+const reportListBarang = require('../../database/models/listbarang');
+const reportListDokumen = require('../../database/models/listdokumen');
+const reportDataPetiKemas = require('../../database/models/datapetikemas');
 
 const importExportTotal = (importExportValue, status = null) => {
     let returnValue = {};
@@ -75,11 +89,12 @@ const getOne = async (req, res) => {
     try {
         const result = await getOneReport(req, id);
 
+        // Remove
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, id, "View One Report");
         }
 
-        return successResponse(res, httpStatus.ok, result);
+        return successResponse(res, httpStatus.ok, "", result);
     } catch (error) {
         console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
@@ -110,17 +125,19 @@ const getXMLReport = async (req, res) => {
     try {
         const result = await getOneReport(req, id);
 
+        // Remove
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, id, "View XML Format");
         }
 
         let xml = ``;
+
         const listBarang = result.listBarangs;
 
         for(let i = 0; i < listBarang.length; i++){
             xml += `<HEADER>`;
             xml += `<JNS_AJU></JNS_AJU>`;
-            xml =+ `<KD_JNS_PIBK></KD_JNS_PIBK>`;
+            xml += `<KD_JNS_PIBK></KD_JNS_PIBK>`;
             xml += `<NO_BARANG></NO_BARANG>`;
             xml += `<NO_KANTONG></NO_KANTONG>`;
             xml += `<KD_KANTOR>${getCode(result.DataPengajuan.kantorPabeanAsal)}</KD_KANTOR>`;
@@ -187,7 +204,7 @@ const getXMLReport = async (req, res) => {
             xml += `</HEADER_PUNGUTAN>`;
             xml += `<DETIL>`;
             xml += `<BARANG>`;
-            xml += `<SERI_BRG>1</SERI_BRG>`;
+            xml += `<SERI_BRG></SERI_BRG>`;
             xml += `<HS_CODE>${listBarang[i].hsCode}</HS_CODE>`;
             xml += `<UR_BRG>${listBarang[i].uraian}</UR_BRG>`;
             xml += `<KD_NEG_ASAL></KD_NEG_ASAL>`;
@@ -210,7 +227,7 @@ const getXMLReport = async (req, res) => {
             xml += `<DETIL_PUNGUTAN>`;
             xml += `<KD_PUNGUTAN></KD_PUNGUTAN>`;
             xml += `<NILAI></NILAI>`;
-            xml += `KD_TARIF></KD_TARIF>`;
+            xml += `<KD_TARIF></KD_TARIF>`;
             xml += `<KD_SAT_TARIF></KD_SAT_TARIF>`;
             xml += `<JML_SAT></JML_SAT>`;
             xml += `<TARIF></TARIF>`;
@@ -243,6 +260,7 @@ const getXMLReport = async (req, res) => {
             xml += `</DETIL>`;
             xml += `</HEADER>`;
         }
+
         
         return successResponse(res, httpStatus.ok, "", xml);
     } catch (error) {
@@ -254,6 +272,8 @@ const getXMLReport = async (req, res) => {
 const getTotalReport = async (req, res) => {
     try {
         const result = await countAllReport(req);
+
+        // Remove
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, null, "Viewing Total Report");
         }
@@ -275,11 +295,118 @@ const getDataActivityRedLine = async (req, res) => {
             return successResponse(res, httpStatus.ok, "", result);
         }
 
+        // Remove
+        if(req.currentRole != 'Owner'){
+            await createUserActivity(req.currentUser, null, "Viewing Report Red Line Activity");
+        }
+
         const result = await getAllReportByType(req, pageSize, pageNo, type);
         
         return successResponse(res, httpStatus.ok, "", result[0]);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, 'Failed To Fetch Red Line Activity');
+    }
+}
+
+const getDataHeaderReport = async(req, res) => {
+    let transaction;
+    try {
+        transaction = await sequelize.transaction();
+
+        const {idReport} = req.params;
+        const {type} = req.query;
+
+        const dataPengajuanRes = await getPerTable(reportDataPengajuan, idReport, type, transaction);
+        const identitasPenerimaRes = await getPerTable(reportIdentitasPenerima, idReport, type, transaction);
+        const identitasPengirimRes = await getPerTable(reportIdentitasPengirim, idReport, type, transaction);
+        const transaksiPerdaganganRes = await getPerTable(reportTransaksiPerdagangan, idReport, type, transaction);
+        const dataPengakutanRes = await getPerTable(reportDataPengangkutan, idReport, type, transaction);
+        const pelabuhanMuatBongkarRes = await getPerTable(reportDataPelabuhanMuatBongkar, idReport, type, transaction);
+        const dataBeratDanVolRes = await getPerTable(reportDataBeratDanVolume, idReport, type, transaction);
+        const dataPetiKemasDanPengemasRes = await getPerTable(reportDataPetiKemasDanPengemas, idReport, type, transaction);
+        const dataTempatPnimbunanRes = await getPerTable(reportDataTempatPenimbunan, idReport, type, transaction);
+        const datePerkiraanTanggalPengeluaranRes = await getPerTable(reportDataPerkiraanTanggalPengeluaran, idReport, type, transaction);
+        const payload = {
+            dataPengajuan: dataPengajuanRes.toJSON(),
+            identitasPenerima: identitasPenerimaRes.toJSON(),
+            IdentitasPengirim: identitasPengirimRes.toJSON(),
+            transaksiPerdagangan: transaksiPerdaganganRes.toJSON(),
+            dataPengangkutan: dataPengakutanRes.toJSON(),
+            dataPelabuhanMuatBongkar: pelabuhanMuatBongkarRes.toJSON(),
+            dataBeratDanVolumne: dataBeratDanVolRes.toJSON(),
+            dataPetiKemasDanPengemas: dataPetiKemasDanPengemasRes.toJSON(),
+            dataTempatPenimbunan: dataTempatPnimbunanRes.toJSON(),
+            dataPerkiraanTanggalPengeluaran: datePerkiraanTanggalPengeluaranRes.toJSON()
+        }
+
+        await transaction.commit()
+        if(req.currentRole != 'Owner'){
+            await createUserActivity(req.currentUser, idReport, "Viewing Report Red Line Activity");
+        }
+
+        return successResponse(res, httpStatus.ok, "", payload)
+    } catch (error) {
+        await transaction.rollback();
+        return errorResponse(res, httpStatus.internalServerError, "Failed To Fetch Data Header");
+    }
+}
+
+const getDataLanjutanReport = async(req, res) => {
+    let transaction;
+    try {
+        transaction = await sequelize.transaction();
+        
+        const {idReport} = req.params;
+        const {type} = req.query;
+
+        const dataDokumenRes = await getPerTableBarangDokumen(reportListDokumen, idReport, type, transaction);
+        let dataDokumen = [];
+        
+        dataDokumenRes.forEach((res, _) => {
+            dataDokumen.push(res.dataValues);
+        });
+
+        const dataPetiKemasRes = await getPerTable(reportDataPetiKemas, idReport, type, transaction)
+        
+        const payload = {
+            dataDokumen,
+            dataPetiKemas: dataPetiKemasRes.toJSON(),
+        }
+        await transaction.commit();
+        if(req.currentRole != 'Owner'){
+            await createUserActivity(req.currentUser, idReport, "Viewing Report Red Line Activity");
+        }
+
+        return successResponse(res, httpStatus.ok, "", payload);
+    } catch (error) {
+        await transaction.rollback();
+        return errorResponse(res, httpStatus.internalServerError, "Failed To Fetch Data Dokumen");
+    }
+}
+
+const getDataBarangReport =  async(req, res) => {
+    let transaction;
+    try {
+        const {idReport} = req.params;
+        const {type} = req.query;
+
+        const dataBarangRes = await getPerTableBarangDokumen(reportListBarang, idReport, type);
+
+        let dataBarang = [];
+
+        dataBarangRes.forEach((res, _) => {
+            dataBarang.push(res.dataValues);
+        })
+
+        const payload = {
+            dataBarang
+        };
+
+        // console.log(payload);
+        return successResponse(res, httpStatus.ok, "", payload);
+        
+    } catch (error) {
+        return errorResponse(res, httpStatus.internalServerError, "Failed To Fetch Data Barang")
     }
 }
 
@@ -290,4 +417,7 @@ module.exports = (routes) => {
     routes.get('/getXML/:id', authentication, getXMLReport);
     routes.get('/getTotalReport', authentication, getTotalReport);
     routes.get('/dataJalurMerah', authentication, getDataActivityRedLine);
+    routes.get('/data-header/:idReport', authentication, getDataHeaderReport);
+    routes.get('/data-lanjutan/:idReport', authentication, getDataLanjutanReport);
+    routes.get('/data-barang/:idReport', authentication, getDataBarangReport);
 }

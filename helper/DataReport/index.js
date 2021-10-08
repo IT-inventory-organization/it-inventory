@@ -319,6 +319,53 @@ const updateStatus = async(id, status) => {
     }
 }
 
+const getPerTable = async (model, idReport, type, transaction = null) => {
+    try {
+        const result = await model.findOne({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            include: [],
+            where: {
+                reportId: idReport
+            },
+            transaction: transaction
+        });
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getPerTableBarangDokumen = async (model, idReport, type, transaction = null) => {
+    try {
+        const result = await model.findAll({
+            include: [
+                {
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            include: [],
+            where: {
+                reportId: idReport
+            },
+            transaction: transaction
+        });
+        return result
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createReport,
     countReportByType,
@@ -329,5 +376,7 @@ module.exports = {
     getAllReportByType,
     updateReport,
     updateStatus,
-    checkAuthorization
+    checkAuthorization,
+    getPerTable,
+    getPerTableBarangDokumen
 }

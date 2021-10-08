@@ -1,4 +1,5 @@
-const reportDataPelabuhanMuatBongkar = require('../../database/models/datapelabuhanmuatbongkar')
+const reportDataPelabuhanMuatBongkar = require('../../database/models/datapelabuhanmuatbongkar');
+const Report = require('../../database/models/report');
 
 const createDataPelabuhanMuatBongkar = async (data, transaction) => {
     try {
@@ -30,7 +31,29 @@ const updateDataPelabuhanMuatBongkar = async (data, idToUpdate, idReport, return
     }
 }
 
+const getDataPelabuhanMuatBongkar = async (idReport, type, transaction = null) => {
+    try {
+        const result = await reportDataPelabuhanMuatBongkar.get({
+            include: [
+                { 
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            where: {
+                reportId: idReport,
+            },
+            transaction: transaction
+        })
+    } catch (error) {
+        
+    }
+}
+
 module.exports = {
     createDataPelabuhanMuatBongkar,
-    updateDataPelabuhanMuatBongkar
+    updateDataPelabuhanMuatBongkar,
+    getDataPelabuhanMuatBongkar
 }

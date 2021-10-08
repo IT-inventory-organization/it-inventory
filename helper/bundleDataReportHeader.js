@@ -17,7 +17,7 @@ const dataPengajuan = (req, res, next) => {
         req.body.DataToInput = { 
             dataPengajuan: dataToInputPengajuan
         };
-
+        // console.log(Decrypt);return;
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);

@@ -83,7 +83,7 @@ const updateDataHeader = async (req, res) => {
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
         await transaction.rollback();
-        return errorResponse(res, Http.internalServerError, error.message);
+        return errorResponse(res, Http.internalServerError, "Failed To Update Report");
     }
 }
 

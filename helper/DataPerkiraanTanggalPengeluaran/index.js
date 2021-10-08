@@ -1,4 +1,5 @@
 const reportPerkiraanTanggalPengeluaran = require('../../database/models/dataperkiraantanggalpengeluaran')
+const Report = require('../../database/models/report');
 
 const createPerkiraanTanggalPengeluaran = async (data, transaction) => {
     try {
@@ -27,7 +28,31 @@ const updatePerkiraanTanggalPengeluaran = async (data, idToUpdate, idReport, ret
     }
 }
 
+const getPerkiraanTanggalPengeluaran = async (idReport, type, transaction = null) => {
+    try {
+        const result = await reportPerkiraanTanggalPengeluaran.get({
+            include: [
+                { 
+                    model: Report,
+                    where: {
+                        typeReport: type
+                    }
+                }
+            ],
+            where: {
+                reportId: idReport,
+            },
+            transaction: transaction
+        });
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createPerkiraanTanggalPengeluaran,
-    updatePerkiraanTanggalPengeluaran
+    updatePerkiraanTanggalPengeluaran,
+    getPerkiraanTanggalPengeluaran
 }

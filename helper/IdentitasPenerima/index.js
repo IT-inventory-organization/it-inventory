@@ -1,4 +1,5 @@
 const reportIdentitasPenerima = require('../../database/models/identitaspenerima');
+const Report = require('../../database/models/report');
 
 const createReportIdentitasPenerima = async (data, transaction = null) => {
     try {
@@ -27,6 +28,10 @@ const updateReportIdentitasPenerima = async (data, idIdentitasPenerima, idReport
     } catch (error) {
         throw error
     }
+}
+
+const getIdentitasPenerima = async(idReport, type, transaction = null) => {
+    
 }
 
 module.exports = {
