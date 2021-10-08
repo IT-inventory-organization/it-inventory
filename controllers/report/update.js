@@ -180,6 +180,10 @@ const updateReportPerId = async (req, res) => {
 
         const result = await updateReport(id, req.body.DataToInput);
 
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, id, `Updating Status Report`);
+        }
+
         return successResponse(res, Http.created, "Success Update Report");
     } catch (error) {
         return errorResponse(res, Http.internalServerError, error.message)

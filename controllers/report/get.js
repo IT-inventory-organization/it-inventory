@@ -75,7 +75,7 @@ const getAll = async(req, res) => {
         }
         
         if(req.currentRole !== "Owner") {
-            await createUserActivity(req.currentUser, reportId = null, "Viewing Data Report")
+            await createUserActivity(req.currentUser, reportId = null, "Viewing All Data Report")
         }
 
         return successResponse(res, httpStatus.ok, "Success Viewing Data Report", result)
@@ -341,7 +341,7 @@ const getDataHeaderReport = async(req, res) => {
 
         await transaction.commit()
         if(req.currentRole != 'Owner'){
-            await createUserActivity(req.currentUser, idReport, "Viewing Report Red Line Activity");
+            await createUserActivity(req.currentUser, idReport, "Get Data Header Report");
         }
 
         return successResponse(res, httpStatus.ok, "", payload)
@@ -374,7 +374,7 @@ const getDataLanjutanReport = async(req, res) => {
         }
         await transaction.commit();
         if(req.currentRole != 'Owner'){
-            await createUserActivity(req.currentUser, idReport, "Viewing Report Red Line Activity");
+            await createUserActivity(req.currentUser, idReport, "Get Data Lanjutan Report");
         }
 
         return successResponse(res, httpStatus.ok, "", payload);
@@ -401,6 +401,10 @@ const getDataBarangReport =  async(req, res) => {
         const payload = {
             dataBarang
         };
+
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, id, `Get Data Barang Report`);
+        }
 
         // console.log(payload);
         return successResponse(res, httpStatus.ok, "", payload);
