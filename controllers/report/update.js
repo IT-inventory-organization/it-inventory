@@ -145,6 +145,7 @@ const updateDataBarang = async (req, res) => {
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
         }
+
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
@@ -181,7 +182,7 @@ const updateReportPerId = async (req, res) => {
         const result = await updateReport(id, req.body.DataToInput);
 
         if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, id, `Updating Status Report`);
+            await createUserActivity(req.currentUser, id, `Updating Report`);
         }
 
         return successResponse(res, Http.created, "Success Update Report");

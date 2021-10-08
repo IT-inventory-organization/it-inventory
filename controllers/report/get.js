@@ -125,11 +125,6 @@ const getXMLReport = async (req, res) => {
     try {
         const result = await getOneReport(req, id);
 
-        // Remove
-        if(req.currentRole != 'Owner'){
-            await createUserActivity(req.currentUser, id, "View XML Format");
-        }
-
         let xml = ``;
 
         const listBarang = result.listBarangs;
@@ -259,6 +254,11 @@ const getXMLReport = async (req, res) => {
             xml += `</BARANG>`;
             xml += `</DETIL>`;
             xml += `</HEADER>`;
+        }
+
+        // Remove
+        if(req.currentRole != 'Owner'){
+            await createUserActivity(req.currentUser, id, "Viewing XML Format");
         }
 
         
