@@ -50,22 +50,12 @@ const { validationArrListBarang }= require("../../middlewares/validationDataBara
 const authentication = require('../../middlewares/authentication');
 const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
+const { bundleReport } = require('../../helper/bundleReport')
 
 const addReport = async (req, res) => {
-    const {type} = req.query;
     try {
-        const dataObj = {
-            pengajuanSebagai: req.body.pengajuanSebagai,
-            kantorPengajuan: req.body.kantorPengajuan,
-            jenisPemberitahuan: req.body.jenisPemberitahuan,
-            jenisKeluar: req.body.jenisKeluar,
-            userId: req.currentUser,
-            typeReport: type,
-            BCDocumentType: req.body.BCDocumentType,
-            isDelete: false
-        };
 
-        const result = await createReport(dataObj, null);
+        const result = await createReport(req.body.DataToInput, null);
         const dataReturn = {
             reportId: result.id,
             userId: result.userId
@@ -77,7 +67,7 @@ const addReport = async (req, res) => {
 
         return successResponse(res, Http.created, "Success Adding A Report", dataReturn)
     } catch (error) {
-        console.error(error)
+        console.error(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add A Report", error);
     }
 }
@@ -126,7 +116,7 @@ const addDataHeader = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        console.error(error.message);
+        console.error(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data")
     }
 }
@@ -175,7 +165,7 @@ const addDataBarang = async (req, res) => {
     
     try {
         transaction = await sequelize.transaction();
-        const { DataToInput: {dataBarang, reportId}} = req.body;
+        const { DataToInput: {listDataBarang, reportId}} = req.body;
         
         const promises = [];
         // listBarang.forEach(async el => {
@@ -184,13 +174,13 @@ const addDataBarang = async (req, res) => {
 
         // const result = await Promise.all(promises);
         // Loop Dengan Async
-        for (let index = 0; index < dataBarang.length; index++) {
-            let res = await createListBarang(dataBarang[index], transaction);
+        for (let index = 0; index < listDataBarang.length; index++) {
+            let res = await createListBarang(listDataBarang[index], transaction);
             promises.push(res);
         }
         
         const dataToReturn = {
-            dataBarang: promises.map( ele => ele.id),
+            listDataBarang: promises.map( ele => ele.id),
             reportId: reportId,
         };
 
@@ -203,7 +193,6 @@ const addDataBarang = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        console.error(error)
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -221,6 +210,7 @@ module.exports = (routes) => {
     // Create report
     routes.post('/', // --> url
         authentication,
+        bundleReport,
         validationReport,
         validationResponse,
         addReport

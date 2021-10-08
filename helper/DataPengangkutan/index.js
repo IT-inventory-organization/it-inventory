@@ -21,6 +21,9 @@ const updateDataPengangkutan = async (data, idToUpdate, idReport, returning = fa
             returning: returning,
             transaction: transaction
         });
+        if(result[0] == 0){
+            throw new Error(`Data Didn't Exist`);
+        }
         return result;
     } catch (error) {
         throw error;

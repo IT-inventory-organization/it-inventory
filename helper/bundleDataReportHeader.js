@@ -246,6 +246,7 @@ const idReport = (req, res, next) => {
             dataSearchReport: dataToSearchId
         }
 
+
         delete req.body.dataHeader;
         // console.log(dataToSearchId);return;
         next()

@@ -21,8 +21,11 @@ const updateReportIdentitasPenerima = async (data, idIdentitasPenerima, idReport
             returning: returning,
             transaction: transaction
         })
+        if(result[0] == 0){
+            throw new Error(`Data Didn't Exist`);
+        }
     } catch (error) {
-        
+        throw error
     }
 }
 

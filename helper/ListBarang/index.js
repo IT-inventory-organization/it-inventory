@@ -32,7 +32,7 @@ const updateListBarang = async (data, idToUpdate , returning = false, transactio
 const softDeleteListBarang = async(idReport, req, transaction = null) => {
     try {
         if(!await authorization(reportListBarang, idReport, req, true)){
-            throw new Error(`Your Not Authorized`);
+            throw new Error(`User Is Not Authorized To Access Data`);
         }
         // return;
         const result = await reportListBarang.update({

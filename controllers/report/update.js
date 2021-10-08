@@ -47,7 +47,8 @@ const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
 const { createUserActivity } = require('../../helper/UserActivity');
 const { updateReport, updateStatus, checkAuthorization } = require('../../helper/DataReport');
-const validationReport = require('../../middlewares/validationDataReport')
+const validationReport = require('../../middlewares/validationDataReport');
+const { bundleReport } = require('../../helper/bundleReport')
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -55,11 +56,12 @@ const updateDataHeader = async (req, res) => {
         const {id} = req.params;
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran,dataSearchReport}} = req.body;
-
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
+    
         await checkAuthorization(req, id, transaction)
 
-        const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport;
+        const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
+        
         // return;
         const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, dataPengajuanId, id, false, transaction);
         const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, identitasPengirimId, id, false, transaction);
@@ -124,20 +126,19 @@ const updateDataBarang = async (req, res) => {
     const {idReport} = req.params;
     
     try {
-        const {DataToInput: {dataBarang}} = req;
-
         transaction = await sequelize.transaction();
+        const {DataToInput: {listDataBarang}} = req.body;
 
         await softDeleteListBarang(idReport, req, transaction);
         // return;
         const promises = [];
 
-        for(let i = 0; i < dataBarang.length; i++) {
-            promises.push(await createListBarang(dataBarang[i], transaction));
+        for(let i = 0; i < listDataBarang.length; i++) {
+            promises.push(await createListBarang(listDataBarang[i], transaction));
         }
 
         const dataToReturn = {
-            dataBarang: promises.map(el => el.id),
+            listDataBarang: promises.map(el => el.id),
             reportId: promises[0].id
         }
 
@@ -147,6 +148,7 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
+        // console.log(error);
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
@@ -175,28 +177,19 @@ const updateStatusInvetory = async (req, res) => {
 const updateReportPerId = async (req, res) => {
     const { id } = req.params;
     try {
-        const dataObj = {
-            pengajuanSebagai: req.body.pengajuanSebagai,
-            kantorPengajuan: req.body.kantorPengajuan,
-            jenisPemberitahuan: req.body.jenisPemberitahuan,
-            jenisKeluar: req.body.jenisKeluar,
-            userId: req.currentUser,
-            typeReport: req.body.typeReport,
-            BCDocumentType: req.body.BCDocumentType,
-            isDelete: false
-        };
 
-        const result = await updateReport(id, dataObj);
+        const result = await updateReport(id, req.body.DataToInput);
 
         return successResponse(res, Http.created, "Success Update Report");
     } catch (error) {
-        return errorResponse(res, Http.internalServerError, "Failed Update Report")
+        return errorResponse(res, Http.internalServerError, error.message)
     }
 }
 
 module.exports = (routes) => {
     routes.put('/:id', 
         authentication,
+        bundleReport,
         validationReport,
         validationResponse,
         updateReportPerId
