@@ -80,6 +80,9 @@ const validationDataPerkiraanTanggalPengeluaran = [
 const validationDataTempatPenimbunan = [
     body('DataToInput.dataTempatPenimbunan.tempatPenimbunan').trim().notEmpty().withMessage(`"Tempat Penimbunan" Is Required`)
 ]
+const validationDataLartas = [
+    body('DataToInput.dataLartas.name').trim().notEmpty().withMessage(`"Data Lartas" Is Required`)
+]
 
 module.exports = {
     validationReport,
@@ -92,5 +95,6 @@ module.exports = {
     validationBeratDanVolume,
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
-    validationDataTempatPenimbunan
+    validationDataTempatPenimbunan,
+    validationDataLartas
 }

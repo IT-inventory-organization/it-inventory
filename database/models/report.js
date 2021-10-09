@@ -15,7 +15,7 @@ const Report = db.define('Report', {
     type: Sequelize.STRING,
     allowNull: false
   },
-  jenisKeluar: {
+  jenisMasuk: {
     type: Sequelize.STRING,
     allowNull: false
   },
@@ -43,6 +43,7 @@ const Report = db.define('Report', {
   },
   isDelete: {
     type: Sequelize.BOOLEAN,
+    defaultValue: false
   }
 }, {
   tableName: 'Reports',

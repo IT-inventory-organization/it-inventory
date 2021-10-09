@@ -18,6 +18,7 @@ const reportDataPerkiraanTanggalPengeluaran = require('../../database/models/dat
 const reportListBarang = require('../../database/models/listbarang');
 const reportListDokumen = require('../../database/models/listdokumen');
 const reportDataPetiKemas = require('../../database/models/datapetikemas');
+const {getOneUserData} = require('../../helper/DataUser')
 
 const importExportTotal = (importExportValue, status = null) => {
     let returnValue = {};
@@ -46,7 +47,6 @@ const getCountReportByType = async (req, res) => {
         const result = await countReportByType(status, req);
 
         try {
-            // const temp = result.toJSON(result)
             const resultActivity = await createUserActivity(req.currentUser, null, "View Total Report By Type")
         } catch (error) {
             throw error;
@@ -67,6 +67,7 @@ const getCountReportByType = async (req, res) => {
 
 const getAll = async(req, res) => {
     try {
+
         const {pageSize, pageNo, sortBy, search, type} = req.query;
         const result = await getAllReport(req, pageSize, pageNo, sortBy, search, type);
         
@@ -80,6 +81,7 @@ const getAll = async(req, res) => {
 
         return successResponse(res, httpStatus.ok, "Success Viewing Data Report", result)
     } catch (err) {
+
         return errorResponse(res, httpStatus.internalServerError, err.message)
     }
 }
@@ -87,6 +89,8 @@ const getAll = async(req, res) => {
 const getOne = async (req, res) => {
     const {id} = req.params
     try {
+        
+        console.log(req)
         const result = await getOneReport(req, id);
 
         // Remove
@@ -278,7 +282,7 @@ const getTotalReport = async (req, res) => {
             await createUserActivity(req.currentUser, null, "Viewing Total Report");
         }
 
-        const total = result[0]
+        const total = result[0];
 
         return successResponse(res, httpStatus.ok, "", importExportTotal(total));
     } catch (error) {
@@ -292,7 +296,7 @@ const getDataActivityRedLine = async (req, res) => {
         const {pageSize, pageNo, type} = req.query;
         if(type === null || typeof type === 'undefined') {
             const result = await getAllReportByType(req, pageSize, pageNo);
-            return successResponse(res, httpStatus.ok, "", result);
+            return successResponse(res, httpStatus.ok, "", result[0]);
         }
 
         // Remove
@@ -406,11 +410,25 @@ const getDataBarangReport =  async(req, res) => {
             await createUserActivity(req.currentUser, id, `Get Data Barang Report`);
         }
 
-        // console.log(payload);
         return successResponse(res, httpStatus.ok, "", payload);
         
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, "Failed To Fetch Data Barang")
+    }
+}
+
+const getOneUser = async(req, res) => {
+    try {
+        const result = await getOneUserData(req, req.currentUser);
+
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, null, `Get Data User`);
+        }
+
+        return successResponse(res, httpStatus.ok,"", result);
+    } catch (error) {
+
+        return errorResponse(res, httpStatus.internalServerError, "Failed To Fetch Data User")
     }
 }
 
@@ -424,4 +442,5 @@ module.exports = (routes) => {
     routes.get('/data-header/:idReport', authentication, getDataHeaderReport);
     routes.get('/data-lanjutan/:idReport', authentication, getDataLanjutanReport);
     routes.get('/data-barang/:idReport', authentication, getDataBarangReport);
+    routes.get('/user', authentication, getOneUser);
 }

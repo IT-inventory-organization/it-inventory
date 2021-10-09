@@ -12,6 +12,7 @@ const authorization = async (model, id, req, extraCondition = false) => {
   }
   try {
     result = await model.findOne(query);
+    // console.log(result == null);
     if(result == null){
       query.where = {
         reportId: id
@@ -28,6 +29,7 @@ const authorization = async (model, id, req, extraCondition = false) => {
         return true
       }
     } else {
+      
       if(result.userId === req.currentUser) {
         return true
       }

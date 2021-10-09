@@ -4,7 +4,7 @@ const {errorResponse} = require("./Response");
 const Encryption = require('./encription');
 
 const dataPengajuan = (req, res, next) => {
-    // console.log(req.body);
+
     try {
         
         const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
@@ -17,7 +17,7 @@ const dataPengajuan = (req, res, next) => {
         req.body.DataToInput = { 
             dataPengajuan: dataToInputPengajuan
         };
-        // console.log(Decrypt);return;
+
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
@@ -84,7 +84,7 @@ const transaksiPerdagangan = (req, res, next) => {
             ...req.body.DataToInput,
             transaksiPerdagangan: dataToInputTransaksiPerdagangan
         }
-        // console.log(req.DataToInput);return;
+
         
         next();
     } catch (error) {
@@ -226,6 +226,28 @@ const dataTempatPenimbunan = (req, res, next) => {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
     }
 }
+
+const dataLartas = (req, res, next) => {
+    try {
+
+        const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
+        const dataToInputLartas = {
+            ...Decrypt.dataLartas,
+            reportId: Decrypt.reportId
+        }
+
+        req.body.DataToInput = {
+            ...req.body.DataToInput,
+            dataLartas: dataToInputLartas
+        }
+
+        
+        next();
+    } catch (error) {
+        console.log(error);
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
+    }
+}
 /**
  * Id Report, Id Data PEngajuan, Id Identitas Pengirim, Id Identitas Penerima, Id Transaksi Perdagangan
  * @param {*} req 
@@ -267,5 +289,6 @@ module.exports = {
     dataPetiKemasDanPengemas,
     dataPerkiraanTanggalPengeluaran,
     dataTempatPenimbunan,
-    idReport
+    idReport,
+    dataLartas
 }

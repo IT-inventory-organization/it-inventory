@@ -2,12 +2,9 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const reportDataPetiKemas = db.define('DataPetiKemas', {
-  dataKontainer: {
+const reportDataLartas = db.define('DataLartas', {
+  name: {
     type: Sequelize.STRING
-  },
-  volumeKontainer: {
-    type: Sequelize.DECIMAL
   },
   reportId: {
     allowNull: false,
@@ -20,8 +17,8 @@ const reportDataPetiKemas = db.define('DataPetiKemas', {
     onUpdate: 'cascade'
   },
 }, {
-  tableName: 'DataPetiKemas',
-  freezeTableName: true,
+  tableName: 'DataLartas',
+  freezeTableName:true,
 })
 
-module.exports = reportDataPetiKemas;
+module.exports = reportDataLartas;

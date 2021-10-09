@@ -20,11 +20,9 @@ const dataBarang = (req, res, next) => {
             listDataBarang: Decrypt.listDataBarang,
             reportId: Decrypt.reportId
         }
-        // console.log(req.body.DataToInput); return;
         
         next();
     } catch (error) {
-        console.log(error);
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error)
     }
 };

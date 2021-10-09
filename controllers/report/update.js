@@ -8,7 +8,8 @@ const {
     validationBeratDanVolume,
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
-    validationDataTempatPenimbunan
+    validationDataTempatPenimbunan,
+    validationDataLartas
 } = require('../../middlewares/validationDataHeader');
 const {
     dataPengajuan,
@@ -21,7 +22,8 @@ const {
     dataPetiKemasDanPengemas,
     dataPerkiraanTanggalPengeluaran,
     dataTempatPenimbunan,
-    idReport
+    idReport,
+    dataLartas
 } = require('../../helper/bundleDataReportHeader');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const { validationResponse } = require('../../middlewares/validationResponse');
@@ -48,7 +50,8 @@ const authentication = require('../../middlewares/authentication');
 const { createUserActivity } = require('../../helper/UserActivity');
 const { updateReport, updateStatus, checkAuthorization } = require('../../helper/DataReport');
 const validationReport = require('../../middlewares/validationDataReport');
-const { bundleReport } = require('../../helper/bundleReport')
+const { bundleReport } = require('../../helper/bundleReport');
+const { updateDataLartas } = require('../../helper/DataLartas');
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -56,12 +59,13 @@ const updateDataHeader = async (req, res) => {
         const {id} = req.params;
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
     
         await checkAuthorization(req, id, transaction)
 
-        const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
+        const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, dataLartasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
         
+        console.log(req.body)
         // return;
         const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, dataPengajuanId, id, false, transaction);
         const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, identitasPengirimId, id, false, transaction);
@@ -72,6 +76,7 @@ const updateDataHeader = async (req, res) => {
         const pelabuhanMuatBongkarUpdate = await updateDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, pelabuhanMuatBongkarId, id, false, transaction); 
         const beratDanVolumeUpdate = await updateDataBeratDanVolume(dataBeratDanVolume, beratDanVolumeId, id ,false, transaction);
         const petiKemasDanPengemasUpdate = await updateDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, petiKemasDanPengemasId, id, false, transaction);
+        const dataLartasUpdate = await updateDataLartas(dataLartas, dataLartasId, id, false, transaction);
         const tempatPenimbunanUpdate = await updateDataTempatPenimbunan(dataTempatPenimbunan, tempatPenimbunanId, id, false, transaction);
         const perkiraanTanggalPengeluaranUpdate = await updatePerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, perkiraanTanggalId, id, true, transaction);
 
@@ -83,6 +88,7 @@ const updateDataHeader = async (req, res) => {
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
         await transaction.rollback();
+        console.log(error);
         return errorResponse(res, Http.internalServerError, "Failed To Update Report");
     }
 }
@@ -149,7 +155,6 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        // console.log(error);
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
@@ -213,6 +218,7 @@ module.exports = (routes) => {
         dataPetiKemasDanPengemas,
         dataPerkiraanTanggalPengeluaran,
         dataTempatPenimbunan,
+        dataLartas,
         idReport,
         validationDataPengajuan, 
         validationIdentitasPengirim, 
@@ -224,6 +230,7 @@ module.exports = (routes) => {
         validationDataPetiKemasDanPengemas,
         validationDataPerkiraanTanggalPengeluaran,
         validationDataTempatPenimbunan,
+        validationDataLartas,
         validationResponse,
         updateDataHeader
     );

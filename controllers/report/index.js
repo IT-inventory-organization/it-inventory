@@ -16,7 +16,8 @@ const {
     beratDanVolume,
     dataPetiKemasDanPengemas,
     dataPerkiraanTanggalPengeluaran,
-    dataTempatPenimbunan
+    dataTempatPenimbunan,
+    dataLartas
 } = require('../../helper/bundleDataReportHeader');
 
 const sequelize = require('../../configs/database')
@@ -30,7 +31,8 @@ const {
     validationBeratDanVolume,
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
-    validationDataTempatPenimbunan
+    validationDataTempatPenimbunan,
+    validationDataLartas
 } = require('../../middlewares/validationDataHeader');
 
 const validationReport = require('../../middlewares/validationDataReport')
@@ -50,14 +52,15 @@ const { validationArrListBarang }= require("../../middlewares/validationDataBara
 const authentication = require('../../middlewares/authentication');
 const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
-const { bundleReport } = require('../../helper/bundleReport')
+const { bundleReport } = require('../../helper/bundleReport');
+const { createDataLartas } = require('../../helper/DataLartas');
 
 const addReport = async (req, res) => {
     try {
 
         const result = await createReport(req.body.DataToInput, null);
         const dataReturn = {
-            reportId: result.id,
+            id: result.id,
             userId: result.userId
         };
 
@@ -74,24 +77,34 @@ const addReport = async (req, res) => {
 // Callback Add Data Header
 const addDataHeader = async (req, res) => {
     let transaction
-
+    
     try {
         transaction = await sequelize.transaction();
-        
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
+
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
         
         const dataPengajuanResult = await createDataPengajuan(dataPengajuan, transaction); // Simpan Ke Table Data Pengajuan
+    
         const identitasPenerimaResult = await createReportIdentitasPenerima(identitasPenerima, transaction); // Simpan Ke Table Identitas Penerima
-        const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
-        const transaksiPerdaganganResult = await createReportTransaksiPerdagangan(transaksiPerdagangan, transaction); // Simpan Ke Table Transaksi Perdagangan
-        
-        const pengangkutanResult = await createDataPengangkutan(dataPengangkutan, transaction);
-        const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, transaction);
-        const beratDanVolumeResult = await createDataBeratDanVolume(dataBeratDanVolume, transaction);
-        const petiKemasDanPengemasResult = await createDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, transaction);
-        const tempatPenimbunanResult = await createDataTempatPenimbunan(dataTempatPenimbunan, transaction);
-        const perkiraanTanggalResult = await createPerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, transaction);
 
+        const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
+   
+        const transaksiPerdaganganResult = await createReportTransaksiPerdagangan(transaksiPerdagangan, transaction); // Simpan Ke Table Transaksi 
+    
+        const pengangkutanResult = await createDataPengangkutan(dataPengangkutan, transaction);
+      
+        const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, transaction);
+     
+        const beratDanVolumeResult = await createDataBeratDanVolume(dataBeratDanVolume, transaction);
+     
+        const petiKemasDanPengemasResult = await createDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, transaction);
+
+        const tempatPenimbunanResult = await createDataTempatPenimbunan(dataTempatPenimbunan, transaction);
+  
+        const dataLartasResult = await createDataLartas(dataLartas, transaction);
+     
+        const perkiraanTanggalResult = await createPerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, transaction);
+        
         const dataToReturn = {
             dataPengajuanId: dataPengajuanResult.id,
             reportId: dataPengajuanResult.reportId,
@@ -103,6 +116,7 @@ const addDataHeader = async (req, res) => {
             beratDanVolumeId: beratDanVolumeResult.id,
             petiKemasDanPengemasId: petiKemasDanPengemasResult.id,
             tempatPenimbunanId: tempatPenimbunanResult.id,
+            dataLartasId: dataLartasResult.id,
             perkiraanTanggalId: perkiraanTanggalResult.id
         };
 
@@ -110,11 +124,13 @@ const addDataHeader = async (req, res) => {
             await createUserActivity(req.currentUser, dataPengajuan.reportId, `Create Report "Data Header"`);
         }
 
+
         await transaction.commit();
 
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
     } catch (error) {
         await transaction.rollback();
+        console.log(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data")
     }
 }
@@ -124,6 +140,7 @@ const addDataLanjutan = async (req, res) => {
     let transaction
 
     try {
+        console.log(req);
         transaction = await sequelize.transaction();
 
         const { DataToInput: {dataDokumen, dataPetiKemas}} = req.body;
@@ -152,6 +169,7 @@ const addDataLanjutan = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
+        console.log(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -226,6 +244,7 @@ module.exports = (routes) => {
         dataPetiKemasDanPengemas,
         dataTempatPenimbunan,
         dataPerkiraanTanggalPengeluaran,
+        dataLartas,
         validationDataPengajuan,
         validationIdentitasPengirim,
         validationIdentitasPenerima,
@@ -236,6 +255,7 @@ module.exports = (routes) => {
         validationDataPetiKemasDanPengemas,
         validationDataTempatPenimbunan,
         validationDataPerkiraanTanggalPengeluaran,
+        validationDataLartas,
         validationResponse, // --> Middleware
         addDataHeader
     );

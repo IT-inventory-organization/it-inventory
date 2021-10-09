@@ -35,7 +35,7 @@ const getUserData = async (email) => {
 }
 
 const checkBody  = (email, password, res) => {
-  // console.log(email)
+
   if(typeof email === 'undefined' || email.length == 0){
     return errorResponse(res, httpStatus.badRequest, "Email / Npwp / Username is required");
   }
@@ -45,7 +45,7 @@ const checkBody  = (email, password, res) => {
 }
 const loginAction = async (req, res) => {
   try {
-    console.log(req.body);
+
     const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
     
     req.body.DataToInput = {
@@ -79,7 +79,6 @@ const loginAction = async (req, res) => {
     }
   } catch (error) {
     // if there is a system error
-    console.log(error)
     return errorResponse(res, httpStatus.internalServerError, "Login failed!")
   }
 };
