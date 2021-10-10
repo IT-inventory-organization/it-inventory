@@ -118,7 +118,6 @@ const deleteReport = async(idType, req) => {
 }
 
 /**
- * searchQuery == null && Role === Admin --> 
  * 
  * @param {Request} req 
  * @param {number} pageSize 
@@ -129,12 +128,13 @@ const deleteReport = async(idType, req) => {
  * @returns 
  */
 
-const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null) => {
+const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null, status = null) => {
     try {
         let searchUser = 'AND ';
         let qtSearch = '';
         let orderQuery = '';
         let typeQuery = '';
+        let statusQuery = '';
         const limit = pageSize ? +pageSize : 10
         const offset = pageNo ? (+pageNo - 1) * pageSize : 0
 
@@ -164,16 +164,27 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
             }
             typeQuery+=`"RP"."typeReport" = '${type}'`;
         }
+        if(status != null){
+            if((req.currentRole !== 'Admin' && req.currentRole !== 'Owner') || searchQuery != null || typeQuery != null){
+                statusQuery+=`AND `
+            }
+
+            statusQuery += `"RP".status = '${status}'`;
+        }
 
         if(req.currentRole === "Admin" || req.currentRole === "Owner"){
             if(searchQuery == null){
                 if(type == null){
-                    searchUser=' '; // Membuang Where
+                    if(status == null){
+                        searchUser=' '; // Membuang AND
+                    }
                 }
             }
         }
+
+        console.log(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`)
         
-        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
 
         const data = {
             data: res[0],

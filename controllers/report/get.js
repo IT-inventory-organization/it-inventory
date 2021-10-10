@@ -68,8 +68,8 @@ const getCountReportByType = async (req, res) => {
 const getAll = async(req, res) => {
     try {
 
-        const {pageSize, pageNo, sortBy, search, type} = req.query;
-        const result = await getAllReport(req, pageSize, pageNo, sortBy, search, type);
+        const {pageSize, pageNo, sortBy, search, type, status} = req.query;
+        const result = await getAllReport(req, pageSize, pageNo, sortBy, search, type, status);
         
         if(result.error) {
             throw new Error(result.error)
@@ -81,7 +81,6 @@ const getAll = async(req, res) => {
 
         return successResponse(res, httpStatus.ok, "Success Viewing Data Report", result)
     } catch (err) {
-
         return errorResponse(res, httpStatus.internalServerError, err.message)
     }
 }
