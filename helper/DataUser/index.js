@@ -8,7 +8,6 @@ const getOneUserData = async (req, idUser) => {
             },
             attributes: ['npwp', 'address', 'name']
         })
-        // console.log('im in')
         return user
     } catch (error) {
         throw error;

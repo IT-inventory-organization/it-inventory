@@ -35,7 +35,6 @@ const bundleReport = (req, res, next) => {
             delete req.body.DataToInput.typeReport
         }
 
-        // console.log(req.body);return;
 
         next();
     } catch (error) {

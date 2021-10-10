@@ -130,7 +130,6 @@ const addDataHeader = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        console.log(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data")
     }
 }
@@ -140,7 +139,6 @@ const addDataLanjutan = async (req, res) => {
     let transaction
 
     try {
-        console.log(req);
         transaction = await sequelize.transaction();
 
         const { DataToInput: {dataDokumen, dataPetiKemas}} = req.body;
@@ -169,7 +167,6 @@ const addDataLanjutan = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
-        console.log(error);
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }

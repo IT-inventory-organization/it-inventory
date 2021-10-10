@@ -12,7 +12,6 @@ const authorization = async (model, id, req, extraCondition = false) => {
   }
   try {
     result = await model.findOne(query);
-    // console.log(result == null);
     if(result == null){
       query.where = {
         reportId: id

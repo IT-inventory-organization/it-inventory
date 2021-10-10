@@ -42,7 +42,6 @@ const updateReport = async(id, data) => {
         const result = await Report.update(data, { 
             where: { id: id },
         });
-        // console.log(result);
         if(result[0] == 0){
             throw new Error(`Data Didn't Exists`);
         }
