@@ -127,7 +127,6 @@ const dataPelabuhanMuatBongkar = (req, res, next) => {
             ...req.body.DataToInput,
             dataPelabuhanMuatBongkar: dataToInputDataPelabuhanMuatBongkar
         };
-        // console.log(req.DataToInput);return;
         
         next();
 
