@@ -16,7 +16,7 @@ const updateDataPetiKemas = async (data, idToUpdate , returning = false, transac
     try {
         const result = await reportDataPetiKemas.update(data, {
             where:{ 
-                // id: idToUpdate,
+                id: data.id,
                 reportId: idToUpdate
             },
             returning: returning,

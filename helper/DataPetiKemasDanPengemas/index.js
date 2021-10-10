@@ -16,6 +16,7 @@ const updateDataPetiKemasDanPengemas = async (data, idReport, returning = false,
     try {
         const result = await reportDataPetiKemasDanPengemas.update(data, {
             where:{ 
+                id: data.id,
                 reportId: idReport
             },
             returning: returning,

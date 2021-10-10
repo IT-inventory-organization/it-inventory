@@ -16,6 +16,7 @@ const updateDataBeratDanVolume = async (data, idReport, returning = false, trans
     try {
         const result = await reportDataBeratDanVolume.update(data, {
             where:{ 
+                id: data.id,
                 reportId: idReport
             },
             returning: returning,

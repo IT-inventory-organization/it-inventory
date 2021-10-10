@@ -18,6 +18,7 @@ const updateDataLartas = async(data, idReport, transaction) => {
     try {
         const result = await reportDataLartas.update(data, { 
             where: { 
+                id: data.id,
                 reportId: idReport
             },
             transaction

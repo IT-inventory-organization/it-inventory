@@ -43,6 +43,7 @@ const updateDataPengajuan = async (data, idReport, returning = false, transactio
     try {
         const result = await reportDataPengajuan.update(data, {
             where:{ 
+                id: data.id,
                 reportId: idReport
             },
             returning: returning,

@@ -16,6 +16,7 @@ const updatePerkiraanTanggalPengeluaran = async (data, idReport, returning = fal
     try {
         const result = await reportPerkiraanTanggalPengeluaran.update(data, {
             where:{ 
+                id: data.id,
                 reportId: idReport
             },
             returning: returning,
