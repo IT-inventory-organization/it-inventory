@@ -103,6 +103,9 @@ const updateDataLanjutan = async (req, res) => {
         
         for (let i = 0; i < dataDokumen.length; i++) {
             const element = dataDokumen[i];
+            if(element.id){
+                delete element.id;
+            }
             promises.push(await createListDokumen(element, transaction));
         }
 
@@ -137,6 +140,9 @@ const updateDataBarang = async (req, res) => {
         const promises = [];
 
         for(let i = 0; i < listDataBarang.length; i++) {
+            if(listDataBarang[i].id){
+                delete listDataBarang[i].id;
+            }
             promises.push(await createListBarang(listDataBarang[i], transaction));
         }
 
