@@ -96,27 +96,8 @@ const getOne = async (req, res) => {
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, id, "View One Report");
         }
- 
-        const data = {
-            ...result.toJSON(),
-            "idReport": {
-                "dataPengajuanId": result.DataPengajuan.id,
-                "reportId": result.id,
-                "identitasPenerimaId": result.reportIdentitasPenerima.id,
-                "identitasPengirimId": result.IdentitasPengirim.id,
-                "transaksiPerdaganganId": result.TransaksiPerdagangan.id,
-                "pengangkutanId": result.DataPengangkutan.id,
-                "pelabuhanMuatBongkarId": result.DataPelabuhanMuatBongkar.id,
-                "beratDanVolumeId": result.DataBeratDanVolume.id,
-                "petiKemasDanPengemasId": result.DataPetiKemasDanPengema.id,
-                "tempatPenimbunanId": result.DataTempatPenimbunan.id,
-                "dataLartasId": result.DataLarta.id,
-                "perkiraanTanggalId": result.DataPerkiraanTanggalPengeluaran.id
 
-            }
-        };
-
-        return successResponse(res, httpStatus.ok, "", data);
+        return successResponse(res, httpStatus.ok, "", result.toJSON());
     } catch (error) {
         console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");

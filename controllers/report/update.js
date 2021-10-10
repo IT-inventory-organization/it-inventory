@@ -59,26 +59,24 @@ const updateDataHeader = async (req, res) => {
         const {id} = req.params;
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
     
         await checkAuthorization(req, id, transaction)
 
-        const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, dataLartasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
+        // const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, dataLartasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
         
-        console.log(req.body)
-        // return;
-        const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, dataPengajuanId, id, false, transaction);
-        const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, identitasPengirimId, id, false, transaction);
-        const identitasPenerimaUpdate = await updateReportIdentitasPenerima(identitasPenerima, identitasPenerimaId, id, false, transaction);
-        const transaksiPerdaganganUpdate = await updateReportTransaksiPerdagangan(transaksiPerdagangan, transaksiPerdaganganId, id, false, transaction);
+        const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, id, false, transaction);
+        const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, id, false, transaction);
+        const identitasPenerimaUpdate = await updateReportIdentitasPenerima(identitasPenerima, id, false, transaction);
+        const transaksiPerdaganganUpdate = await updateReportTransaksiPerdagangan(transaksiPerdagangan, id, false, transaction);
         
-        const dataPengangkutanUpdate = await updateDataPengangkutan(dataPengangkutan, pengangkutanId, id, false, transaction); // Success
-        const pelabuhanMuatBongkarUpdate = await updateDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, pelabuhanMuatBongkarId, id, false, transaction); 
-        const beratDanVolumeUpdate = await updateDataBeratDanVolume(dataBeratDanVolume, beratDanVolumeId, id ,false, transaction);
-        const petiKemasDanPengemasUpdate = await updateDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, petiKemasDanPengemasId, id, false, transaction);
-        const dataLartasUpdate = await updateDataLartas(dataLartas, dataLartasId, id, false, transaction);
-        const tempatPenimbunanUpdate = await updateDataTempatPenimbunan(dataTempatPenimbunan, tempatPenimbunanId, id, false, transaction);
-        const perkiraanTanggalPengeluaranUpdate = await updatePerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, perkiraanTanggalId, id, true, transaction);
+        const dataPengangkutanUpdate = await updateDataPengangkutan(dataPengangkutan, id, false, transaction); // Success
+        const pelabuhanMuatBongkarUpdate = await updateDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, id, false, transaction); 
+        const beratDanVolumeUpdate = await updateDataBeratDanVolume(dataBeratDanVolume, id ,false, transaction);
+        const petiKemasDanPengemasUpdate = await updateDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, id, false, transaction);
+        const dataLartasUpdate = await updateDataLartas(dataLartas, id, false, transaction);
+        const tempatPenimbunanUpdate = await updateDataTempatPenimbunan(dataTempatPenimbunan, id, false, transaction);
+        const perkiraanTanggalPengeluaranUpdate = await updatePerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, id, true, transaction);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, id, `Updating "Data Header" Report`);
@@ -219,7 +217,7 @@ module.exports = (routes) => {
         dataPerkiraanTanggalPengeluaran,
         dataTempatPenimbunan,
         dataLartas,
-        idReport,
+        // idReport,
         validationDataPengajuan, 
         validationIdentitasPengirim, 
         validationIdentitasPenerima,

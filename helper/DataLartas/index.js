@@ -14,16 +14,14 @@ const createDataLartas = async (data, transaction) => {
     }
 }
 
-const updateDataLartas = async(data, id, idReport, transaction) => {
+const updateDataLartas = async(data, idReport, transaction) => {
     try {
         const result = await reportDataLartas.update(data, { 
             where: { 
-                id: id,
                 reportId: idReport
             },
             transaction
         });
-        console.log(result);
         if(result[0] == 0){
             throw new Error(`Data Didn't Exists`);
         }

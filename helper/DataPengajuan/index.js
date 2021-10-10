@@ -39,17 +39,16 @@ const getDataPengajuan = async(idReport, type, transaction = null) => {
     }
 }
 
-const updateDataPengajuan = async (data, idToUpdate, idReport, returning = false, transaction = null) => {
+const updateDataPengajuan = async (data, idReport, returning = false, transaction = null) => {
     try {
         const result = await reportDataPengajuan.update(data, {
             where:{ 
-                id: idToUpdate,
                 reportId: idReport
             },
             returning: returning,
             transaction: transaction
         });
-        console.log(result);
+
         if(result[0] == 0){
             throw new Error(`Data Didn't Exists`);
         }
