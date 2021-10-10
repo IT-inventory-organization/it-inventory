@@ -85,18 +85,40 @@ const getAll = async(req, res) => {
     }
 }
 
+const convertDate = (date) => {
+    const ISO = new Date(date);
+    return `${addZero(ISO.getDate())}-${addZero(ISO.getMonth()+1)}-${ISO.getFullYear()}`;
+}
+
+const addZero = (val) => {
+    if(val < 10){
+        return `0${val}`
+    }
+
+    return val
+}
+
 const getOne = async (req, res) => {
     const {id} = req.params
     try {
         
         const result = await getOneReport(req, id);
 
+        const data = result.toJSON();
+
+        data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran = convertDate(data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran);
+        data.IdentitasPengirim.tanggalIjinBpkPengirim = convertDate(data.IdentitasPengirim.tanggalIjinBpkPengirim);
+
+        for (let i = 0; i < data.ListDokumens.length; i++) {
+            data.ListDokumens[i].tanggalDokumen = convertDate(data.ListDokumens[i].tanggalDokumen);       
+        }
+
         // Remove
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, id, "View One Report");
         }
 
-        return successResponse(res, httpStatus.ok, "", result.toJSON());
+        return successResponse(res, httpStatus.ok, "", data);
     } catch (error) {
         console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
