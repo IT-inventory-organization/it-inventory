@@ -168,8 +168,13 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
             if((req.currentRole !== 'Admin' && req.currentRole !== 'Owner') || searchQuery != null || typeQuery != null){
                 statusQuery+=`AND `
             }
-
-            statusQuery += `"RP".status = '${status}'`;
+            if(status == 'All'){
+                statusQuery += `"RP".status IS NOT NULL`;  
+            }else if(status == 'Approval'){
+                statusQuery += `"RP".status IS NULL`;
+            }else{
+                statusQuery += `"RP".status = '${status}'`;
+            }
         }
 
         if(req.currentRole === "Admin" || req.currentRole === "Owner"){

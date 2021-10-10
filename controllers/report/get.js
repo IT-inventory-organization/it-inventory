@@ -452,6 +452,10 @@ const getOneUser = async(req, res) => {
     }
 }
 
+const getStatusNull = async(req, res) => {
+    
+}
+
 module.exports = (routes) => {
     routes.get('/', authentication, getAll);
     routes.get('/total', authentication, getCountReportByType);
