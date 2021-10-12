@@ -2,7 +2,7 @@ const { errorResponse, successResponse } = require("../../helper/Response");
 const { deleteReport } = require('../../helper/DataReport');
 const { createUserActivity }= require('../../helper/UserActivity');
 const Http = require('../../helper/Httplib');
-const authentication = require("../../middlewares/Authentication");
+const authentication = require("../../middlewares/authentication");
 
 const deleteReportDoc = async (req, res) => {
     try {

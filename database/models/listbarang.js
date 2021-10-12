@@ -45,7 +45,7 @@ const reportListBarang = db.define('listBarang', {
     type: Sequelize.DECIMAL
   },
   satuanKemasan: {
-    type: Sequelize.DECIMAL
+    type: Sequelize.STRING
   },
   nilaiPabeanHargaPenyerahan: {
     type: Sequelize.DECIMAL

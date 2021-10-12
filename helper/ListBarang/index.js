@@ -9,6 +9,7 @@ const createListBarang = async (data, transaction) => {
         });
         return result;
     } catch (error) {
+
         throw error;
     }
     
@@ -45,6 +46,7 @@ const softDeleteListBarang = async(idReport, req, transaction = null) => {
         })
         return result;
     } catch (error) {
+
         throw error;
     }
 }

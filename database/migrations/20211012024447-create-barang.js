@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('listBarang', {
+    await queryInterface.createTable('Barang', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -10,6 +10,9 @@ module.exports = {
       },
       posTarif: {
         type: Sequelize.DECIMAL
+      },
+      hsCode: {
+        type: Sequelize.STRING
       },
       uraian: {
         type: Sequelize.STRING
@@ -23,14 +26,17 @@ module.exports = {
       nilaiPabeanHargaPenyerahan: {
         type: Sequelize.DECIMAL
       },
-      hsCode: {
-        type: Sequelize.STRING
+      quantity: {
+        type: Sequelize.INTEGER
       },
-      reportId: {
+      isDelete: {
+        type: Sequelize.BOOLEAN
+      },
+      userId: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "Reports",
+          model: "Users",
           key: "id"
         },
         onDelete: 'cascade',
@@ -44,9 +50,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      freezeTableName:true
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('listBarang');
+    await queryInterface.dropTable('Barang');
   }
 };

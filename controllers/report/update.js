@@ -59,12 +59,13 @@ const updateDataHeader = async (req, res) => {
         const {id} = req.params;
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
     
         await checkAuthorization(req, id, transaction)
 
         // const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, dataLartasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
         
+        // return;
         const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, id, false, transaction);
         const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, id, false, transaction);
         const identitasPenerimaUpdate = await updateReportIdentitasPenerima(identitasPenerima, id, false, transaction);
@@ -122,6 +123,7 @@ const updateDataLanjutan = async (req, res) => {
             reportId: promises[0].reportId
         })
     } catch (error) {
+        console.error(error);
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
@@ -141,7 +143,7 @@ const updateDataBarang = async (req, res) => {
 
         for(let i = 0; i < listDataBarang.length; i++) {
             if(listDataBarang[i].id){
-                delete listDataBarang[i].id;
+                delete listDataBarang[i].id
             }
             promises.push(await createListBarang(listDataBarang[i], transaction));
         }
@@ -222,7 +224,7 @@ module.exports = (routes) => {
         dataPerkiraanTanggalPengeluaran,
         dataTempatPenimbunan,
         dataLartas,
-        // idReport,
+        idReport,
         validationDataPengajuan, 
         validationIdentitasPengirim, 
         validationIdentitasPenerima,

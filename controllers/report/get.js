@@ -1,6 +1,6 @@
 const { errorResponse, successResponse } = require('../../helper/Response');
 const { getAllReport, getOneReport } = require('../../helper/DataReport');
-const authentication = require('../../middlewares/Authentication');
+const authentication = require('../../middlewares/authentication');
 const httpStatus = require('../../helper/Httplib');
 const sequelize = require('../../configs/database')
 const { createUserActivity } = require('../../helper/UserActivity');
@@ -131,7 +131,7 @@ const getCode = (val) => {
     }
 
     if(!val.includes('-')){
-        throw new Error('Value Doesnt Include "-"')
+        return val
     }
 
     const split = val.split('-');
