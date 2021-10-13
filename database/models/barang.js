@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const listItem = db.define('Barang', {
+const Barang = db.define('Barang', {
   posTarif: Sequelize.DECIMAL,
   hsCode: Sequelize.STRING,
   uraian: Sequelize.STRING,
@@ -28,4 +28,4 @@ const listItem = db.define('Barang', {
   freezeTableName: true
 });
 
-module.exports = listItem;
+module.exports = Barang;

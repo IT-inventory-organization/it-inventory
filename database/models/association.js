@@ -16,7 +16,7 @@ const reportTransaksiPerdagangan = require("./transaksiperdagangan");
 const User = require("./user");
 const UserActivity = require("./useractivity");
 const reportDataLartas = require("./datalartas");
-const listItem = require("./barang");
+const Barang = require("./barang");
 
 const setAssociations = function() {
   Report.hasOne(reportIdentitasPenerima, {foreignKey: 'reportId'});
@@ -60,8 +60,16 @@ const setAssociations = function() {
   User.hasMany(Report, {foreignKey: "userId"});
 
   // Barang
-  User.hasMany(listItem, {foreignKey: 'id'});
-  listItem.belongsTo(User, {foreignKey: 'userId'});
+  User.hasMany(Barang, {foreignKey: 'id'});
+  Barang.belongsTo(User, {foreignKey: 'userId'});
+
+  // Mandatory
+  Report.belongsToMany(Barang, {through: reportListBarang, foreignKey: 'reportId'});
+  Barang.belongsToMany(Report, {through: reportListBarang, foreignKey: 'idBarang'});
+
+  Barang.hasMany(reportListBarang, {foreignKey: 'idBarang'});
+  reportListBarang.belongsTo(Barang, {foreignKey: 'idBarang'});
+  reportListBarang.belongsTo(Report, {foreignKey: 'reportId'});
 };
 
 module.exports = setAssociations;

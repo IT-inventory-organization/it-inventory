@@ -17,6 +17,7 @@ const reportTransaksiPerdagangan = require('../../database/models/transaksiperda
 const User = require('../../database/models/user');
 const authorization = require("../authorization");
 const reportDataLartas = require('../../database/models/datalartas');
+const Barang = require('../../database/models/barang');
 
 const createReport = async (data, transaction) => {
     try {
@@ -187,7 +188,7 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
             }
         }
         
-        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
 
         const data = {
             data: res[0],
@@ -248,8 +249,20 @@ const getOneReport = async(req, id) => {
             {
                 model: reportListBarang,
                 attributes: {
-                    exclude: ['createdAt', 'updatedAt', 'isDelete']
-                }
+                    exclude: ['createdAt', 'updatedAt'],
+                    include: ['quantity']
+                },
+                include: [
+                    {
+                        model: Barang,
+                        attributes: {
+                            exclude: ['isDelete']
+                        },
+                        where: {
+                            isDelete: false
+                        }
+                    }
+                ]
             },
             {
                 model: reportDataPerkiraanTanggalPengeluaran,
@@ -273,6 +286,9 @@ const getOneReport = async(req, id) => {
                 model: reportListDokumen,
                 attributes: {
                     exclude: ['createdAt', 'updatedAt', 'isDelete']
+                },
+                where: {
+                    isDelete: false
                 }
             },
             {
@@ -341,25 +357,19 @@ const getOneReport = async(req, id) => {
                     {userId: req.currentUser}
                 ],
             }
-            query.include[0] = {
-                ...query.include[0],
-                where: {
-                    isDelete: false
-                }
-            },
-            query.include[4] = {
-                ...query.include[4],
-                where: {
-                    isDelete: false
-                }
-            }
         }
         query.attributes = {
             exclude: ['createdAt', 'updatedAt', 'isDelete']
         }
-        const result = await Report.findOne(query)
+        query.where = {
+            ...query.where,
+            isDelete: false
+        }
+        const result = await Report.findOne(query);
+        // console.log(result);
         return result
     } catch (error) {
+        console.log(error)
         throw new Error("Fail fetch data, please try again later, or refresh your browser")
     }
 }
@@ -436,6 +446,24 @@ const getPerTableBarangDokumen = async (model, idReport, type, transaction = nul
     }
 }
 
+const getOneSpecificReport = async (req, id) => {
+    try {
+        if(! await authorization(Report, id, req, false)){
+            throw new Error(`Users Is Not Authorized`);
+        }
+        const result = await Report.findOne({
+            where: {
+                id:id,
+                isDelete: false,
+                userId: req.currentUser
+            }
+        });
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     createReport,
     countReportByType,
@@ -448,5 +476,6 @@ module.exports = {
     updateStatus,
     checkAuthorization,
     getPerTable,
-    getPerTableBarangDokumen
+    getPerTableBarangDokumen,
+    getOneSpecificReport
 }

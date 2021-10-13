@@ -2,7 +2,7 @@ const {body, validationResult} = require('express-validator');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
-const { createListItem, softDeleteListItem, updateDeleteListItem, getListItem } = require('../../helper/Barang');
+const { createListItem, softDeleteListItem, updateDeleteListItem, getListItem, updateStockItem } = require('../../helper/Barang');
 const Crypt = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 
@@ -120,10 +120,27 @@ const getItem = async(req, res) => {
     }
 }
 
+const updateStock = async(req, res) => {
+    try {
+        const { total } = Crypt.AESDecrypt(req.body.Total);
+
+        const {id} = req.params;
+        const {status} = req.query;
+
+        const resultStockItem = await updateStockItem(req, id, status, total);
+        
+        return successResponse(res, Http.created, "", resultStockItem)
+    } catch (error) {
+        console.log(error)
+        return errorResponse(res, Http.internalServerError, error.message)
+    }
+}
+
 module.exports = routes => {
     routes.get('/', authentication, getItem); // Get All
     routes.get('/:id', authentication, getItem); // Get One
     routes.post('/save', authentication, bundle, validationItem, createItemBarang);
     routes.put('/update/:id', authentication, bundle, validationItem, editItemBarang);
     routes.delete('/delete/:id', authentication, validationItem, deleteItemBarang);
+    routes.put('/update-stock/:id', authentication, updateStock);
 }
