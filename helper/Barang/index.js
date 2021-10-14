@@ -2,14 +2,25 @@ const Barang = require('../../database/models/barang');
 const reportListBarang = require('../../database/models/listbarang');
 const { authUser } = require('../../helper/authBarang');
 const sequelize = require('../../configs/database');
+const { query } = require('express');
 
-const findBarang = async (id, idUser) => {
-    return await Barang.findOne({
+const findBarang = async (id, idUser = null) => {
+    let query = {
         where: {
-            id: id,
-            userId: idUser
+            id:id,
+            isDelete: false
         }
-    });
+    };
+
+    if(idUser == null){
+        query = {
+            ...query,
+            userId: idUser,
+        }
+    }
+    
+    query.where = {}
+    return await Barang.findOne(query);
 }
 
 module.exports={
@@ -92,7 +103,7 @@ module.exports={
             const offset = pageNo ? (+pageNo - 1) * pageSize : 0;
 
             if(id){
-                if(!await authUser(listItem, id, req, true)){
+                if(!await authUser(Barang, id, req, true)){
                     throw new Error(`User is Not Authorized To Access Data`)
                 }
                 user+=`AND barang."userId" = ${req.currentUser} AND barang.id = ${id}`;
@@ -123,20 +134,20 @@ module.exports={
             }
 
             if(id){
-                if(!await authUser(listItem, id, req, true)){
+                if(!await authUser(Barang, id, req, true)){
                     throw new Error(`User Is Not Authorized to Access Data`)
                 }
 
-                let sql = `SELECT barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", (barang.quantity - SUM("lB".quantity)) as total, SUM("lB".quantity) FROM "Barang" AS barang LEFT OUTER JOIN "listBarang" AS "lB" ON (barang.id = "lB"."idBarang") WHERE barang."isDelete" = false ${user} GROUP BY barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.quantity, barang.uraian`;
+                let sql = `SELECT barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
 
                 const result = await sequelize.query(sql);
                 return result[0]
             }else{
                 
 
-                let sql = `SELECT barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", (barang.quantity - SUM("lB".quantity)) as total, SUM("lB".quantity) FROM "Barang" AS barang LEFT OUTER JOIN "listBarang" AS "lB" ON (barang.id = "lB"."idBarang") WHERE barang."isDelete" = false ${user} ${searchQuery} GROUP BY barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.quantity, barang.uraian LIMIT ${limit} OFFSET ${offset}`
+                let sql = `SELECT barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
 
-                console.log(sql);
+
 
                 const result = await sequelize.query(sql);
                 return {
@@ -151,39 +162,87 @@ module.exports={
         }
     },
 
-    updateStockItem: async (req, id, status, total) => {
-        if(! await authUser(Barang, id, req, true)){
-            throw new Error(`User is not authorized to update`);
-        }
+    updateStockItem: async (req, id, status = null, total, notificationType = null, transaction = null) => {
+        try {
+            let query = {
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt', 'isDelete', 'userId']
+                },
+                transaction: transaction,
+                returning: true
+            };
+            let resultFindItem;
 
-        const resultFindItem = await findBarang(id, req.currentUser)
-
-
-        if(!resultFindItem){
-            throw new Error(`Data Not Found`);
-        }
-
-        let quantity = resultFindItem.quantity;
-        
-        if((/(increase)/gi).test(status)){
-            quantity+=total;
-        }else if((/(decrease)/gi).test(status)){
-            if(quantity <= 0){
-                throw new Error(`Stock ${resultFindItem.uraian} is Currently Empty`)
+            if(req.currentRole !== 'Admin' && req.currentRole !== 'Owner'){
+                resultFindItem = await findBarang(id, req.currentUser);
+                query = {
+                    where: {
+                        id:id,
+                        userId: req.currentUser
+                    },
+                    ...query
+                }
+                
+            }else{
+                resultFindItem = await findBarang(id);
+                query = {
+                    where: {
+                        id:id
+                    },
+                    ...query
+                }
             }
-            quantity-=total;
+            
+            if(!resultFindItem){
+                throw new Error(`Data Not Found`);
+            }
+            
+            let quantity = resultFindItem.stock;
+            // console.log(quantity, total, notificationType);
+            if(status != null){
+                if((/(increase)/gi).test(status)){
+                    quantity+=total;
+                }else if((/(decrease)/gi).test(status)){
+                    if(quantity == 0){
+                        throw new Error(`Stock ${resultFindItem.uraian} is Currently Empty`)
+                    }
+                    quantity-=total;
+                    if(quantity <= 0){
+                        throw new Error(`Stock ${resultFindItem.uraian} is Too Low`)
+                    }
+                }
+            }else if(notificationType != null){
+                if((/(export)/gi).test(notificationType)){
+                    if(quantity == 0){
+                        throw new Error(`Stock ${resultFindItem.uraian} is Currently Empty`)
+                    }
+    
+                    quantity-=total;
+                    
+                    if(quantity <= 0){
+                        throw new Error(`Stock ${resultFindItem.uraian} is Too Low`)
+                    }
+                }else if((/(import)/gi).test(notificationType)){
+                    quantity+=total;
+                }
+            }
+
+            // console.log(query, req.currentRole);
+            
+            const result = await Barang.update({
+                stock: quantity,
+            }, query);
+    
+            return result;
+        } catch (error) {
+
+            throw error
         }
+        
+    },
 
-        const result = await Barang.update({
-            quantity: quantity,
-        }, {
-            where: {
-                id: id,
-                userId: req.currentUser
-            },
-            returning: true
-        });
-
+    getItem: async(req) => {
+        const result = await Barang.findAll();
         return result;
     }
 }

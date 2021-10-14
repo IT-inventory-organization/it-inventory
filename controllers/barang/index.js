@@ -2,7 +2,7 @@ const {body, validationResult} = require('express-validator');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
-const { createListItem, softDeleteListItem, updateDeleteListItem, getListItem, updateStockItem } = require('../../helper/Barang');
+const { createListItem, softDeleteListItem, updateDeleteListItem, getListItem, updateStockItem, getItem } = require('../../helper/Barang');
 const Crypt = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 
@@ -13,7 +13,7 @@ const validationItem = [
     body('dataItem.nettoBrutoVolume').trim().notEmpty().withMessage(`"Netto, Bruto, Volume" Is Required`),
     body('dataItem.satuanKemasan').trim().notEmpty().withMessage(`"Satuan Kemasan" Is Required`),
     body('dataItem.nilaiPabeanHargaPenyerahan').trim().notEmpty().withMessage(`" Nilai Pabean, Nilai Penyerahan" Is Required`),
-    body('dataItem.quantity').trim().notEmpty().withMessage(`Quantity is Required`),
+    body('dataItem.stock').trim().notEmpty().withMessage(`Quantity is Required`),
 ]
 
 const bundle = (req, res, next) => {
@@ -40,7 +40,6 @@ const createItemBarang = async(req, res) => {
         }
         const {dataItem} = req.body;
         
-        console.log(dataItem);
 
         await createListItem(dataItem);
 
@@ -51,7 +50,6 @@ const createItemBarang = async(req, res) => {
         return successResponse(res, Http.created, "Success Create List Item");
 
     } catch (error) {
-        // console.log(error)
         return errorResponse(res, Http.internalServerError, "Failed To Add Item")
     }
     
@@ -95,7 +93,7 @@ const editItemBarang = async(req, res) => {
     }
 }
 
-const getItem = async(req, res) => {
+const getAnItem = async(req, res) => {
     try {
         const {id} = req.params;
         const {pageSize, pageNo, search} = req.query;
@@ -115,7 +113,6 @@ const getItem = async(req, res) => {
 
         return successResponse(res, Http.ok, "", result);
     } catch (error) {
-        console.log(error);
         return errorResponse(res, Http.internalServerError, "Failed Fetch Item")        
     }
 }
@@ -123,6 +120,10 @@ const getItem = async(req, res) => {
 const updateStock = async(req, res) => {
     try {
         const { total } = Crypt.AESDecrypt(req.body.Total);
+        
+        if(typeof total === 'undefined' || total == null){
+            return errorResponse(res, Http.badRequest, "Number Value is Empty")
+        }
 
         const {id} = req.params;
         const {status} = req.query;
@@ -131,14 +132,28 @@ const updateStock = async(req, res) => {
         
         return successResponse(res, Http.created, "", resultStockItem)
     } catch (error) {
-        console.log(error)
         return errorResponse(res, Http.internalServerError, error.message)
     }
 }
 
+const getItemToChoose = async (req, res) => {
+    try {
+        const data = await getItem(req);
+
+        if(req.currentRole != 'Owner'){
+            await createUserActivity(req.currentUser, null, "Fetch Item To Choose An Item in Data Barang");
+        }
+
+        return successResponse(res, Http.ok, "", data.toJSON());
+    } catch (error) {
+        return errorResponse(res, Http.internalServerError, "Failed To Fetch Data")
+    }
+
+}
+
 module.exports = routes => {
-    routes.get('/', authentication, getItem); // Get All
-    routes.get('/:id', authentication, getItem); // Get One
+    routes.get('/', authentication, getAnItem); // Get All
+    routes.get('/:id', authentication, getAnItem); // Get One
     routes.post('/save', authentication, bundle, validationItem, createItemBarang);
     routes.put('/update/:id', authentication, bundle, validationItem, editItemBarang);
     routes.delete('/delete/:id', authentication, validationItem, deleteItemBarang);

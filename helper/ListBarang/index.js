@@ -1,18 +1,40 @@
 const reportListBarang = require('../../database/models/listbarang');
 const authorization = require('../authorization');
 
-const createListBarang = async (data, transaction) => {
+const createListBarang = async (data, transaction = null) => {
     try {
         const result = await reportListBarang.create(data, {
             transaction: transaction,
-            returning: true
+            returning: true,
+            attributes: {
+                includes: ['id'],
+                exclude: ['createdAt', 'updatedAt']
+            }
         });
+        // console.log(result.toJSON());
         return result;
     } catch (error) {
 
         throw error;
     }
     
+}
+
+const fetchListBarang = async(req, idReport, transaction = null) => {
+    try {
+        const result = await reportListBarang.findAll({
+            where: {
+                reportId: idReport
+            },
+            attributes: {
+                exclude:['createdAt', 'updatedAt', 'reportId']
+            },
+            transaction: transaction
+        });
+        return result;
+    } catch (error) {
+        throw error;   
+    }
 }
 
 const updateListBarang = async (data, idToUpdate , returning = false, transaction = null) => {
@@ -51,6 +73,30 @@ const softDeleteListBarang = async(idReport, req, transaction = null) => {
     }
 }
 
+const fullDelete = async (req, idListBarang, idReport, transaction = null, returning = false) => {
+    try {
+        if(!await authorization(reportListBarang, idReport, req, true)){
+            throw new Error(`User Is Not Authorized To Access Data`);
+        }
+
+        const result = await reportListBarang.destroy(
+            {
+                where: {
+                    id: idListBarang,
+                    reportId: idReport
+                },
+                transaction: transaction,
+                returning: returning
+            }
+        )
+
+        return result;
+    } catch (error) {
+ 
+        throw error
+    }
+}
+
 const deleteListBarang = async(idParams, returning = false, transaction = false) => {
     try {
         const result = await reportListBarang.update(
@@ -74,5 +120,7 @@ module.exports = {
     createListBarang,
     updateListBarang,
     deleteListBarang,
-    softDeleteListBarang
+    softDeleteListBarang,
+    fullDelete,
+    fetchListBarang
 }

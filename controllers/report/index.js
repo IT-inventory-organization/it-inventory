@@ -1,5 +1,5 @@
 const Http = require('../../helper/Httplib');
-const { createReport } = require('../../helper/DataReport');
+const { createReport, getOneSpecificReport } = require('../../helper/DataReport');
 const { createDataPengajuan } = require('../../helper/DataPengajuan');
 const { createReportIdentitasPenerima } = require('../../helper/IdentitasPenerima');
 const { createReportIdentitasPengirim } = require('../../helper/IdentitasPengirim');
@@ -37,7 +37,7 @@ const {
 
 const validationReport = require('../../middlewares/validationDataReport')
 const { validationArrListDokumen, validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
-const { dataBarang } = require('../../helper/bundleDataBarang');
+const { BDataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen, petiKemas } = require('../../helper/bundleDataLanjutan');
 const { createDataPengangkutan } = require('../../helper/DataPengangkutan');
 const { createDataPelabuhanMuatBongkar } = require('../../helper/DataPelabuhanMuatBongkar');
@@ -48,12 +48,13 @@ const { createPerkiraanTanggalPengeluaran } = require('../../helper/DataPerkiraa
 const { createListDokumen } = require('../../helper/ListDokumen');
 const { createDataPetiKemas } = require("../../helper/DataPetiKemas");
 const { createListBarang } = require("../../helper/ListBarang");
-const { validationArrListBarang }= require("../../middlewares/validationDataBarang");
+const { VListBarang }= require("../../middlewares/validationDataBarang");
 const authentication = require('../../middlewares/authentication');
 const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 const { bundleReport } = require('../../helper/bundleReport');
 const { createDataLartas } = require('../../helper/DataLartas');
+const { updateStockItem } = require('../../helper/Barang');
 
 const addReport = async (req, res) => {
     try {
@@ -181,18 +182,26 @@ const addDataBarang = async (req, res) => {
     try {
         transaction = await sequelize.transaction();
         const { DataToInput: {listDataBarang, reportId}} = req.body;
-        
         const promises = [];
-        // listBarang.forEach(async el => {
-        //     promises.push(await createListBarang(el, transaction));
-        // })
 
-        // const result = await Promise.all(promises);
+        const found = await getOneSpecificReport(req, reportId);
+
+        if(!found){
+            return errorResponse(res, Http.badRequest, "Report Not Found");
+        }
+
+        const typeNotification = found.toJSON().jenisPemberitahuan;
+
+
         // Loop Dengan Async
         for (let index = 0; index < listDataBarang.length; index++) {
+
             let res = await createListBarang(listDataBarang[index], transaction);
+            
+            await updateStockItem(req, listDataBarang[index].idBarang, null, listDataBarang[index].quantity, typeNotification, transaction);
             promises.push(res);
         }
+        // return;
         
         const dataToReturn = {
             listDataBarang: promises.map( ele => ele.id),
@@ -275,8 +284,8 @@ module.exports = (routes) => {
     // Create Data Barang
     routes.post('/data-barang',
         authentication,
-        dataBarang,
-        validationArrListBarang,
+        BDataBarang,
+        VListBarang,
         validationResponse,
         addDataBarang
     );

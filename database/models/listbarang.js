@@ -40,9 +40,6 @@ const db = require('../../configs/database');
 
 // module.exports = reportListBarang;
 const reportListBarang = db.define('listBarang', {
-  isDelete: {
-    type: Sequelize.BOOLEAN,
-  },
   idBarang: {
     type: Sequelize.INTEGER,
     references: {
@@ -60,6 +57,9 @@ const reportListBarang = db.define('listBarang', {
     },
     onDelete: "cascade",
     onUpdate: "cascade"
+  },
+  quantity: {
+    type: Sequelize.INTEGER,
   }
 }, {
   tableName: 'listBarang',

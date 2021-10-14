@@ -250,13 +250,13 @@ const getOneReport = async(req, id) => {
                 model: reportListBarang,
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
-                    include: ['quantity']
+                    include: ['quantity', 'id']
                 },
                 include: [
                     {
                         model: Barang,
                         attributes: {
-                            exclude: ['isDelete']
+                            exclude: ['isDelete', 'createdAt', 'updatedAt', 'userId']
                         },
                         where: {
                             isDelete: false
@@ -366,10 +366,10 @@ const getOneReport = async(req, id) => {
             isDelete: false
         }
         const result = await Report.findOne(query);
-        // console.log(result);
+
         return result
     } catch (error) {
-        console.log(error)
+
         throw new Error("Fail fetch data, please try again later, or refresh your browser")
     }
 }

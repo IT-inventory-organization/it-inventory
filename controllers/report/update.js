@@ -37,21 +37,23 @@ const { updateDataBeratDanVolume } = require('../../helper/DataBeratDanVolume');
 const { updateDataPetiKemasDanPengemas } = require('../../helper/DataPetiKemasDanPengemas');
 const { updateDataTempatPenimbunan } = require('../../helper/DataTempatPenimbunan');
 const { updatePerkiraanTanggalPengeluaran }= require('../../helper/DataPerkiraanTanggalPengeluaran');
-const { softDeleteListBarang, createListBarang } = require('../../helper/ListBarang');
+const { softDeleteListBarang, createListBarang, fullDelete, fetchListBarang } = require('../../helper/ListBarang');
 const { softDeleteListDokumen, createListDokumen } = require('../../helper/ListDokumen');
 const { updateDataPetiKemas } = require('../../helper/DataPetiKemas');
-const { dataBarang } = require('../../helper/bundleDataBarang');
+const { dataBarang, BDataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen,petiKemas } = require('../../helper/bundleDataLanjutan');
 const { validationArrListDokumen,validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
-const { validationArrListBarang } = require('../../middlewares/validationDataBarang');
+const { validationArrListBarang, VListBarang } = require('../../middlewares/validationDataBarang');
 const Http = require('../../helper/Httplib');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
 const { createUserActivity } = require('../../helper/UserActivity');
-const { updateReport, updateStatus, checkAuthorization } = require('../../helper/DataReport');
+const { updateReport, updateStatus, checkAuthorization, getOneSpecificReport, getOneReport } = require('../../helper/DataReport');
 const validationReport = require('../../middlewares/validationDataReport');
 const { bundleReport } = require('../../helper/bundleReport');
 const { updateDataLartas } = require('../../helper/DataLartas');
+const { updateStockItem } = require('../../helper/Barang');
+const { reverseJenisPemberiahuan } = require('../../helper/util');
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -129,24 +131,48 @@ const updateDataLanjutan = async (req, res) => {
     }
 }
 
+// not returning id
 const updateDataBarang = async (req, res) => {
     let transaction;
     const {idReport} = req.params;
     
     try {
-        transaction = await sequelize.transaction();
+
         const {DataToInput: {listDataBarang}} = req.body;
 
-        await softDeleteListBarang(idReport, req, transaction);
-        // return;
+        const idList = await fetchListBarang(req, idReport,);
+        const found = await getOneSpecificReport(req, idReport);
+
+        if(!found){
+            return errorResponse(res, Http.internalServerError, "Failed To Update Data");
+        }
+
+        const jenisPemberitahuan = found.toJSON().jenisPemberitahuan;
+        
+        for (let i = 0; i < idList.length; i++) {
+            const element = idList[i];
+            const res = element.toJSON();
+
+            // Mengembalikan Ke Nilai Awal
+            await updateStockItem(req, res.idBarang, null, res.quantity, reverseJenisPemberiahuan(jenisPemberitahuan));
+        }
+        // return
+        transaction = await sequelize.transaction();
         const promises = [];
 
         for(let i = 0; i < listDataBarang.length; i++) {
+ 
+            await fullDelete(req, listDataBarang[i].id, idReport, transaction);
+            
             if(listDataBarang[i].id){
                 delete listDataBarang[i].id
             }
+
             promises.push(await createListBarang(listDataBarang[i], transaction));
+            await updateStockItem(req, listDataBarang[i].idBarang, null, listDataBarang[i].quantity, jenisPemberitahuan, transaction);
         }
+
+        console.log(promises)
 
         const dataToReturn = {
             listDataBarang: promises.map(el => el.id),
@@ -160,6 +186,7 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
+        console.log(error);
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
@@ -171,6 +198,17 @@ const updateStatusInvetory = async (req, res) => {
     try {
         if(req.currentRole !== 'Admin'){
             throw new Error(`${req.currentRole} Cannot Updating Status`);
+        }
+
+        if(status === 'merah'){
+            const result = await getOneReport(req, id);
+            const { listBarangs, jenisPemberitahuan } = result;
+            
+            for(let i = 0; i < listBarangs.length; i++){
+                const {quantity, idBarang} = listBarangs[i].toJSON();
+                // console.log(listBarangs[i].toJSON())
+                await updateStockItem(req, idBarang, null, quantity, reverseJenisPemberiahuan(jenisPemberitahuan));
+            }
         }
 
         await updateStatus(id, status);
@@ -242,8 +280,8 @@ module.exports = (routes) => {
 
     routes.put('/data-barang/:idReport',
         authentication,
-        dataBarang,
-        validationArrListBarang,
+        BDataBarang,
+        VListBarang,
         validationResponse,
         updateDataBarang
     );
