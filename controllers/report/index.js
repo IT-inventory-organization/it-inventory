@@ -216,7 +216,7 @@ const addDataBarang = async (req, res) => {
 
         return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
     } catch (error) {
-
+        console.log(error)
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }

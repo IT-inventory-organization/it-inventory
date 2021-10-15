@@ -11,7 +11,7 @@ const deleteReportDoc = async (req, res) => {
         await deleteReport(id, req);
         
         if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, null, `Deleting Report Document`);
+            await createUserActivity(req.currentUser, id, `Deleting Report Document`);
         }
 
         return successResponse(res, Http.ok, "Success Deleting Report Document");

@@ -2,11 +2,13 @@ const {body, validationResult} = require('express-validator');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
-const { createListItem, softDeleteListItem, updateDeleteListItem, getListItem, updateStockItem, getItem } = require('../../helper/Barang');
+const { createListItem, softDeleteListItem, updateListItem, getListItem, updateStockItem, getItem, fetchHistoryIteBarang } = require('../../helper/Barang');
 const Crypt = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
+const { getOneHistoryOnItem } = require('../../helper/Barang');
 
 const validationItem = [
+    body('dataItem.name').trim().notEmpty().withMessage(`Name is Not Provided`),
     body('dataItem.posTarif').trim().notEmpty().withMessage(`"Pos Tarif Is Required`),
     body('dataItem.hsCode').trim().notEmpty().withMessage(`HS Code is Required`),
     body('dataItem.uraian').trim().notEmpty().withMessage(`"Uraian" is Required`),
@@ -19,7 +21,7 @@ const validationItem = [
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.item);
-        
+        // console.log(Decrypt);return;
         req.body.dataItem = {
             ...Decrypt,
             userId: req.currentUser
@@ -67,7 +69,7 @@ const deleteItemBarang = async(req, res) => {
 
         return successResponse(res, Http.ok, "Success Delete List Item");
     } catch (error) {
-        return errorResponse(res, Http.badRequest, "Failed To Delete Item")
+        return errorResponse(res, Http.badRequest, error.message)
     }
 }
 
@@ -80,8 +82,8 @@ const editItemBarang = async(req, res) => {
 
         const {id} = req.params;
         const {dataItem} = req.body;
-
-        await updateDeleteListItem(req, id, dataItem);
+        delete dataItem.id;
+        await updateListItem(req, id, dataItem);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, null, 'Update Item Barang')
@@ -89,6 +91,7 @@ const editItemBarang = async(req, res) => {
 
         return successResponse(res, Http.ok, "Success Update Item Barang")
     } catch (error) {
+        console.log(error)
         return errorResponse(res, Http.badRequest, "Failed To Edit Item")
     }
 }
@@ -113,6 +116,7 @@ const getAnItem = async(req, res) => {
 
         return successResponse(res, Http.ok, "", result);
     } catch (error) {
+        console.log(error)
         return errorResponse(res, Http.internalServerError, "Failed Fetch Item")        
     }
 }
@@ -148,8 +152,19 @@ const getItemToChoose = async (req, res) => {
     } catch (error) {
         return errorResponse(res, Http.internalServerError, "Failed To Fetch Data")
     }
-
 }
+
+const historyDataBarang = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const result = await fetchHistoryIteBarang(req, id)
+        return successResponse(res, Http.ok, result)
+    } catch (error) {
+        console.log(error)
+        return errorResponse(res, Http.internalServerError, "Failed Get Item History")
+    }
+}
+
 
 module.exports = routes => {
     routes.get('/', authentication, getAnItem); // Get All
@@ -158,4 +173,5 @@ module.exports = routes => {
     routes.put('/update/:id', authentication, bundle, validationItem, editItemBarang);
     routes.delete('/delete/:id', authentication, validationItem, deleteItemBarang);
     routes.put('/update-stock/:id', authentication, updateStock);
+    routes.get('/history/:id', authentication, historyDataBarang);
 }

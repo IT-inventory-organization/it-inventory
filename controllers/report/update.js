@@ -37,13 +37,13 @@ const { updateDataBeratDanVolume } = require('../../helper/DataBeratDanVolume');
 const { updateDataPetiKemasDanPengemas } = require('../../helper/DataPetiKemasDanPengemas');
 const { updateDataTempatPenimbunan } = require('../../helper/DataTempatPenimbunan');
 const { updatePerkiraanTanggalPengeluaran }= require('../../helper/DataPerkiraanTanggalPengeluaran');
-const { softDeleteListBarang, createListBarang, fullDelete, fetchListBarang } = require('../../helper/ListBarang');
+const { createListBarang, fullDelete, fetchListBarang } = require('../../helper/ListBarang');
 const { softDeleteListDokumen, createListDokumen } = require('../../helper/ListDokumen');
 const { updateDataPetiKemas } = require('../../helper/DataPetiKemas');
-const { dataBarang, BDataBarang } = require('../../helper/bundleDataBarang');
+const { BDataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen,petiKemas } = require('../../helper/bundleDataLanjutan');
 const { validationArrListDokumen,validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
-const { validationArrListBarang, VListBarang } = require('../../middlewares/validationDataBarang');
+const { VListBarang } = require('../../middlewares/validationDataBarang');
 const Http = require('../../helper/Httplib');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
@@ -54,6 +54,7 @@ const { bundleReport } = require('../../helper/bundleReport');
 const { updateDataLartas } = require('../../helper/DataLartas');
 const { updateStockItem } = require('../../helper/Barang');
 const { reverseJenisPemberiahuan } = require('../../helper/util');
+const { insertHistory } = require('../../helper/Histories');
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -151,8 +152,7 @@ const updateDataBarang = async (req, res) => {
         
         for (let i = 0; i < idList.length; i++) {
             const element = idList[i];
-            const res = element.toJSON();
-
+            const res = element.toJSON(); 
             // Mengembalikan Ke Nilai Awal
             await updateStockItem(req, res.idBarang, null, res.quantity, reverseJenisPemberiahuan(jenisPemberitahuan));
         }
@@ -186,10 +186,28 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        console.log(error);
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
+}
+
+const checkStatus = (val, status) => {
+    let stats = ``;
+    
+    switch (true) {
+        case /(hijau)/.test(status):
+            if(/(export)/gi.test(val)){
+                stats = `decrease`;
+            }else if(/(import)/gi.test(val)){
+                stats = `increase`;
+            }
+            break;
+        case /(merah)/.test(status):
+            break;
+        default:
+            break;
+    }
+    return stats;
 }
 
 const updateStatusInvetory = async (req, res) => {
@@ -200,16 +218,36 @@ const updateStatusInvetory = async (req, res) => {
             throw new Error(`${req.currentRole} Cannot Updating Status`);
         }
 
-        if(status === 'merah'){
-            const result = await getOneReport(req, id);
+        const result = await getOneReport(req, id);
+
+        if((/(merah)/).test(status)){
             const { listBarangs, jenisPemberitahuan } = result;
             
             for(let i = 0; i < listBarangs.length; i++){
                 const {quantity, idBarang} = listBarangs[i].toJSON();
-                // console.log(listBarangs[i].toJSON())
+                
+                // Mengembalikan Nilai
                 await updateStockItem(req, idBarang, null, quantity, reverseJenisPemberiahuan(jenisPemberitahuan));
             }
+        }else if((/(hijau)/gi).test(status)){
+            const {listBarangs, jenisPemberitahuan} = result;
+
+            for(let i = 0; i < listBarangs.length; i++){
+                const {idBarang, quantity} = listBarangs[i].toJSON();
+
+                const data = {
+                    idBarang: idBarang,
+                    reportId: id,
+                    quantityItem: quantity,
+                    status: checkStatus(jenisPemberitahuan, status)
+                }
+
+                // Menyimpan Catatan
+                await insertHistory(data)
+            }
         }
+
+        // console.log(result)
 
         await updateStatus(id, status);
 

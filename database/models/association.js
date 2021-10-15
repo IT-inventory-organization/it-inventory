@@ -17,6 +17,7 @@ const User = require("./user");
 const UserActivity = require("./useractivity");
 const reportDataLartas = require("./datalartas");
 const Barang = require("./barang");
+const Histories = require("./history");
 
 const setAssociations = function() {
   Report.hasOne(reportIdentitasPenerima, {foreignKey: 'reportId'});
@@ -70,6 +71,15 @@ const setAssociations = function() {
   Barang.hasMany(reportListBarang, {foreignKey: 'idBarang'});
   reportListBarang.belongsTo(Barang, {foreignKey: 'idBarang'});
   reportListBarang.belongsTo(Report, {foreignKey: 'reportId'});
+
+  // Mandatory
+  Report.belongsToMany(Barang, {through: Histories, foreignKey: 'reportId'});
+  Barang.belongsToMany(Report, {through: Histories, foreignKey: 'idBarang'});
+
+  Barang.hasMany(Histories, {foreignKey: 'idBarang'});
+  Report.hasMany(Histories, {foreignKey: 'reportId'});
+  Histories.belongsTo(Barang, {foreignKey: 'idBarang'});
+  Histories.belongsTo(Report, {foreignKey: 'reportId'});
 };
 
 module.exports = setAssociations;

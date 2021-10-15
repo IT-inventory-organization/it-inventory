@@ -241,7 +241,7 @@ const getAllReportByType = async (req, pageSize, pageNo, type = null) => {
     }
 }
 
-const getOneReport = async(req, id) => {
+const getOneReport = async(req, id, statusCheck = false) => {
     try {
         const query = {}
         query.where = {id}
@@ -356,6 +356,12 @@ const getOneReport = async(req, id) => {
                     {id},
                     {userId: req.currentUser}
                 ],
+            }
+        }
+        if(statusCheck){
+            query.where = {
+                ...query.where,
+                status: {[Op.not]: null}
             }
         }
         query.attributes = {

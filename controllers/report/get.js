@@ -427,7 +427,7 @@ const getDataBarangReport =  async(req, res) => {
         };
 
         if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, id, `Get Data Barang Report`);
+            await createUserActivity(req.currentUser, idReport, `Get Data Barang Report`);
         }
 
         return successResponse(res, httpStatus.ok, "", payload);

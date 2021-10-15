@@ -3,6 +3,7 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const Barang = db.define('Barang', {
+  name: Sequelize.STRING,
   posTarif: Sequelize.DECIMAL,
   hsCode: Sequelize.STRING,
   uraian: Sequelize.STRING,

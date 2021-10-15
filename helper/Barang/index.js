@@ -2,7 +2,11 @@ const Barang = require('../../database/models/barang');
 const reportListBarang = require('../../database/models/listbarang');
 const { authUser } = require('../../helper/authBarang');
 const sequelize = require('../../configs/database');
-const { query } = require('express');
+const reportListDokumen = require('../../database/models/listdokumen');
+const Report = require('../../database/models/report');
+const reportIdentitasPenerima = require('../../database/models/identitaspenerima');
+const {Op} = require('sequelize');
+const Histories = require('../../database/models/history');
 
 const findBarang = async (id, idUser = null) => {
     let query = {
@@ -12,14 +16,13 @@ const findBarang = async (id, idUser = null) => {
         }
     };
 
-    if(idUser == null){
+    if(idUser !== null){
         query = {
             ...query,
             userId: idUser,
         }
     }
-    
-    query.where = {}
+
     return await Barang.findOne(query);
 }
 
@@ -40,7 +43,7 @@ module.exports={
             if(!await authUser(Barang, id, req, true)){
                 throw new Error('User Is Not Authorized To Delete List Item');
             }
-            const findItem = await findBarang(id, req,currentUser);
+            const findItem = await findBarang(id, req.currentUser);
             if(!findItem) {
                 throw new Error(`Data Not Found`);
             }
@@ -59,7 +62,7 @@ module.exports={
             }
             return result;
         } catch (error) {
-            throw error;
+            return error;
         }
     },
 
@@ -112,7 +115,7 @@ module.exports={
             }
 
             if(search){
-                const column = ['posTarif', 'hsCode', 'uraian', 'satuanKemasan', 'nettoBrutoVolume', 'quantity', 'nilaiPabeanHargaPenyerahan'];
+                const column = ['posTarif', 'hsCode', 'uraian', 'satuanKemasan', 'nettoBrutoVolume', 'stock', 'nilaiPabeanHargaPenyerahan'];
                 searchQuery+=`AND (`
                 for (let i = 0; i < column.length; i++) {
                     const regex = new RegExp(/[A-Z]/g);
@@ -138,14 +141,14 @@ module.exports={
                     throw new Error(`User Is Not Authorized to Access Data`)
                 }
 
-                let sql = `SELECT barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
+                let sql = `SELECT barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
 
                 const result = await sequelize.query(sql);
                 return result[0]
             }else{
                 
 
-                let sql = `SELECT barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
+                let sql = `SELECT barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
 
 
 
@@ -201,12 +204,12 @@ module.exports={
             // console.log(quantity, total, notificationType);
             if(status != null){
                 if((/(increase)/gi).test(status)){
-                    quantity+=total;
+                    quantity += (+total);
                 }else if((/(decrease)/gi).test(status)){
                     if(quantity == 0){
                         throw new Error(`Stock ${resultFindItem.uraian} is Currently Empty`)
                     }
-                    quantity-=total;
+                    quantity -= (+total);
                     if(quantity <= 0){
                         throw new Error(`Stock ${resultFindItem.uraian} is Too Low`)
                     }
@@ -217,13 +220,13 @@ module.exports={
                         throw new Error(`Stock ${resultFindItem.uraian} is Currently Empty`)
                     }
     
-                    quantity-=total;
+                    quantity -= (+total);
                     
                     if(quantity <= 0){
                         throw new Error(`Stock ${resultFindItem.uraian} is Too Low`)
                     }
                 }else if((/(import)/gi).test(notificationType)){
-                    quantity+=total;
+                    quantity += (+total);
                 }
             }
 
@@ -244,5 +247,105 @@ module.exports={
     getItem: async(req) => {
         const result = await Barang.findAll();
         return result;
+    },
+
+    getOneHistoryOnItem: async (req, idBarang) => {
+        try {
+            let query = {
+                where:{
+                    userId: req.currentUser
+                },
+                attributes: {
+                    include: ['uraian']
+                }
+            }
+            if(idBarang){
+                query = {
+                    where: {
+                        ...query.where,
+                        id: idBarang
+                    }
+                }
+            }
+            query = {
+                ...query,
+                include: [
+                    {
+                        model: reportListBarang,
+                        attributes: {
+                            exclude: ['createdAt','updatedAt', 'idBarang', 'reportId']
+                        },
+                        include: {
+                            model: Report,
+                            attributes: {
+                                exclude: ['pengajuanSebagai', 'kantorPengajuan', 'jenisMasuk', 'isEditable', 'userId', 'isDelete', 'createdAt']
+                            },
+                            include: [
+                                {
+                                    model: reportListDokumen,
+                                    attributes: {
+                                        include: ['nomorDokumen']
+                                    }
+                                },
+                                {
+                                    model: reportIdentitasPenerima,
+                                    attributes: {
+                                        include: ['namaPenerima']
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                ]
+            };
+
+            const result = await Barang.findOne(query);
+            return result;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    fetchHistoryIteBarang: async (req, idBarang) => {
+        try {
+            
+        } catch (error) {
+            throw error
+        }
     }
 }
+
+/**
+ * const found = await Barang.findAll({
+                where: {
+                    id: idBarang,
+                    userId: req.currentUser,
+                },
+                attributes: ['name'],
+                include: [
+                    {
+                        model: Histories,
+                        attributes: ['quantityItem', 'updatedAt', 'status'],
+                        include: [
+                            {
+                                model: Report,
+                                where: {
+                                    status: {[Op.not]: null}
+                                },
+                                attributes: ['typeReport', 'BCDocumentType', 'id', 'jenisPemberitahuan'],
+                                include: [
+                                    {
+                                        model: reportIdentitasPenerima,
+                                        attributes: ['namaPenerima']
+                                    },
+                                    {
+                                        model: reportListDokumen,
+                                        attributes: ['nomorDokumen']
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            })
+ */

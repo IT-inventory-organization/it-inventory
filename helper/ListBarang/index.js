@@ -122,5 +122,6 @@ module.exports = {
     deleteListBarang,
     softDeleteListBarang,
     fullDelete,
-    fetchListBarang
+    fetchListBarang,
+    // getOneHistoryOnItem
 }
