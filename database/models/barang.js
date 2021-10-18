@@ -9,7 +9,7 @@ const Barang = db.define('Barang', {
   uraian: Sequelize.STRING,
   nettoBrutoVolume: Sequelize.DECIMAL,
   satuanKemasan: Sequelize.STRING,
-  nilaiPabeanHargaPenyerahan: Sequelize.DECIMAL,
+  // nilaiPabeanHargaPenyerahan: Sequelize.DECIMAL,
   stock: Sequelize.INTEGER,
   isDelete: {
     type: Sequelize.BOOLEAN,

@@ -52,7 +52,7 @@ const { updateReport, updateStatus, checkAuthorization, getOneSpecificReport, ge
 const validationReport = require('../../middlewares/validationDataReport');
 const { bundleReport } = require('../../helper/bundleReport');
 const { updateDataLartas } = require('../../helper/DataLartas');
-const { updateStockItem } = require('../../helper/Barang');
+const { updateStockItem, getListItem } = require('../../helper/Barang');
 const { reverseJenisPemberiahuan } = require('../../helper/util');
 const { insertHistory } = require('../../helper/Histories');
 
@@ -89,6 +89,7 @@ const updateDataHeader = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
+        console.log(error)
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Failed To Update Report");
     }
@@ -140,53 +141,52 @@ const updateDataBarang = async (req, res) => {
     try {
 
         const {DataToInput: {listDataBarang}} = req.body;
+        // transaction = await sequelize.transaction();
 
-        const idList = await fetchListBarang(req, idReport,);
-        const found = await getOneSpecificReport(req, idReport);
+        const idList = await fetchListBarang(req, idReport); // Fetch Data Di List Barang
+        const found = await getOneSpecificReport(req, idReport); // Mencari Jenis Pemberitahuan Report
 
         if(!found){
             return errorResponse(res, Http.internalServerError, "Failed To Update Data");
         }
 
+        transaction = await sequelize.transaction();
         const jenisPemberitahuan = found.toJSON().jenisPemberitahuan;
-        
+    
         for (let i = 0; i < idList.length; i++) {
             const element = idList[i];
-            const res = element.toJSON(); 
+            const res = element.toJSON();
+
             // Mengembalikan Ke Nilai Awal
-            await updateStockItem(req, res.idBarang, null, res.quantity, reverseJenisPemberiahuan(jenisPemberitahuan));
+            await updateStockItem(req, res.idBarang, null, res.quantity, reverseJenisPemberiahuan(jenisPemberitahuan), transaction);
         }
+
         // return
-        transaction = await sequelize.transaction();
-        const promises = [];
+        let resultsListBarang = [];
 
         for(let i = 0; i < listDataBarang.length; i++) {
- 
             await fullDelete(req, listDataBarang[i].id, idReport, transaction);
-            
             if(listDataBarang[i].id){
                 delete listDataBarang[i].id
             }
 
-            promises.push(await createListBarang(listDataBarang[i], transaction));
+            resultsListBarang.push(await createListBarang(listDataBarang[i], transaction));
             await updateStockItem(req, listDataBarang[i].idBarang, null, listDataBarang[i].quantity, jenisPemberitahuan, transaction);
         }
 
-        console.log(promises)
-
         const dataToReturn = {
-            listDataBarang: promises.map(el => el.id),
-            reportId: promises[0].id
+            listDataBarang: resultsListBarang.map(el => el.id),
+            reportId: resultsListBarang[0].id
         }
 
-        if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
-        }
+        await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
+        
 
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        await transaction.rollback();
+        console.log(error)
+        // await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
 }
@@ -265,7 +265,7 @@ const updateReportPerId = async (req, res) => {
     const { id } = req.params;
     try {
 
-        const result = await updateReport(id, req.body.DataToInput);
+        const result = await updateReport(id, req.body.DataToInput, req);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, id, `Updating Report`);

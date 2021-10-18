@@ -6,6 +6,8 @@ const { createListItem, softDeleteListItem, updateListItem, getListItem, updateS
 const Crypt = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 const { getOneHistoryOnItem } = require('../../helper/Barang');
+const { getHistoryBarangPerItem } = require('../../helper/Histories');
+const { key } = require('nconf');
 
 const validationItem = [
     body('dataItem.name').trim().notEmpty().withMessage(`Name is Not Provided`),
@@ -14,7 +16,7 @@ const validationItem = [
     body('dataItem.uraian').trim().notEmpty().withMessage(`"Uraian" is Required`),
     body('dataItem.nettoBrutoVolume').trim().notEmpty().withMessage(`"Netto, Bruto, Volume" Is Required`),
     body('dataItem.satuanKemasan').trim().notEmpty().withMessage(`"Satuan Kemasan" Is Required`),
-    body('dataItem.nilaiPabeanHargaPenyerahan').trim().notEmpty().withMessage(`" Nilai Pabean, Nilai Penyerahan" Is Required`),
+    // body('dataItem.nilaiPabeanHargaPenyerahan').trim().notEmpty().withMessage(`" Nilai Pabean, Nilai Penyerahan" Is Required`),
     body('dataItem.stock').trim().notEmpty().withMessage(`Quantity is Required`),
 ]
 
@@ -157,11 +159,32 @@ const getItemToChoose = async (req, res) => {
 const historyDataBarang = async (req, res) => {
     try {
         const {id} = req.params;
-        const result = await fetchHistoryIteBarang(req, id)
-        return successResponse(res, Http.ok, result)
+        const result = await getHistoryBarangPerItem(req, id);
+        const name = await getListItem(req, {id: id})
+        let qry = [];
+        for(let i =0; i < result.length; i++){
+            let obj = {};
+            // console.log(name)
+            obj['name'] = name[0].name;
+            const keys = Object.keys(result[i]);
+            for(let j = 0; j < keys.length; j++){
+                const seperate = keys[j].split('.');
+                
+                obj[seperate[seperate.length - 1]] = result[i][`${seperate.join('.')}`]; 
+            }
+
+            qry.push(obj)
+            delete obj;
+        }
+
+        if(req.currentRole != 'Owner'){
+            await createUserActivity(req.currentUser, null, `Looking Through Item History`);
+        }
+        
+        return successResponse(res, Http.ok, "Success Fetching Item History", qry);
     } catch (error) {
-        console.log(error)
-        return errorResponse(res, Http.internalServerError, "Failed Get Item History")
+
+        return errorResponse(res, Http.internalServerError, error)
     }
 }
 

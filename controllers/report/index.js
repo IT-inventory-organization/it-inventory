@@ -195,7 +195,7 @@ const addDataBarang = async (req, res) => {
 
         // Loop Dengan Async
         for (let index = 0; index < listDataBarang.length; index++) {
-
+            // console.log(listDataBarang[index]);
             let res = await createListBarang(listDataBarang[index], transaction);
             
             await updateStockItem(req, listDataBarang[index].idBarang, null, listDataBarang[index].quantity, typeNotification, transaction);

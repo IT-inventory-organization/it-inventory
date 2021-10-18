@@ -115,7 +115,7 @@ module.exports={
             }
 
             if(search){
-                const column = ['posTarif', 'hsCode', 'uraian', 'satuanKemasan', 'nettoBrutoVolume', 'stock', 'nilaiPabeanHargaPenyerahan'];
+                const column = ['name', 'posTarif', 'hsCode', 'uraian', 'satuanKemasan', 'nettoBrutoVolume', 'stock'];
                 searchQuery+=`AND (`
                 for (let i = 0; i < column.length; i++) {
                     const regex = new RegExp(/[A-Z]/g);
@@ -141,15 +141,14 @@ module.exports={
                     throw new Error(`User Is Not Authorized to Access Data`)
                 }
 
-                let sql = `SELECT barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
+                let sql = `SELECT barang.name, barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
 
                 const result = await sequelize.query(sql);
                 return result[0]
             }else{
                 
 
-                let sql = `SELECT barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang."nilaiPabeanHargaPenyerahan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
-
+                let sql = `SELECT barang.name, barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
 
 
                 const result = await sequelize.query(sql);

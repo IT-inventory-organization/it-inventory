@@ -27,6 +27,7 @@ const fetchListBarang = async(req, idReport, transaction = null) => {
                 reportId: idReport
             },
             attributes: {
+                include: ['id', 'quantity', 'nilaiPabeanHargaPenyerahan', 'idBarang'],
                 exclude:['createdAt', 'updatedAt', 'reportId']
             },
             transaction: transaction

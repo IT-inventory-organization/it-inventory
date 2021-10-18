@@ -60,6 +60,9 @@ const reportListBarang = db.define('listBarang', {
   },
   quantity: {
     type: Sequelize.INTEGER,
+  },
+  nilaiPabeanHargaPenyerahan: {
+    type: Sequelize.DECIMAL
   }
 }, {
   tableName: 'listBarang',

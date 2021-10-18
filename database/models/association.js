@@ -76,10 +76,11 @@ const setAssociations = function() {
   Report.belongsToMany(Barang, {through: Histories, foreignKey: 'reportId'});
   Barang.belongsToMany(Report, {through: Histories, foreignKey: 'idBarang'});
 
-  Barang.hasMany(Histories, {foreignKey: 'idBarang'});
-  Report.hasMany(Histories, {foreignKey: 'reportId'});
+  // Barang.belongsToMany(Histories, {foreignKey: 'idBarang'});
+  // Report.belongsToMany(Histories, {foreignKey: 'reportId'});
   Histories.belongsTo(Barang, {foreignKey: 'idBarang'});
   Histories.belongsTo(Report, {foreignKey: 'reportId'});
+  
 };
 
 module.exports = setAssociations;

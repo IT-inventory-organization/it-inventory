@@ -12,7 +12,7 @@ const dataBarang = (req, res, next) => {
         const Decrypt = Encryption.AESDecrypt(req.body.dataBarang);
 
         for (let i = 0; i < Decrypt.listDataBarang.length; i++) {
-            Decrypt.listDataBarang[i].nilaiPabeanHargaPenyerahan = parseFloat(Decrypt.listDataBarang[i].nilaiPabeanHargaPenyerahan)
+            // Decrypt.listDataBarang[i].nilaiPabeanHargaPenyerahan = parseFloat(Decrypt.listDataBarang[i].nilaiPabeanHargaPenyerahan)
             Decrypt.listDataBarang[i].isDelete = false;
             Decrypt.listDataBarang[i].reportId = Decrypt.reportId; 
         }
