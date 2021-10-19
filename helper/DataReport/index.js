@@ -18,6 +18,8 @@ const User = require('../../database/models/user');
 const authorization = require("../authorization");
 const reportDataLartas = require('../../database/models/datalartas');
 const Barang = require('../../database/models/barang');
+const { isExist } = require('../checkExistingDataFromTable');
+// const sequelize = require('../../configs/database');
 
 const createReport = async (data, transaction) => {
     try {
@@ -51,44 +53,65 @@ const updateReport = async(id, data, req) => {
         if(!found){
             throw new Error('Data Not Found');
         }
+        
         const resultToCheck = [];
         if(found.toJSON().jenisPemberitahuan !== data.jenisPemberitahuan){
             const listBarangOfExistingData = await reportListBarang.findAll({where:{reportId: id}}, transaction);
-            console.log(listBarangOfExistingData);
-            // return;
+            
             if(data.jenisPemberitahuan === 'Export'){
                 for (let i = 0; i < listBarangOfExistingData.length; i++) {
-                    const Decrement = await Barang.decrement('stock', {
-                        by: listBarangOfExistingData[i].toJSON().quantity,
+                    const jsonListBarang = listBarangOfExistingData[i].toJSON();
+                    const Dec = await Barang.decrement('stock', {
+                        by: 2 * +jsonListBarang.quantity,
                         where: {
-                            id: listBarangOfExistingData[i].toJSON().idBarang,
+                            id: jsonListBarang.idBarang,
                             userId: req.currentUser
                         },
                         transaction
                     });
+                    if(Dec[0][0][0].stock < 0){
+                        throw new Error(`Stock ${Dec[0][0][0].name} Reach Minus, Update Failed`);
+                    }
+                    resultToCheck.push(Dec)                  
                 }
             }else if(data.jenisPemberitahuan === 'Import'){
                 for(let i = 0; i < listBarangOfExistingData.length; i++){
-                    const Increment = await Barang.increment('stock', {
-                        by: listBarangOfExistingData[i].toJSON().quantity,
+                    const jsonListBarang = listBarangOfExistingData[i].toJSON();
+                    const Inc = await Barang.increment('stock', {
+                        by: 2 * +jsonListBarang.quantity,
                         where: {
-                            id: listBarangOfExistingData[i].toJSON().idBarang,
+                            id: jsonListBarang.idBarang,
                             userId: req.currentUser
                         },
                         transaction
                     })
+                    
+                    resultToCheck.push(Inc)
                 }
             }
+            if(resultToCheck.length !== listBarangOfExistingData.length){
+                throw new Error('Failed To Update Report')
+            }
+
         }
-        // return;
+        
+        const checkForExistingReport = await Report.findOne({where: {id: id, userId: req.currentUser}, transaction});
+
+        if(!checkForExistingReport){
+            throw new Error('Data Not Found');
+        }
+        
         const result = await Report.update(data, { 
             where: { id: id },
+            transaction
         });
         if(result[0] == 0){
             throw new Error(`Data Didn't Exists`);
         }
+        await transaction.commit();
         return result
     } catch (error) {
+        await transaction.rollback();
         throw error;
     }
 }
@@ -140,21 +163,88 @@ const countReportByType = async (type, req) => {
 }
 
 const deleteReport = async(idType, req) => {
+    let transaction;
     try {
         if(!await authorization(Report, idType, req)){
             throw new Error('User Is Not Authorized To Delete This Data');
         }
+        transaction = await sequelize.transaction();
+        const query = {
+            where: {
+                id: idType,
+                userId: req.currentUser,
+                isDelete: false
+            }
+        }
 
-        const result = Report.update({
+        const foundExistingReport = await Report.findOne({
+            ...query,
+            transaction
+        })
+
+        if(!foundExistingReport){
+            throw new Error(`Data Not Found, Delete failed`);
+        }
+
+        const jenisPemberitahuan = foundExistingReport.toJSON().jenisPemberitahuan;
+
+        const foundlistBarang = await reportListBarang.findAll({where: {reportId: idType}, transaction});
+        
+        if(!foundlistBarang){
+            throw new Error(`Data Not Found, Delete Failed`);
+        }
+        let resultsChange = [];
+        
+
+        if(jenisPemberitahuan === 'Export'){
+            for (let i = 0; i < foundlistBarang.length; i++) {
+                const listBarang = foundlistBarang[i].toJSON();
+                const Inc = await Barang.increment('stock', {
+                    by: listBarang.quantity,
+                    where: {
+                        id: listBarang.idBarang,
+                        userId: req.currentUser
+                    },
+                    transaction
+                })
+                resultsChange.push(Inc);
+            }
+        }else if(jenisPemberitahuan === 'Import'){
+            for (let i = 0; i < foundlistBarang.length; i++) {
+                const listBarang = foundlistBarang[i].toJSON();
+                const Dec = await Barang.decrement('stock', {
+                    by: listBarang.quantity,
+                    where: {
+                        id: listBarang.idBarang,
+                        userId: req.currentUser 
+                    },
+                    transaction
+                })
+                if(Dec[0][0][0].stock < 0){
+                    throw new Error('Stock Reach Minus, Delete Failed')
+                }
+                resultsChange.push(Dec);
+            }
+        }
+
+        if(resultsChange.length !== foundlistBarang.length){
+            throw new Error('Failed Delete Report');
+        }
+
+        const result = await Report.update({
             isDelete: true,
         },{
             where: {
                 id: idType
-            }
+            },
+            transaction
         });
+
+        await transaction.commit();
 
         return result;
     } catch (error) {
+        await transaction.rollback();
         throw error
     }
 }

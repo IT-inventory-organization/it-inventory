@@ -16,7 +16,7 @@ const deleteReportDoc = async (req, res) => {
 
         return successResponse(res, Http.ok, "Success Deleting Report Document");
     } catch (error) {
-        return errorResponse(res, Http.internalServerError, "Failed To Delete Report Document");
+        return errorResponse(res, Http.internalServerError, error.message);
     }
 }
 

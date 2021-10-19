@@ -133,7 +133,6 @@ const updateDataLanjutan = async (req, res) => {
     }
 }
 
-// not returning id
 const updateDataBarang = async (req, res) => {
     let transaction;
     const {idReport} = req.params;
@@ -141,36 +140,72 @@ const updateDataBarang = async (req, res) => {
     try {
 
         const {DataToInput: {listDataBarang}} = req.body;
-        // transaction = await sequelize.transaction();
+        
+        /**
+         * Mencari List Barang Dengan Id Report Pada Param
+         */
+        let oldlistBarang = await fetchListBarang(req, idReport); // Fetch Data Di List Barang
+        
+        /**
+         * Jika Tidak Di Temukan Buat Array Kosong
+         */
+        if(!oldlistBarang){
+            oldlistBarang = [];
+        }
 
-        const idList = await fetchListBarang(req, idReport); // Fetch Data Di List Barang
+        /**
+         * Mencari Satu Report Dengan id Report
+         */
         const found = await getOneSpecificReport(req, idReport); // Mencari Jenis Pemberitahuan Report
 
-        if(!found){
+        if(!found){ // JIka Tidak Di Temukan Beri Pesan Error Gagal
             return errorResponse(res, Http.internalServerError, "Failed To Update Data");
         }
 
-        transaction = await sequelize.transaction();
+        /**
+         * Mengambil Key Jenis Pemberitahuan Pada Report
+         */
         const jenisPemberitahuan = found.toJSON().jenisPemberitahuan;
-    
-        for (let i = 0; i < idList.length; i++) {
-            const element = idList[i];
+        
+        /**
+         * Loop List Barang Pada @variable idList 
+         */
+        for (let i = 0; i < oldlistBarang.length; i++) {
+            const element = oldlistBarang[i];
             const res = element.toJSON();
 
-            // Mengembalikan Ke Nilai Awal
-            await updateStockItem(req, res.idBarang, null, res.quantity, reverseJenisPemberiahuan(jenisPemberitahuan), transaction);
+            /**
+             * Mengembalikan Ke Nilai Awal, Dengan Mengambil Jenis Pemberitahuan Report, 
+             * Dan Memberinya Kebalikan dari Dari Jenis Pemberitahuan
+             * e.x:
+             *  Jenis Pemberitahuan Import --> Maka Kebalikannya Export. vica versa. 
+             */
+            await sequelize.transaction(async t => {
+                return await updateStockItem(req, res.idBarang, null, res.quantity, reverseJenisPemberiahuan(jenisPemberitahuan), t);
+            })
+            
         }
 
-        // return
+        transaction = await sequelize.transaction();
+
         let resultsListBarang = [];
 
+        /**
+         * Membuat List Barang Baru Dengan Quantity Yang Berbeda
+         */
         for(let i = 0; i < listDataBarang.length; i++) {
-            await fullDelete(req, listDataBarang[i].id, idReport, transaction);
+            await fullDelete(req, listDataBarang[i].id, idReport, transaction); // Menghapus List Barang Yang lama
             if(listDataBarang[i].id){
-                delete listDataBarang[i].id
+                delete listDataBarang[i].id // Membuang Id
             }
-
+            /**
+             * Membuat List Barang Baru Dengan Quantity Yang Berbeda
+             */
             resultsListBarang.push(await createListBarang(listDataBarang[i], transaction));
+            
+            /**
+             * Update Stock Barang Tanpa Menukarkan Jenis Pemberitahuan
+             */
             await updateStockItem(req, listDataBarang[i].idBarang, null, listDataBarang[i].quantity, jenisPemberitahuan, transaction);
         }
 
@@ -185,8 +220,10 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        console.log(error)
-        // await transaction.rollback();
+        // console.log(error)
+        if(transaction){
+            await transaction.rollback();
+        }
         return errorResponse(res, Http.internalServerError, error.message);
     }
 }
@@ -213,10 +250,13 @@ const checkStatus = (val, status) => {
 const updateStatusInvetory = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
+    let transaction;
     try {
         if(req.currentRole !== 'Admin'){
             throw new Error(`${req.currentRole} Cannot Updating Status`);
         }
+
+        transaction = await sequelize.transaction();
 
         const result = await getOneReport(req, id);
 
@@ -227,7 +267,7 @@ const updateStatusInvetory = async (req, res) => {
                 const {quantity, idBarang} = listBarangs[i].toJSON();
                 
                 // Mengembalikan Nilai
-                await updateStockItem(req, idBarang, null, quantity, reverseJenisPemberiahuan(jenisPemberitahuan));
+                await updateStockItem(req, idBarang, null, quantity, reverseJenisPemberiahuan(jenisPemberitahuan), transaction);
             }
         }else if((/(hijau)/gi).test(status)){
             const {listBarangs, jenisPemberitahuan} = result;
@@ -243,20 +283,21 @@ const updateStatusInvetory = async (req, res) => {
                 }
 
                 // Menyimpan Catatan
-                await insertHistory(data)
+                await insertHistory(data, transaction)
             }
         }
 
         // console.log(result)
 
-        await updateStatus(id, status);
+        await updateStatus(id, status, transaction);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, id, `Updating Status Report`);
         }
-
+        await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Status");
     } catch (error) {
+        await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
 }
@@ -264,7 +305,7 @@ const updateStatusInvetory = async (req, res) => {
 const updateReportPerId = async (req, res) => {
     const { id } = req.params;
     try {
-
+        
         const result = await updateReport(id, req.body.DataToInput, req);
 
         if(req.currentRole !== 'Owner'){

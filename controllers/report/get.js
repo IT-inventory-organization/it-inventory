@@ -103,7 +103,7 @@ const getOne = async (req, res) => {
     try {
         
         const result = await getOneReport(req, id);
-
+        // console.log(result)
         const data = result.toJSON();
 
         data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran = convertDate(data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran);

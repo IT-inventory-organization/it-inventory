@@ -7,7 +7,6 @@ const Crypt = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 const { getOneHistoryOnItem } = require('../../helper/Barang');
 const { getHistoryBarangPerItem } = require('../../helper/Histories');
-const { key } = require('nconf');
 
 const validationItem = [
     body('dataItem.name').trim().notEmpty().withMessage(`Name is Not Provided`),
@@ -16,7 +15,6 @@ const validationItem = [
     body('dataItem.uraian').trim().notEmpty().withMessage(`"Uraian" is Required`),
     body('dataItem.nettoBrutoVolume').trim().notEmpty().withMessage(`"Netto, Bruto, Volume" Is Required`),
     body('dataItem.satuanKemasan').trim().notEmpty().withMessage(`"Satuan Kemasan" Is Required`),
-    // body('dataItem.nilaiPabeanHargaPenyerahan').trim().notEmpty().withMessage(`" Nilai Pabean, Nilai Penyerahan" Is Required`),
     body('dataItem.stock').trim().notEmpty().withMessage(`Quantity is Required`),
 ]
 
@@ -45,14 +43,13 @@ const createItemBarang = async(req, res) => {
         const {dataItem} = req.body;
         
 
-        await createListItem(dataItem);
+        const result = await createListItem(dataItem);
 
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, null, 'Create New List Item');
         }
 
-        return successResponse(res, Http.created, "Success Create List Item");
-
+        return successResponse(res, Http.created, "Success Create List Item", result);
     } catch (error) {
         return errorResponse(res, Http.internalServerError, "Failed To Add Item")
     }
@@ -85,13 +82,13 @@ const editItemBarang = async(req, res) => {
         const {id} = req.params;
         const {dataItem} = req.body;
         delete dataItem.id;
-        await updateListItem(req, id, dataItem);
+        const result = await updateListItem(req, id, dataItem);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, null, 'Update Item Barang')
         }
 
-        return successResponse(res, Http.ok, "Success Update Item Barang")
+        return successResponse(res, Http.ok, "Success Update Item Barang", result)
     } catch (error) {
         console.log(error)
         return errorResponse(res, Http.badRequest, "Failed To Edit Item")
@@ -131,6 +128,10 @@ const updateStock = async(req, res) => {
             return errorResponse(res, Http.badRequest, "Number Value is Empty")
         }
 
+        if(total <= 0){
+            return errorResponse(res, Http.badRequest, "Number Value Must Bigger Then Zero")
+        }
+
         const {id} = req.params;
         const {status} = req.query;
 
@@ -138,6 +139,7 @@ const updateStock = async(req, res) => {
         
         return successResponse(res, Http.created, "", resultStockItem)
     } catch (error) {
+        console.log(error)
         return errorResponse(res, Http.internalServerError, error.message)
     }
 }

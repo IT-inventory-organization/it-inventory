@@ -9,18 +9,28 @@ const bundleReport = (req, res, next) => {
 
         const arr = ['BC 2.3', 'BC 2.7', 'BC 4.0', 'BC 2.6.2', 'BC 4.1', 'BC 2.5', 'BC 2.7', 'BC 2.6.1', 'BC 01', 'BC 02', 'BC 03'];
         const Inside =  ['BC 2.3', 'BC 2.7', 'BC 4.0', 'BC 2.6.2', 'BC 4.1', 'BC 2.5', 'BC 2.7', 'BC 2.6.1'];
-        const out = ['BC 01', 'BC 02', 'BC 03'];
+        const out  = ['BC 02', 'BC 03'];
+        const inOut = ['BC 01'];
+        /**
+         * BC 01 Masuk Keluar
+         * BC 02 
+         * BC 03 
+         */
 
         if(arr.indexOf(Decrypt.BCDocumentType) == -1){
             return errorResponse(res, Http.badRequest, "Document Type is Not Acceptable");
         }
 
         let jenisMasuk = ``;
-
+        /**
+         * * Pending Fix
+         */
         if(Inside.indexOf(Decrypt.BCDocumentType) != -1){
             jenisMasuk = 'in';
         }else if(out.indexOf(Decrypt.BCDocumentType) != -1){
             jenisMasuk = 'out';
+        }else if(inOut.indexOf(Decrypt.BCDocumentType) != -1){
+            jenisMasuk = 'in out';
         }else{
             return errorResponse(res, Http.badRequest, "Document Type Invalid")
         }

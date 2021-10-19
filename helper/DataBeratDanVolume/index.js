@@ -1,5 +1,6 @@
 const reportDataBeratDanVolume = require('../../database/models/databeratdanvolume');
 const Report = require('../../database/models/report');
+const { isExist } = require('../checkExistingDataFromTable');
 
 const createDataBeratDanVolume = async (data, transaction) => {
     try {
@@ -14,6 +15,24 @@ const createDataBeratDanVolume = async (data, transaction) => {
 
 const updateDataBeratDanVolume = async (data, idReport, returning = false, transaction = null) => {
     try {
+        const query = {
+            where: {
+                id: data.id,
+                reportId: idReport
+            }
+        }
+        await isExist(reportDataBeratDanVolume, query);
+        const dataBeratDanVolumeExistance = await reportDataBeratDanVolume.findOne({
+            where: {
+                id: data.id,
+                reportId: idReport
+            },
+            returning,
+            transaction
+        });
+        if(!dataBeratDanVolumeExistance){
+            throw new Error('Data Not Found');
+        }
         const result = await reportDataBeratDanVolume.update(data, {
             where:{ 
                 id: data.id,

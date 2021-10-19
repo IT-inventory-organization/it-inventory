@@ -1,5 +1,6 @@
 const reportDataPetiKemasDanPengemas = require('../../database/models/datapetikemasdanpengemas');
 const Report = require('../../database/models/report');
+const { isExist } = require('../checkExistingDataFromTable');
 
 const createDataPetiKemasDanPengemas = async (data, transaction) => {
     try {
@@ -14,6 +15,14 @@ const createDataPetiKemasDanPengemas = async (data, transaction) => {
 
 const updateDataPetiKemasDanPengemas = async (data, idReport, returning = false, transaction = null) => {
     try {
+        const query = {
+            where: {
+                id: data.id,
+                reportId: idReport
+            }
+        }
+
+        await isExist(reportDataPetiKemasDanPengemas, query);
         const result = await reportDataPetiKemasDanPengemas.update(data, {
             where:{ 
                 id: data.id,

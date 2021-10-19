@@ -30,9 +30,21 @@ module.exports={
     createListItem: async (data, transaction = null) => {
         try {
             const result = await Barang.create(data, {
-                transaction: transaction
+                transaction: transaction,
+                returning: true
             });
-            return result;
+
+            if(!result){
+                throw new Error('Failed Create Barang')
+            }
+
+            const find = await Barang.findOne({
+                where: {
+                    id: result.toJSON().id
+                },
+                attributes: ['name', 'posTarif', 'nettoBrutoVolume', 'hsCode', 'satuanKemasan', 'stock', 'id', 'uraian']
+            })
+            return find;
         } catch (error) {
             throw error;
         }
@@ -40,12 +52,12 @@ module.exports={
 
     softDeleteListItem: async (req, id, transaction = null) => {
         try {
-            if(!await authUser(Barang, id, req, true)){
-                throw new Error('User Is Not Authorized To Delete List Item');
-            }
             const findItem = await findBarang(id, req.currentUser);
             if(!findItem) {
                 throw new Error(`Data Not Found`);
+            }
+            if(!await authUser(Barang, id, req, true)){
+                throw new Error('User Is Not Authorized To Delete List Item');
             }
             const result = await Barang.update({
                     isDelete: true
@@ -62,7 +74,7 @@ module.exports={
             }
             return result;
         } catch (error) {
-            return error;
+            throw error;
         }
     },
 
@@ -87,10 +99,24 @@ module.exports={
                     id:id,
                     userId: req.currentUser
                 },
-                transaction: transaction
+                transaction: transaction,
+                returning: true
             })
+
+            if(!result){
+                throw new Error(`Failed Update Item`)
+            }
             
-            return result;
+            const found = await Barang.findOne({
+                where: {
+                    id: id,
+                    userId: req.currentUser
+                },
+                attributes: ['name', 'posTarif', 'nettoBrutoVolume', 'hsCode', 'satuanKemasan', 'stock', 'id', 'uraian'],
+                transaction: transaction
+            });
+            
+            return found;
         } catch (error) {
             throw error
         }
@@ -200,29 +226,23 @@ module.exports={
             }
             
             let quantity = resultFindItem.stock;
-            // console.log(quantity, total, notificationType);
+            console.log(quantity, total, notificationType);
             if(status != null){
                 if((/(increase)/gi).test(status)){
                     quantity += (+total);
                 }else if((/(decrease)/gi).test(status)){
-                    if(quantity == 0){
-                        throw new Error(`Stock ${resultFindItem.uraian} is Currently Empty`)
-                    }
                     quantity -= (+total);
-                    if(quantity <= 0){
-                        throw new Error(`Stock ${resultFindItem.uraian} is Too Low`)
+                    if(quantity < 0){
+                        throw new Error(`Stock ${resultFindItem.name} is Too Low`)
                     }
                 }
             }else if(notificationType != null){
                 if((/(export)/gi).test(notificationType)){
-                    if(quantity == 0){
-                        throw new Error(`Stock ${resultFindItem.uraian} is Currently Empty`)
-                    }
     
                     quantity -= (+total);
                     
-                    if(quantity <= 0){
-                        throw new Error(`Stock ${resultFindItem.uraian} is Too Low`)
+                    if(quantity < 0){
+                        throw new Error(`Stock ${resultFindItem.name} is Too Low`)
                     }
                 }else if((/(import)/gi).test(notificationType)){
                     quantity += (+total);
@@ -313,38 +333,3 @@ module.exports={
         }
     }
 }
-
-/**
- * const found = await Barang.findAll({
-                where: {
-                    id: idBarang,
-                    userId: req.currentUser,
-                },
-                attributes: ['name'],
-                include: [
-                    {
-                        model: Histories,
-                        attributes: ['quantityItem', 'updatedAt', 'status'],
-                        include: [
-                            {
-                                model: Report,
-                                where: {
-                                    status: {[Op.not]: null}
-                                },
-                                attributes: ['typeReport', 'BCDocumentType', 'id', 'jenisPemberitahuan'],
-                                include: [
-                                    {
-                                        model: reportIdentitasPenerima,
-                                        attributes: ['namaPenerima']
-                                    },
-                                    {
-                                        model: reportListDokumen,
-                                        attributes: ['nomorDokumen']
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            })
- */
