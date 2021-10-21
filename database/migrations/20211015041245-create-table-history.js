@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       reportId: {
-        allowNull: false,
+        allowNull: true,
         type: Sequelize.INTEGER,
         referecenes: {
           model: 'Report',
@@ -41,6 +41,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('table-histories');
+    await queryInterface.dropTable('histories');
   }
 };

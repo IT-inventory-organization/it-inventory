@@ -43,57 +43,53 @@ const createReport = async (data, transaction) => {
 const updateReport = async(id, data, req) => {
     let transaction;
     try {
-        /**
-         * 1. Find One Existing Data
-         * 2. Compare Existing Data Dengan Update
-         * 3. Jika Tidak Sama 
-         */
-        transaction = await sequelize.transaction();
-        const found = await Report.findOne({where: {id: id}, transaction});
-        if(!found){
-            throw new Error('Data Not Found');
-        }
-        
-        const resultToCheck = [];
-        if(found.toJSON().jenisPemberitahuan !== data.jenisPemberitahuan){
-            const listBarangOfExistingData = await reportListBarang.findAll({where:{reportId: id}}, transaction);
-            
-            if(data.jenisPemberitahuan === 'Export'){
-                for (let i = 0; i < listBarangOfExistingData.length; i++) {
-                    const jsonListBarang = listBarangOfExistingData[i].toJSON();
-                    const Dec = await Barang.decrement('stock', {
-                        by: 2 * +jsonListBarang.quantity,
-                        where: {
-                            id: jsonListBarang.idBarang,
-                            userId: req.currentUser
-                        },
-                        transaction
-                    });
-                    if(Dec[0][0][0].stock < 0){
-                        throw new Error(`Stock ${Dec[0][0][0].name} Reach Minus, Update Failed`);
-                    }
-                    resultToCheck.push(Dec)                  
-                }
-            }else if(data.jenisPemberitahuan === 'Import'){
-                for(let i = 0; i < listBarangOfExistingData.length; i++){
-                    const jsonListBarang = listBarangOfExistingData[i].toJSON();
-                    const Inc = await Barang.increment('stock', {
-                        by: 2 * +jsonListBarang.quantity,
-                        where: {
-                            id: jsonListBarang.idBarang,
-                            userId: req.currentUser
-                        },
-                        transaction
-                    })
-                    
-                    resultToCheck.push(Inc)
-                }
-            }
-            if(resultToCheck.length !== listBarangOfExistingData.length){
-                throw new Error('Failed To Update Report')
-            }
 
-        }
+        transaction = await sequelize.transaction();
+        // const found = await Report.findOne({where: {id: id}, transaction});
+        // if(!found){
+        //     throw new Error('Data Not Found');
+        // }
+        
+        // const resultToCheck = [];
+        // if(found.toJSON().jenisPemberitahuan !== data.jenisPemberitahuan){
+        //     const listBarangOfExistingData = await reportListBarang.findAll({where:{reportId: id}}, transaction);
+            
+        //     if(data.jenisPemberitahuan === 'Export'){
+        //         for (let i = 0; i < listBarangOfExistingData.length; i++) {
+        //             const jsonListBarang = listBarangOfExistingData[i].toJSON();
+        //             const Dec = await Barang.decrement('stock', {
+        //                 by: 2 * +jsonListBarang.quantity,
+        //                 where: {
+        //                     id: jsonListBarang.idBarang,
+        //                     userId: req.currentUser
+        //                 },
+        //                 transaction
+        //             });
+        //             if(Dec[0][0][0].stock < 0){
+        //                 throw new Error(`Stock ${Dec[0][0][0].name} Reach Minus, Update Failed`);
+        //             }
+        //             resultToCheck.push(Dec)                  
+        //         }
+        //     }else if(data.jenisPemberitahuan === 'Import'){
+        //         for(let i = 0; i < listBarangOfExistingData.length; i++){
+        //             const jsonListBarang = listBarangOfExistingData[i].toJSON();
+        //             const Inc = await Barang.increment('stock', {
+        //                 by: 2 * +jsonListBarang.quantity,
+        //                 where: {
+        //                     id: jsonListBarang.idBarang,
+        //                     userId: req.currentUser
+        //                 },
+        //                 transaction
+        //             })
+                    
+        //             resultToCheck.push(Inc)
+        //         }
+        //     }
+        //     if(resultToCheck.length !== listBarangOfExistingData.length){
+        //         throw new Error('Failed To Update Report')
+        //     }
+
+        // }
         
         const checkForExistingReport = await Report.findOne({where: {id: id, userId: req.currentUser}, transaction});
 

@@ -4,7 +4,7 @@ const db = require('../../configs/database');
 
 const Histories = db.define('histories', {
   reportId: {
-    allowNull: false,
+    allowNull: true,
     type: Sequelize.INTEGER,
     references: {
       model: "Reports",
@@ -27,6 +27,9 @@ const Histories = db.define('histories', {
     type: Sequelize.INTEGER,
   },
   status: {
+    type: Sequelize.STRING
+  },
+  desc: {
     type: Sequelize.STRING
   }
 }, {

@@ -42,7 +42,7 @@ module.exports={
                 where: {
                     id: result.toJSON().id
                 },
-                attributes: ['name', 'posTarif', 'nettoBrutoVolume', 'hsCode', 'satuanKemasan', 'stock', 'id', 'uraian']
+                attributes: ['name', 'posTarif', 'nettoBrutoVolume', 'hsCode', 'satuanKemasan', 'stock', ['id', 'idBarang'], 'uraian']
             })
             return find;
         } catch (error) {
@@ -112,7 +112,7 @@ module.exports={
                     id: id,
                     userId: req.currentUser
                 },
-                attributes: ['name', 'posTarif', 'nettoBrutoVolume', 'hsCode', 'satuanKemasan', 'stock', 'id', 'uraian'],
+                attributes: ['name', 'posTarif', 'nettoBrutoVolume', 'hsCode', 'satuanKemasan', 'stock', ['id', 'idBarang'], 'uraian'],
                 transaction: transaction
             });
             
@@ -167,14 +167,14 @@ module.exports={
                     throw new Error(`User Is Not Authorized to Access Data`)
                 }
 
-                let sql = `SELECT barang.name, barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
+                let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
 
                 const result = await sequelize.query(sql);
                 return result[0]
             }else{
                 
 
-                let sql = `SELECT barang.name, barang.id, barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
+                let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
 
 
                 const result = await sequelize.query(sql);
@@ -263,11 +263,6 @@ module.exports={
         
     },
 
-    getItem: async(req) => {
-        const result = await Barang.findAll();
-        return result;
-    },
-
     getOneHistoryOnItem: async (req, idBarang) => {
         try {
             let query = {
@@ -317,6 +312,8 @@ module.exports={
                     },
                 ]
             };
+
+            query.attributes = [['id', 'idBarang']];
 
             const result = await Barang.findOne(query);
             return result;

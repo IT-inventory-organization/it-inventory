@@ -37,7 +37,7 @@ const { updateDataBeratDanVolume } = require('../../helper/DataBeratDanVolume');
 const { updateDataPetiKemasDanPengemas } = require('../../helper/DataPetiKemasDanPengemas');
 const { updateDataTempatPenimbunan } = require('../../helper/DataTempatPenimbunan');
 const { updatePerkiraanTanggalPengeluaran }= require('../../helper/DataPerkiraanTanggalPengeluaran');
-const { createListBarang, fullDelete, fetchListBarang } = require('../../helper/ListBarang');
+const { createListBarang, fullDelete } = require('../../helper/ListBarang');
 const { softDeleteListDokumen, createListDokumen } = require('../../helper/ListDokumen');
 const { updateDataPetiKemas } = require('../../helper/DataPetiKemas');
 const { BDataBarang } = require('../../helper/bundleDataBarang');
@@ -52,9 +52,10 @@ const { updateReport, updateStatus, checkAuthorization, getOneSpecificReport, ge
 const validationReport = require('../../middlewares/validationDataReport');
 const { bundleReport } = require('../../helper/bundleReport');
 const { updateDataLartas } = require('../../helper/DataLartas');
-const { updateStockItem, getListItem } = require('../../helper/Barang');
-const { reverseJenisPemberiahuan } = require('../../helper/util');
+const { updateStockItem } = require('../../helper/Barang');
 const { insertHistory } = require('../../helper/Histories');
+const { isExist } = require('../../helper/checkExistingDataFromTable');
+const Report = require('../../database/models/report');
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -140,73 +141,32 @@ const updateDataBarang = async (req, res) => {
     try {
 
         const {DataToInput: {listDataBarang}} = req.body;
-        
-        /**
-         * Mencari List Barang Dengan Id Report Pada Param
-         */
-        let oldlistBarang = await fetchListBarang(req, idReport); // Fetch Data Di List Barang
-        
-        /**
-         * Jika Tidak Di Temukan Buat Array Kosong
-         */
-        if(!oldlistBarang){
-            oldlistBarang = [];
-        }
 
-        /**
-         * Mencari Satu Report Dengan id Report
-         */
-        const found = await getOneSpecificReport(req, idReport); // Mencari Jenis Pemberitahuan Report
-
-        if(!found){ // JIka Tidak Di Temukan Beri Pesan Error Gagal
-            return errorResponse(res, Http.internalServerError, "Failed To Update Data");
-        }
-
-        /**
-         * Mengambil Key Jenis Pemberitahuan Pada Report
-         */
-        const jenisPemberitahuan = found.toJSON().jenisPemberitahuan;
-        
-        /**
-         * Loop List Barang Pada @variable idList 
-         */
-        for (let i = 0; i < oldlistBarang.length; i++) {
-            const element = oldlistBarang[i];
-            const res = element.toJSON();
-
-            /**
-             * Mengembalikan Ke Nilai Awal, Dengan Mengambil Jenis Pemberitahuan Report, 
-             * Dan Memberinya Kebalikan dari Dari Jenis Pemberitahuan
-             * e.x:
-             *  Jenis Pemberitahuan Import --> Maka Kebalikannya Export. vica versa. 
-             */
-            await sequelize.transaction(async t => {
-                return await updateStockItem(req, res.idBarang, null, res.quantity, reverseJenisPemberiahuan(jenisPemberitahuan), t);
-            })
-            
-        }
+        await isExist(Report, {where: {id: idReport, userId: req.currentUser}});
 
         transaction = await sequelize.transaction();
 
         let resultsListBarang = [];
-
         /**
          * Membuat List Barang Baru Dengan Quantity Yang Berbeda
          */
+        await fullDelete(req, null, idReport, transaction)
         for(let i = 0; i < listDataBarang.length; i++) {
-            await fullDelete(req, listDataBarang[i].id, idReport, transaction); // Menghapus List Barang Yang lama
-            if(listDataBarang[i].id){
-                delete listDataBarang[i].id // Membuang Id
+            // console.log(i, listDataBarang[i])
+
+            if(listDataBarang[i].id || typeof listDataBarang[i].id !== 'undefined'){
+                delete listDataBarang[i].id 
             }
             /**
              * Membuat List Barang Baru Dengan Quantity Yang Berbeda
              */
-            resultsListBarang.push(await createListBarang(listDataBarang[i], transaction));
+            let result = await createListBarang(listDataBarang[i], transaction, idReport);
             
-            /**
-             * Update Stock Barang Tanpa Menukarkan Jenis Pemberitahuan
-             */
-            await updateStockItem(req, listDataBarang[i].idBarang, null, listDataBarang[i].quantity, jenisPemberitahuan, transaction);
+            if(result.error){
+                return errorResponse(res, Http.badRequest, result.error);
+            }
+            // console.log('asd',result);
+            resultsListBarang.push(result);
         }
 
         const dataToReturn = {
@@ -216,11 +176,10 @@ const updateDataBarang = async (req, res) => {
 
         await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
         
-
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        // console.log(error)
+        console.log(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -260,25 +219,19 @@ const updateStatusInvetory = async (req, res) => {
 
         const result = await getOneReport(req, id);
 
-        if((/(merah)/).test(status)){
-            const { listBarangs, jenisPemberitahuan } = result;
-            
-            for(let i = 0; i < listBarangs.length; i++){
-                const {quantity, idBarang} = listBarangs[i].toJSON();
-                
-                // Mengembalikan Nilai
-                await updateStockItem(req, idBarang, null, quantity, reverseJenisPemberiahuan(jenisPemberitahuan), transaction);
-            }
-        }else if((/(hijau)/gi).test(status)){
+        if((/(hijau)/gi).test(status)){
             const {listBarangs, jenisPemberitahuan} = result;
 
             for(let i = 0; i < listBarangs.length; i++){
                 const {idBarang, quantity} = listBarangs[i].toJSON();
 
+                // Mengubah Nilai
+                await updateStockItem(req, idBarang, null, quantity, jenisPemberitahuan, transaction);
+
                 const data = {
-                    idBarang: idBarang,
-                    reportId: id,
-                    quantityItem: quantity,
+                    idBarang: +idBarang,
+                    reportId: +id,
+                    quantityItem: +quantity,
                     status: checkStatus(jenisPemberitahuan, status)
                 }
 

@@ -18,7 +18,7 @@ const createUserActivity = async(userId, reportId, activity) => {
 
 const getUserActivity = async(req) => {
   if(req.currentRole !== "Owner"){
-    return "Your No An Owner Of this Website"
+    return "Your Not An Owner Of this Website"
   }
   try {
     const result = await UserActivity.findAll({

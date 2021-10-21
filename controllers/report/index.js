@@ -54,7 +54,6 @@ const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 const { bundleReport } = require('../../helper/bundleReport');
 const { createDataLartas } = require('../../helper/DataLartas');
-const { updateStockItem } = require('../../helper/Barang');
 
 const addReport = async (req, res) => {
     try {
@@ -190,15 +189,16 @@ const addDataBarang = async (req, res) => {
             return errorResponse(res, Http.badRequest, "Report Not Found");
         }
 
-        const typeNotification = found.toJSON().jenisPemberitahuan;
-
-
         // Loop Dengan Async
         for (let index = 0; index < listDataBarang.length; index++) {
             // console.log(listDataBarang[index]);
-            let res = await createListBarang(listDataBarang[index], transaction);
+            let res = await createListBarang(listDataBarang[index], transaction, reportId);
             
-            await updateStockItem(req, listDataBarang[index].idBarang, null, listDataBarang[index].quantity, typeNotification, transaction);
+            if(res.error){
+                return errorResponse(res, Http.badRequest, res.error);
+            }
+            
+            // await updateStockItem(req, listDataBarang[index].idBarang, null, listDataBarang[index].quantity, typeNotification, transaction);
             promises.push(res);
         }
         // return;
@@ -218,7 +218,7 @@ const addDataBarang = async (req, res) => {
     } catch (error) {
         console.log(error)
         await transaction.rollback();
-        return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
+        return errorResponse(res, Http.internalServerError, error.message)
     }
 }
 

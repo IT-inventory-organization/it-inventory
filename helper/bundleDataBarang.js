@@ -35,18 +35,20 @@ const BDataBarang = (req, res, next) => {
         }
 
         const Decrypt = Encryption.AESDecrypt(req.body.dataBarang);
-
+        // console.log('asdasdasdasdsa',Decrypt)
         for(let i = 0; i < Decrypt.listDataBarang.length; i++){
             Decrypt.listDataBarang[i].reportId = Decrypt.reportId
         }
-
+        // console.log(req.body)
         req.body.DataToInput = {
-            listDataBarang: Decrypt.listDataBarang,
-            reportId: Decrypt.reportId
+            ...Decrypt
         }
+
+        // console.log(req.body.DataToInput);
 
         next();
     } catch (error) {
+        console.log(error)
         return errorResponse(res, Http.badRequest, "Failed To Add Data Barang", error)
     }
 }

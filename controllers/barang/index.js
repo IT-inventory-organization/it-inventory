@@ -2,11 +2,11 @@ const {body, validationResult} = require('express-validator');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
-const { createListItem, softDeleteListItem, updateListItem, getListItem, updateStockItem, getItem, fetchHistoryIteBarang } = require('../../helper/Barang');
+const { createListItem, softDeleteListItem, updateListItem, getListItem, updateStockItem, getItem } = require('../../helper/Barang');
 const Crypt = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
-const { getOneHistoryOnItem } = require('../../helper/Barang');
-const { getHistoryBarangPerItem } = require('../../helper/Histories');
+const { getHistoryBarangPerItem, insertHistory } = require('../../helper/Histories');
+const sequelize = require('../../configs/database');
 
 const validationItem = [
     body('dataItem.name').trim().notEmpty().withMessage(`Name is Not Provided`),
@@ -21,7 +21,7 @@ const validationItem = [
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.item);
-        // console.log(Decrypt);return;
+        
         req.body.dataItem = {
             ...Decrypt,
             userId: req.currentUser
@@ -31,7 +31,6 @@ const bundle = (req, res, next) => {
     } catch (error) {
         throw errorResponse(res, Http.badRequest, 'Failed To Add List Item');
     }
-    
 }
 
 const createItemBarang = async(req, res) => {
@@ -42,7 +41,6 @@ const createItemBarang = async(req, res) => {
         }
         const {dataItem} = req.body;
         
-
         const result = await createListItem(dataItem);
 
         if(req.currentRole != 'Owner'){
@@ -90,7 +88,6 @@ const editItemBarang = async(req, res) => {
 
         return successResponse(res, Http.ok, "Success Update Item Barang", result)
     } catch (error) {
-        console.log(error)
         return errorResponse(res, Http.badRequest, "Failed To Edit Item")
     }
 }
@@ -121,8 +118,9 @@ const getAnItem = async(req, res) => {
 }
 
 const updateStock = async(req, res) => {
+    let transaction;
     try {
-        const { total } = Crypt.AESDecrypt(req.body.Total);
+        const Decrypt = Crypt.AESDecrypt(req.body.Total);
         
         if(typeof total === 'undefined' || total == null){
             return errorResponse(res, Http.badRequest, "Number Value is Empty")
@@ -135,11 +133,25 @@ const updateStock = async(req, res) => {
         const {id} = req.params;
         const {status} = req.query;
 
-        const resultStockItem = await updateStockItem(req, id, status, total);
+        transaction = await sequelize.transaction();
+
+        const resultStockItem = await updateStockItem(req, id, status, Decrypt.total, null, transaction);
+
+        if(req.currentRole != 'Owner'){
+            await createUserActivity(req.currentUser, null, `Update Stock`);
+        }
+
+        await insertHistory({
+            idBarang: id,
+            quantityItem: total,
+            status: status,
+            desc: Decrypt.desc
+        }, transaction);
         
+        await transaction.commit()
         return successResponse(res, Http.created, "", resultStockItem)
     } catch (error) {
-        console.log(error)
+        await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message)
     }
 }
@@ -161,9 +173,21 @@ const getItemToChoose = async (req, res) => {
 const historyDataBarang = async (req, res) => {
     try {
         const {id} = req.params;
-        const result = await getHistoryBarangPerItem(req, id);
+        const {type} = req.query;
+
+        let stats = false
+        if(type == `noReport`){
+            stats = true
+        }
+
+        const result = await getHistoryBarangPerItem(req, id, stats);
+        if(result.length == 0){
+            return errorResponse(res, Http.badRequest, "Data Not Found")
+        }
         const name = await getListItem(req, {id: id})
+
         let qry = [];
+
         for(let i =0; i < result.length; i++){
             let obj = {};
             // console.log(name)
@@ -185,7 +209,7 @@ const historyDataBarang = async (req, res) => {
         
         return successResponse(res, Http.ok, "Success Fetching Item History", qry);
     } catch (error) {
-
+        console.log(error)
         return errorResponse(res, Http.internalServerError, error)
     }
 }
