@@ -20,93 +20,61 @@ module.exports = {
     },
     getHistoryBarangPerItem: async(req, idBarang, noReport) => {
         try {
-
             let query = {};
-            if(!noReport){
-                query = {
-                    where: {
-                        idBarang: idBarang
-                    },
-                    attributes: [['quantityItem', 'quantity'], 'status', 'updatedAt'],
-                    include: [
-                        {
-                            model: Report,
-                            attributes: ['jenisPemberitahuan', 'typeReport', 'BCDocumentType', ['id', 'nomorAjuan']],
-                            where: {
-                                isDelete: false,
-                                userId: req.currentUser
-                            },
-                            include: [
-                                {
-                                    model: reportIdentitasPenerima,
-                                    attributes: ['namaPenerima'],
-                                    // as: 'asd'
-                                }
-                            ],
-                            // required: false
+            query = {
+                where: {
+                    idBarang: idBarang
+                },
+                attributes: [['quantityItem', 'quantity'], 'status', 'updatedAt'],
+                include: [
+                    {
+                        model: Report,
+                        attributes: ['jenisPemberitahuan', 'typeReport', 'BCDocumentType', ['id', 'nomorAjuan']],
+                        where: {
+                            isDelete: false,
+                            userId: req.currentUser
                         },
-                        {
-                            model: Barang,
-                            where: {
-                                isDelete: false
+                        include: [
+                            {
+                                model: reportIdentitasPenerima,
+                                attributes: ['namaPenerima'],
+                                // as: 'asd'
                             }
+                        ],
+                        required: false
+                    },
+                    {
+                        model: Barang,
+                        where: {
+                            isDelete: false
                         }
-                    ],
-                    raw: true,
-                    logging: console.log
-                }
-                // console.log(query)
-                let result = await Histories.findAll(query);
-                
-                if(result.length){
-                    for(let i = 0; i < result.length; i++){
-                        const res = await reportListDokumen.findOne({
-                            where: {
-                                reportId: result[i]['Report.nomorAjuan']
-                            },
-                            attributes: ['nomorDokumen']
-                        });
-        
+                    }
+                ],
+                raw: true,
+            }
+            let result = await Histories.findAll(query);
+            if(result.length){
+                for(let i = 0; i < result.length; i++){
+                    const res = await reportListDokumen.findOne({
+                        where: {
+                            reportId: result[i]['Report.nomorAjuan']
+                        },
+                        attributes: ['nomorDokumen']
+                    });
+                    
+                    if(res) {
                         const found = res.toJSON();
-                        
                         result[i] = {
                             ...result[i],
                             'nomorDokumen': found.nomorDokumen
                         }
                     }
-                }else{
-                    result = [];
                 }
-    
-                return result;
             }else{
-                query = {
-                    where: {
-                        [Op.and]: [
-                            {reportId: null},
-                            {idBarang: +idBarang},
-                        ]
-                    },
-                    include: [
-                        {
-                            model: Barang,
-                            where: {
-                                isDelete: false
-                            }
-                        }
-                    ],
-                    attributes: [['quantityItem', 'quantity'], 'status', 'updatedAt'],
-                    raw: true,
-                    logging: console.log
-                }
-
-                let result = await Histories.findAll(query);
-                if(!result){
-                    result = [];
-                }
-
-                return result;
+                result = [];
             }
+
+            return result;
             
         } catch (error) {
             console.log(error)

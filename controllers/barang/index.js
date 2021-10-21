@@ -119,9 +119,9 @@ const getAnItem = async(req, res) => {
 const updateStock = async(req, res) => {
     let transaction;
     try {
-        const Decrypt = Crypt.AESDecrypt(req.body.Total);
+        const { total } = Crypt.AESDecrypt(req.body.Total);
         
-        if(typeof total === 'undefined' || total == null){
+        if(total == null){
             return errorResponse(res, Http.badRequest, "Number Value is Empty")
         }
 
@@ -134,7 +134,7 @@ const updateStock = async(req, res) => {
 
         transaction = await sequelize.transaction();
 
-        const resultStockItem = await updateStockItem(req, id, status, Decrypt.total, null, transaction);
+        const resultStockItem = await updateStockItem(req, id, status, total, null, transaction);
 
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, null, `Update Stock`);
@@ -150,7 +150,9 @@ const updateStock = async(req, res) => {
         await transaction.commit()
         return successResponse(res, Http.created, "", resultStockItem)
     } catch (error) {
-        await transaction.rollback();
+        if(transaction){
+            await transaction.rollback();
+        }
         return errorResponse(res, Http.internalServerError, error.message)
     }
 }

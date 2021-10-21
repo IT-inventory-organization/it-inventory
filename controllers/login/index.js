@@ -63,7 +63,7 @@ const loginAction = async (req, res) => {
     }
 
     const result = getUser.toJSON();
-
+    
     // Check password
     if (checkHashText(result.password, req.body.DataToInput.password)) {
       // User Biasa
