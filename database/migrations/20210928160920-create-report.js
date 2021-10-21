@@ -17,7 +17,7 @@ module.exports = {
       jenisPemberitahuan: {
         type: Sequelize.STRING
       },
-      jenisKeluar: {
+      jenisMasuk: {
         type: Sequelize.STRING
       },
       userId: {

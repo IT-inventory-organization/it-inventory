@@ -1,6 +1,6 @@
 const { errorResponse, successResponse } = require('../../helper/Response');
 const { getAllReport, getOneReport } = require('../../helper/DataReport');
-const authentication = require('../../middlewares/Authentication');
+const authentication = require('../../middlewares/authentication');
 const httpStatus = require('../../helper/Httplib');
 const sequelize = require('../../configs/database')
 const { createUserActivity } = require('../../helper/UserActivity');
@@ -18,6 +18,7 @@ const reportDataPerkiraanTanggalPengeluaran = require('../../database/models/dat
 const reportListBarang = require('../../database/models/listbarang');
 const reportListDokumen = require('../../database/models/listdokumen');
 const reportDataPetiKemas = require('../../database/models/datapetikemas');
+const {getOneUserData} = require('../../helper/DataUser')
 
 const importExportTotal = (importExportValue, status = null) => {
     let returnValue = {};
@@ -46,7 +47,6 @@ const getCountReportByType = async (req, res) => {
         const result = await countReportByType(status, req);
 
         try {
-            // const temp = result.toJSON(result)
             const resultActivity = await createUserActivity(req.currentUser, null, "View Total Report By Type")
         } catch (error) {
             throw error;
@@ -67,8 +67,9 @@ const getCountReportByType = async (req, res) => {
 
 const getAll = async(req, res) => {
     try {
-        const {pageSize, pageNo, sortBy, search, type} = req.query;
-        const result = await getAllReport(req, pageSize, pageNo, sortBy, search, type);
+
+        const {pageSize, pageNo, sortBy, search, type, status} = req.query;
+        const result = await getAllReport(req, pageSize, pageNo, sortBy, search, type, status);
         
         if(result.error) {
             throw new Error(result.error)
@@ -84,17 +85,40 @@ const getAll = async(req, res) => {
     }
 }
 
+const convertDate = (date) => {
+    const ISO = new Date(date);
+    return `${addZero(ISO.getDate())}-${addZero(ISO.getMonth()+1)}-${ISO.getFullYear()}`;
+}
+
+const addZero = (val) => {
+    if(val < 10){
+        return `0${val}`
+    }
+
+    return val
+}
+
 const getOne = async (req, res) => {
     const {id} = req.params
     try {
+        
         const result = await getOneReport(req, id);
+        // console.log(result)
+        const data = result.toJSON();
+
+        data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran = convertDate(data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran);
+        data.IdentitasPengirim.tanggalIjinBpkPengirim = convertDate(data.IdentitasPengirim.tanggalIjinBpkPengirim);
+
+        for (let i = 0; i < data.ListDokumens.length; i++) {
+            data.ListDokumens[i].tanggalDokumen = convertDate(data.ListDokumens[i].tanggalDokumen);       
+        }
 
         // Remove
         if(req.currentRole != 'Owner'){
             await createUserActivity(req.currentUser, id, "View One Report");
         }
 
-        return successResponse(res, httpStatus.ok, "", result);
+        return successResponse(res, httpStatus.ok, "", data);
     } catch (error) {
         console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
@@ -107,7 +131,7 @@ const getCode = (val) => {
     }
 
     if(!val.includes('-')){
-        throw new Error('Value Doesnt Include "-"')
+        return val
     }
 
     const split = val.split('-');
@@ -278,7 +302,7 @@ const getTotalReport = async (req, res) => {
             await createUserActivity(req.currentUser, null, "Viewing Total Report");
         }
 
-        const total = result[0]
+        const total = result[0];
 
         return successResponse(res, httpStatus.ok, "", importExportTotal(total));
     } catch (error) {
@@ -292,7 +316,7 @@ const getDataActivityRedLine = async (req, res) => {
         const {pageSize, pageNo, type} = req.query;
         if(type === null || typeof type === 'undefined') {
             const result = await getAllReportByType(req, pageSize, pageNo);
-            return successResponse(res, httpStatus.ok, "", result);
+            return successResponse(res, httpStatus.ok, "", result[0]);
         }
 
         // Remove
@@ -403,15 +427,33 @@ const getDataBarangReport =  async(req, res) => {
         };
 
         if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, id, `Get Data Barang Report`);
+            await createUserActivity(req.currentUser, idReport, `Get Data Barang Report`);
         }
 
-        // console.log(payload);
         return successResponse(res, httpStatus.ok, "", payload);
         
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, "Failed To Fetch Data Barang")
     }
+}
+
+const getOneUser = async(req, res) => {
+    try {
+        const result = await getOneUserData(req, req.currentUser);
+
+        if(req.currentRole !== 'Owner'){
+            await createUserActivity(req.currentUser, null, `Get Data User`);
+        }
+
+        return successResponse(res, httpStatus.ok,"", result);
+    } catch (error) {
+
+        return errorResponse(res, httpStatus.internalServerError, "Failed To Fetch Data User")
+    }
+}
+
+const getStatusNull = async(req, res) => {
+    
 }
 
 module.exports = (routes) => {
@@ -424,4 +466,5 @@ module.exports = (routes) => {
     routes.get('/data-header/:idReport', authentication, getDataHeaderReport);
     routes.get('/data-lanjutan/:idReport', authentication, getDataLanjutanReport);
     routes.get('/data-barang/:idReport', authentication, getDataBarangReport);
+    routes.get('/user', authentication, getOneUser);
 }

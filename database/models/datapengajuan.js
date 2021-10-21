@@ -6,7 +6,7 @@ const reportDataPengajuan = db.define('DataPengajuan', {
   kantorPabeanAsal: Sequelize.STRING,
   kategoryPemberitahuan: Sequelize.STRING,
   kategoryPengeluaran: Sequelize.STRING,
-  tujuanPengeluan: Sequelize.STRING,
+  tujuanPengeluaran: Sequelize.STRING,
   asalBarang: Sequelize.STRING,
   caraPembayaran: Sequelize.STRING,
   reportId: {

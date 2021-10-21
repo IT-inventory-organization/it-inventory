@@ -7,7 +7,6 @@ const dataDokumen = (req, res, next) => {
     try {
 
         const Decrypt = Encryption.AESDecrypt(req.body.dataLanjutan);
-        // console.log(Decrypt);return;
         for (let i = 0; i < Decrypt.dataDokumen.length; i++) {
             Decrypt.dataDokumen[i].tanggalDokumen = convertStrignToDateUTC(Decrypt.dataDokumen[i].tanggalDokumen);
             Decrypt.dataDokumen[i].reportId = Decrypt.reportId;
@@ -20,7 +19,6 @@ const dataDokumen = (req, res, next) => {
             ...req.body.DataToInput,
             dataDokumen: cDataDokumen,
         }
-        // console.log(req.body.DataToInput);return;
         
         next();
     } catch (error) {
@@ -43,7 +41,6 @@ const petiKemas = (req, res, next) => {
             dataPetiKemas: cPetiKemas,
         }
         delete req.body.dataLanjutan;
-        // console.log(req.body.DataToInput);return;
         
         next();
     } catch (error) {

@@ -18,7 +18,14 @@ const validationArrListBarang = [
     // body('barang.*.reportId').notEmpty().trim()
 ]
 
+const VListBarang = [
+    body('DataToInput.listDataBarang.*.idBarang').notEmpty().trim().withMessage(`Select Item You Want To Export / Import`),
+    body('DataToInput.listDataBarang.*.quantity').notEmpty().trim().withMessage(`How Many Item You Want To Export / Import ?`),
+    body('DataToInput.listDataBarang.*.nilaiPabeanHargaPenyerahan').notEmpty().trim().withMessage(`Nilai Pabean, Harga Penyerahan is Required`)
+]
+
 module.exports = {
     validationListBarang,
-    validationArrListBarang
+    validationArrListBarang,
+    VListBarang
 }

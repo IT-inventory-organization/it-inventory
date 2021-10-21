@@ -8,7 +8,8 @@ const {
     validationBeratDanVolume,
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
-    validationDataTempatPenimbunan
+    validationDataTempatPenimbunan,
+    validationDataLartas
 } = require('../../middlewares/validationDataHeader');
 const {
     dataPengajuan,
@@ -21,7 +22,8 @@ const {
     dataPetiKemasDanPengemas,
     dataPerkiraanTanggalPengeluaran,
     dataTempatPenimbunan,
-    idReport
+    idReport,
+    dataLartas
 } = require('../../helper/bundleDataReportHeader');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const { validationResponse } = require('../../middlewares/validationResponse');
@@ -35,20 +37,25 @@ const { updateDataBeratDanVolume } = require('../../helper/DataBeratDanVolume');
 const { updateDataPetiKemasDanPengemas } = require('../../helper/DataPetiKemasDanPengemas');
 const { updateDataTempatPenimbunan } = require('../../helper/DataTempatPenimbunan');
 const { updatePerkiraanTanggalPengeluaran }= require('../../helper/DataPerkiraanTanggalPengeluaran');
-const { softDeleteListBarang, createListBarang } = require('../../helper/ListBarang');
+const { createListBarang, fullDelete } = require('../../helper/ListBarang');
 const { softDeleteListDokumen, createListDokumen } = require('../../helper/ListDokumen');
 const { updateDataPetiKemas } = require('../../helper/DataPetiKemas');
-const { dataBarang } = require('../../helper/bundleDataBarang');
+const { BDataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen,petiKemas } = require('../../helper/bundleDataLanjutan');
 const { validationArrListDokumen,validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
-const { validationArrListBarang } = require('../../middlewares/validationDataBarang');
+const { VListBarang } = require('../../middlewares/validationDataBarang');
 const Http = require('../../helper/Httplib');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
 const { createUserActivity } = require('../../helper/UserActivity');
-const { updateReport, updateStatus, checkAuthorization } = require('../../helper/DataReport');
+const { updateReport, updateStatus, checkAuthorization, getOneSpecificReport, getOneReport } = require('../../helper/DataReport');
 const validationReport = require('../../middlewares/validationDataReport');
-const { bundleReport } = require('../../helper/bundleReport')
+const { bundleReport } = require('../../helper/bundleReport');
+const { updateDataLartas } = require('../../helper/DataLartas');
+const { updateStockItem } = require('../../helper/Barang');
+const { insertHistory } = require('../../helper/Histories');
+const { isExist } = require('../../helper/checkExistingDataFromTable');
+const Report = require('../../database/models/report');
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -56,24 +63,25 @@ const updateDataHeader = async (req, res) => {
         const {id} = req.params;
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
     
         await checkAuthorization(req, id, transaction)
 
-        const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
+        // const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, dataLartasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
         
         // return;
-        const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, dataPengajuanId, id, false, transaction);
-        const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, identitasPengirimId, id, false, transaction);
-        const identitasPenerimaUpdate = await updateReportIdentitasPenerima(identitasPenerima, identitasPenerimaId, id, false, transaction);
-        const transaksiPerdaganganUpdate = await updateReportTransaksiPerdagangan(transaksiPerdagangan, transaksiPerdaganganId, id, false, transaction);
+        const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, id, false, transaction);
+        const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, id, false, transaction);
+        const identitasPenerimaUpdate = await updateReportIdentitasPenerima(identitasPenerima, id, false, transaction);
+        const transaksiPerdaganganUpdate = await updateReportTransaksiPerdagangan(transaksiPerdagangan, id, false, transaction);
         
-        const dataPengangkutanUpdate = await updateDataPengangkutan(dataPengangkutan, pengangkutanId, id, false, transaction); // Success
-        const pelabuhanMuatBongkarUpdate = await updateDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, pelabuhanMuatBongkarId, id, false, transaction); 
-        const beratDanVolumeUpdate = await updateDataBeratDanVolume(dataBeratDanVolume, beratDanVolumeId, id ,false, transaction);
-        const petiKemasDanPengemasUpdate = await updateDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, petiKemasDanPengemasId, id, false, transaction);
-        const tempatPenimbunanUpdate = await updateDataTempatPenimbunan(dataTempatPenimbunan, tempatPenimbunanId, id, false, transaction);
-        const perkiraanTanggalPengeluaranUpdate = await updatePerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, perkiraanTanggalId, id, true, transaction);
+        const dataPengangkutanUpdate = await updateDataPengangkutan(dataPengangkutan, id, false, transaction); // Success
+        const pelabuhanMuatBongkarUpdate = await updateDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, id, false, transaction); 
+        const beratDanVolumeUpdate = await updateDataBeratDanVolume(dataBeratDanVolume, id ,false, transaction);
+        const petiKemasDanPengemasUpdate = await updateDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, id, false, transaction);
+        const dataLartasUpdate = await updateDataLartas(dataLartas, id, false, transaction);
+        const tempatPenimbunanUpdate = await updateDataTempatPenimbunan(dataTempatPenimbunan, id, false, transaction);
+        const perkiraanTanggalPengeluaranUpdate = await updatePerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, id, true, transaction);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, id, `Updating "Data Header" Report`);
@@ -82,6 +90,7 @@ const updateDataHeader = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
+        console.log(error)
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Failed To Update Report");
     }
@@ -100,6 +109,9 @@ const updateDataLanjutan = async (req, res) => {
         
         for (let i = 0; i < dataDokumen.length; i++) {
             const element = dataDokumen[i];
+            if(element.id){
+                delete element.id;
+            }
             promises.push(await createListDokumen(element, transaction));
         }
 
@@ -116,6 +128,7 @@ const updateDataLanjutan = async (req, res) => {
             reportId: promises[0].reportId
         })
     } catch (error) {
+        console.error(error);
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
@@ -126,51 +139,118 @@ const updateDataBarang = async (req, res) => {
     const {idReport} = req.params;
     
     try {
-        transaction = await sequelize.transaction();
+
         const {DataToInput: {listDataBarang}} = req.body;
 
-        await softDeleteListBarang(idReport, req, transaction);
-        // return;
-        const promises = [];
+        await isExist(Report, {where: {id: idReport, userId: req.currentUser}});
 
+        transaction = await sequelize.transaction();
+
+        let resultsListBarang = [];
+        /**
+         * Membuat List Barang Baru Dengan Quantity Yang Berbeda
+         */
+        await fullDelete(req, null, idReport, transaction)
         for(let i = 0; i < listDataBarang.length; i++) {
-            promises.push(await createListBarang(listDataBarang[i], transaction));
+            // console.log(i, listDataBarang[i])
+
+            if(listDataBarang[i].id || typeof listDataBarang[i].id !== 'undefined'){
+                delete listDataBarang[i].id 
+            }
+            /**
+             * Membuat List Barang Baru Dengan Quantity Yang Berbeda
+             */
+            let result = await createListBarang(listDataBarang[i], transaction, idReport);
+            
+            if(result.error){
+                return errorResponse(res, Http.badRequest, result.error);
+            }
+            // console.log('asd',result);
+            resultsListBarang.push(result);
         }
 
         const dataToReturn = {
-            listDataBarang: promises.map(el => el.id),
-            reportId: promises[0].id
+            listDataBarang: resultsListBarang.map(el => el.id),
+            reportId: resultsListBarang[0].id
         }
 
-        if(req.currentRole !== 'Owner'){
-            await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
-        }
-
+        await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
+        
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        // console.log(error);
-        await transaction.rollback();
+        console.log(error)
+        if(transaction){
+            await transaction.rollback();
+        }
         return errorResponse(res, Http.internalServerError, error.message);
     }
+}
+
+const checkStatus = (val, status) => {
+    let stats = ``;
+    
+    switch (true) {
+        case /(hijau)/.test(status):
+            if(/(export)/gi.test(val)){
+                stats = `decrease`;
+            }else if(/(import)/gi.test(val)){
+                stats = `increase`;
+            }
+            break;
+        case /(merah)/.test(status):
+            break;
+        default:
+            break;
+    }
+    return stats;
 }
 
 const updateStatusInvetory = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
+    let transaction;
     try {
         if(req.currentRole !== 'Admin'){
             throw new Error(`${req.currentRole} Cannot Updating Status`);
         }
 
-        await updateStatus(id, status);
+        transaction = await sequelize.transaction();
+
+        const result = await getOneReport(req, id);
+
+        if((/(hijau)/gi).test(status)){
+            const {listBarangs, jenisPemberitahuan} = result;
+
+            for(let i = 0; i < listBarangs.length; i++){
+                const {idBarang, quantity} = listBarangs[i].toJSON();
+
+                // Mengubah Nilai
+                await updateStockItem(req, idBarang, null, quantity, jenisPemberitahuan, transaction);
+
+                const data = {
+                    idBarang: +idBarang,
+                    reportId: +id,
+                    quantityItem: +quantity,
+                    status: checkStatus(jenisPemberitahuan, status)
+                }
+
+                // Menyimpan Catatan
+                await insertHistory(data, transaction)
+            }
+        }
+
+        // console.log(result)
+
+        await updateStatus(id, status, transaction);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, id, `Updating Status Report`);
         }
-
+        await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Status");
     } catch (error) {
+        await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
 }
@@ -178,8 +258,8 @@ const updateStatusInvetory = async (req, res) => {
 const updateReportPerId = async (req, res) => {
     const { id } = req.params;
     try {
-
-        const result = await updateReport(id, req.body.DataToInput);
+        
+        const result = await updateReport(id, req.body.DataToInput, req);
 
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, id, `Updating Report`);
@@ -213,6 +293,7 @@ module.exports = (routes) => {
         dataPetiKemasDanPengemas,
         dataPerkiraanTanggalPengeluaran,
         dataTempatPenimbunan,
+        dataLartas,
         idReport,
         validationDataPengajuan, 
         validationIdentitasPengirim, 
@@ -224,14 +305,15 @@ module.exports = (routes) => {
         validationDataPetiKemasDanPengemas,
         validationDataPerkiraanTanggalPengeluaran,
         validationDataTempatPenimbunan,
+        validationDataLartas,
         validationResponse,
         updateDataHeader
     );
 
     routes.put('/data-barang/:idReport',
         authentication,
-        dataBarang,
-        validationArrListBarang,
+        BDataBarang,
+        VListBarang,
         validationResponse,
         updateDataBarang
     );

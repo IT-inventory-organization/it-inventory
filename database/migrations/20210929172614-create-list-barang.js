@@ -18,7 +18,7 @@ module.exports = {
         type: Sequelize.DECIMAL
       },
       satuanKemasan: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.STRING
       },
       nilaiPabeanHargaPenyerahan: {
         type: Sequelize.DECIMAL

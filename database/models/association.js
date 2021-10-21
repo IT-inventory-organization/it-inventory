@@ -15,6 +15,9 @@ const Role = require("./role");
 const reportTransaksiPerdagangan = require("./transaksiperdagangan");
 const User = require("./user");
 const UserActivity = require("./useractivity");
+const reportDataLartas = require("./datalartas");
+const Barang = require("./barang");
+const Histories = require("./history");
 
 const setAssociations = function() {
   Report.hasOne(reportIdentitasPenerima, {foreignKey: 'reportId'});
@@ -31,6 +34,7 @@ const setAssociations = function() {
   Report.hasMany(reportListBarang, {foreignKey: 'reportId'});
   Report.hasMany(reportListDokumen, {foreignKey: 'reportId'});
   Report.belongsTo(User, {foreignKey: "userId"})
+  Report.hasOne(reportDataLartas, {foreignKey: 'reportId'})
 
   reportIdentitasPenerima.belongsTo(Report, {foreignKey: 'reportId'});
   reportIdentitasPengirim.belongsTo(Report, {foreignKey: 'reportId'});
@@ -45,6 +49,7 @@ const setAssociations = function() {
   reportTransaksiPerdagangan.belongsTo(Report, {foreignKey: 'reportId'});
   reportListBarang.belongsTo(Report, {foreignKey: 'reportId'});
   reportListDokumen.belongsTo(Report, {foreignKey: 'reportId'});
+  reportDataLartas.belongsTo(Report, {foreignKey: 'reportId'});
 
   Role.hasOne(User, {foreignKey: 'role_id'});
   User.belongsTo(Role, {foreignKey: 'role_id'})
@@ -54,6 +59,28 @@ const setAssociations = function() {
   UserActivity.belongsTo(User, {foreignKey: "userId"})
   UserActivity.belongsTo(Report, {foreignKey: "reportId"})
   User.hasMany(Report, {foreignKey: "userId"});
+
+  // Barang
+  User.hasMany(Barang, {foreignKey: 'id'});
+  Barang.belongsTo(User, {foreignKey: 'userId'});
+
+  // Mandatory
+  Report.belongsToMany(Barang, {through: reportListBarang, foreignKey: 'reportId'});
+  Barang.belongsToMany(Report, {through: reportListBarang, foreignKey: 'idBarang'});
+
+  Barang.hasMany(reportListBarang, {foreignKey: 'idBarang'});
+  reportListBarang.belongsTo(Barang, {foreignKey: 'idBarang'});
+  reportListBarang.belongsTo(Report, {foreignKey: 'reportId'});
+
+  // Mandatory
+  Report.belongsToMany(Barang, {through: Histories, foreignKey: 'reportId'});
+  Barang.belongsToMany(Report, {through: Histories, foreignKey: 'idBarang'});
+
+  // Barang.belongsToMany(Histories, {foreignKey: 'idBarang'});
+  // Report.belongsToMany(Histories, {foreignKey: 'reportId'});
+  Histories.belongsTo(Barang, {foreignKey: 'idBarang'});
+  Histories.belongsTo(Report, {foreignKey: 'reportId'});
+  
 };
 
 module.exports = setAssociations;

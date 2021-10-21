@@ -4,7 +4,7 @@ const {errorResponse} = require("./Response");
 const Encryption = require('./encription');
 
 const dataPengajuan = (req, res, next) => {
-    // console.log(req.body);
+
     try {
         
         const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
@@ -17,7 +17,7 @@ const dataPengajuan = (req, res, next) => {
         req.body.DataToInput = { 
             dataPengajuan: dataToInputPengajuan
         };
-        // console.log(Decrypt);return;
+
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
@@ -39,7 +39,6 @@ const identitasPenerima = (req, res, next) => {
             identitasPenerima: dataToInputIdentitasPenerima
         }
 
-        // console.info(req.DataToInput);return;
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
@@ -62,8 +61,6 @@ const identitasPengirim = (req, res, next) => {
             identitasPengirim: dataToInputIdentitasPengirim
         }
 
-        // console.info(req.DataToInput);return;
-
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
@@ -84,7 +81,7 @@ const transaksiPerdagangan = (req, res, next) => {
             ...req.body.DataToInput,
             transaksiPerdagangan: dataToInputTransaksiPerdagangan
         }
-        // console.log(req.DataToInput);return;
+
         
         next();
     } catch (error) {
@@ -106,7 +103,6 @@ const dataPengangkut = (req, res, next) => {
             ...req.body.DataToInput,
             dataPengangkutan: dataToInputDataPengangkut
         }
-        // console.log(req.DataToInput);return;
 
         next();
     } catch (error) {
@@ -127,7 +123,6 @@ const dataPelabuhanMuatBongkar = (req, res, next) => {
             ...req.body.DataToInput,
             dataPelabuhanMuatBongkar: dataToInputDataPelabuhanMuatBongkar
         };
-        // console.log(req.DataToInput);return;
         
         next();
 
@@ -150,7 +145,6 @@ const beratDanVolume = (req, res, next) => {
             ...req.body.DataToInput,
             dataBeratDanVolume: dataToInputBeratDanVolume
         }
-        // console.log(req.DataToInput);return;
 
         next();
     } catch (error) {
@@ -171,7 +165,6 @@ const dataPetiKemasDanPengemas = (req, res, next) => {
             ...req.body.DataToInput,
             dataPetiKemasDanPengemas: dataToInputDataPetiKemasDanPengemas
         }
-        // console.log(req.DataToInput);return;
 
         next();
     } catch (error) {
@@ -199,8 +192,6 @@ const dataPerkiraanTanggalPengeluaran = (req, res, next) => {
             delete req.body.dataHeader;
         }
         
-        // console.log(req.body);return;
-        
         next();
 
     } catch (error) {
@@ -219,7 +210,27 @@ const dataTempatPenimbunan = (req, res, next) => {
             ...req.body.DataToInput,
             dataTempatPenimbunan: dataToInputDataTempatPenimbunan
         }
-        // console.log(req.DataToInput);return;
+        
+        next();
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Failed To Add Data", error);
+    }
+}
+
+const dataLartas = (req, res, next) => {
+    try {
+
+        const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
+        const dataToInputLartas = {
+            ...Decrypt.dataLartas,
+            reportId: Decrypt.reportId
+        }
+
+        req.body.DataToInput = {
+            ...req.body.DataToInput,
+            dataLartas: dataToInputLartas
+        }
+
         
         next();
     } catch (error) {
@@ -248,7 +259,6 @@ const idReport = (req, res, next) => {
 
 
         delete req.body.dataHeader;
-        // console.log(dataToSearchId);return;
         next()
     } catch (error) {
         
@@ -267,5 +277,6 @@ module.exports = {
     dataPetiKemasDanPengemas,
     dataPerkiraanTanggalPengeluaran,
     dataTempatPenimbunan,
-    idReport
+    idReport,
+    dataLartas
 }

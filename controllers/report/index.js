@@ -1,5 +1,5 @@
 const Http = require('../../helper/Httplib');
-const { createReport } = require('../../helper/DataReport');
+const { createReport, getOneSpecificReport } = require('../../helper/DataReport');
 const { createDataPengajuan } = require('../../helper/DataPengajuan');
 const { createReportIdentitasPenerima } = require('../../helper/IdentitasPenerima');
 const { createReportIdentitasPengirim } = require('../../helper/IdentitasPengirim');
@@ -16,7 +16,8 @@ const {
     beratDanVolume,
     dataPetiKemasDanPengemas,
     dataPerkiraanTanggalPengeluaran,
-    dataTempatPenimbunan
+    dataTempatPenimbunan,
+    dataLartas
 } = require('../../helper/bundleDataReportHeader');
 
 const sequelize = require('../../configs/database')
@@ -30,12 +31,13 @@ const {
     validationBeratDanVolume,
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
-    validationDataTempatPenimbunan
+    validationDataTempatPenimbunan,
+    validationDataLartas
 } = require('../../middlewares/validationDataHeader');
 
 const validationReport = require('../../middlewares/validationDataReport')
 const { validationArrListDokumen, validationPetiKemas } = require('../../middlewares/validationDataLanjutan');
-const { dataBarang } = require('../../helper/bundleDataBarang');
+const { BDataBarang } = require('../../helper/bundleDataBarang');
 const { dataDokumen, petiKemas } = require('../../helper/bundleDataLanjutan');
 const { createDataPengangkutan } = require('../../helper/DataPengangkutan');
 const { createDataPelabuhanMuatBongkar } = require('../../helper/DataPelabuhanMuatBongkar');
@@ -46,18 +48,19 @@ const { createPerkiraanTanggalPengeluaran } = require('../../helper/DataPerkiraa
 const { createListDokumen } = require('../../helper/ListDokumen');
 const { createDataPetiKemas } = require("../../helper/DataPetiKemas");
 const { createListBarang } = require("../../helper/ListBarang");
-const { validationArrListBarang }= require("../../middlewares/validationDataBarang");
+const { VListBarang }= require("../../middlewares/validationDataBarang");
 const authentication = require('../../middlewares/authentication');
 const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
-const { bundleReport } = require('../../helper/bundleReport')
+const { bundleReport } = require('../../helper/bundleReport');
+const { createDataLartas } = require('../../helper/DataLartas');
 
 const addReport = async (req, res) => {
     try {
 
         const result = await createReport(req.body.DataToInput, null);
         const dataReturn = {
-            reportId: result.id,
+            id: result.id,
             userId: result.userId
         };
 
@@ -74,24 +77,34 @@ const addReport = async (req, res) => {
 // Callback Add Data Header
 const addDataHeader = async (req, res) => {
     let transaction
-
+    
     try {
         transaction = await sequelize.transaction();
-        
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
+
+        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
         
         const dataPengajuanResult = await createDataPengajuan(dataPengajuan, transaction); // Simpan Ke Table Data Pengajuan
+    
         const identitasPenerimaResult = await createReportIdentitasPenerima(identitasPenerima, transaction); // Simpan Ke Table Identitas Penerima
-        const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
-        const transaksiPerdaganganResult = await createReportTransaksiPerdagangan(transaksiPerdagangan, transaction); // Simpan Ke Table Transaksi Perdagangan
-        
-        const pengangkutanResult = await createDataPengangkutan(dataPengangkutan, transaction);
-        const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, transaction);
-        const beratDanVolumeResult = await createDataBeratDanVolume(dataBeratDanVolume, transaction);
-        const petiKemasDanPengemasResult = await createDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, transaction);
-        const tempatPenimbunanResult = await createDataTempatPenimbunan(dataTempatPenimbunan, transaction);
-        const perkiraanTanggalResult = await createPerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, transaction);
 
+        const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
+   
+        const transaksiPerdaganganResult = await createReportTransaksiPerdagangan(transaksiPerdagangan, transaction); // Simpan Ke Table Transaksi 
+    
+        const pengangkutanResult = await createDataPengangkutan(dataPengangkutan, transaction);
+      
+        const pelabuhanMuatBongkarResult = await createDataPelabuhanMuatBongkar(dataPelabuhanMuatBongkar, transaction);
+     
+        const beratDanVolumeResult = await createDataBeratDanVolume(dataBeratDanVolume, transaction);
+     
+        const petiKemasDanPengemasResult = await createDataPetiKemasDanPengemas(dataPetiKemasDanPengemas, transaction);
+
+        const tempatPenimbunanResult = await createDataTempatPenimbunan(dataTempatPenimbunan, transaction);
+  
+        const dataLartasResult = await createDataLartas(dataLartas, transaction);
+     
+        const perkiraanTanggalResult = await createPerkiraanTanggalPengeluaran(dataPerkiraanTanggalPengeluaran, transaction);
+        
         const dataToReturn = {
             dataPengajuanId: dataPengajuanResult.id,
             reportId: dataPengajuanResult.reportId,
@@ -103,6 +116,7 @@ const addDataHeader = async (req, res) => {
             beratDanVolumeId: beratDanVolumeResult.id,
             petiKemasDanPengemasId: petiKemasDanPengemasResult.id,
             tempatPenimbunanId: tempatPenimbunanResult.id,
+            dataLartasId: dataLartasResult.id,
             perkiraanTanggalId: perkiraanTanggalResult.id
         };
 
@@ -110,11 +124,13 @@ const addDataHeader = async (req, res) => {
             await createUserActivity(req.currentUser, dataPengajuan.reportId, `Create Report "Data Header"`);
         }
 
+
         await transaction.commit();
 
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
     } catch (error) {
         await transaction.rollback();
+
         return errorResponse(res, Http.internalServerError, "Failed To Add Data")
     }
 }
@@ -124,6 +140,7 @@ const addDataLanjutan = async (req, res) => {
     let transaction
 
     try {
+        
         transaction = await sequelize.transaction();
 
         const { DataToInput: {dataDokumen, dataPetiKemas}} = req.body;
@@ -152,6 +169,7 @@ const addDataLanjutan = async (req, res) => {
         return successResponse(res, Http.created, "Success Adding Data Lanjutan", dataToReturn);
     } catch (error) {
         await transaction.rollback();
+
         return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
     }
 }
@@ -163,18 +181,27 @@ const addDataBarang = async (req, res) => {
     try {
         transaction = await sequelize.transaction();
         const { DataToInput: {listDataBarang, reportId}} = req.body;
-        
         const promises = [];
-        // listBarang.forEach(async el => {
-        //     promises.push(await createListBarang(el, transaction));
-        // })
 
-        // const result = await Promise.all(promises);
+        const found = await getOneSpecificReport(req, reportId);
+
+        if(!found){
+            return errorResponse(res, Http.badRequest, "Report Not Found");
+        }
+
         // Loop Dengan Async
         for (let index = 0; index < listDataBarang.length; index++) {
-            let res = await createListBarang(listDataBarang[index], transaction);
+            // console.log(listDataBarang[index]);
+            let res = await createListBarang(listDataBarang[index], transaction, reportId);
+            
+            if(res.error){
+                return errorResponse(res, Http.badRequest, res.error);
+            }
+            
+            // await updateStockItem(req, listDataBarang[index].idBarang, null, listDataBarang[index].quantity, typeNotification, transaction);
             promises.push(res);
         }
+        // return;
         
         const dataToReturn = {
             listDataBarang: promises.map( ele => ele.id),
@@ -189,8 +216,9 @@ const addDataBarang = async (req, res) => {
 
         return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
     } catch (error) {
+        console.log(error)
         await transaction.rollback();
-        return errorResponse(res, Http.internalServerError, "Failed To Add Data", error)
+        return errorResponse(res, Http.internalServerError, error.message)
     }
 }
 
@@ -226,6 +254,7 @@ module.exports = (routes) => {
         dataPetiKemasDanPengemas,
         dataTempatPenimbunan,
         dataPerkiraanTanggalPengeluaran,
+        dataLartas,
         validationDataPengajuan,
         validationIdentitasPengirim,
         validationIdentitasPenerima,
@@ -236,6 +265,7 @@ module.exports = (routes) => {
         validationDataPetiKemasDanPengemas,
         validationDataTempatPenimbunan,
         validationDataPerkiraanTanggalPengeluaran,
+        validationDataLartas,
         validationResponse, // --> Middleware
         addDataHeader
     );
@@ -254,8 +284,8 @@ module.exports = (routes) => {
     // Create Data Barang
     routes.post('/data-barang',
         authentication,
-        dataBarang,
-        validationArrListBarang,
+        BDataBarang,
+        VListBarang,
         validationResponse,
         addDataBarang
     );

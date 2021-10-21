@@ -17,7 +17,7 @@ module.exports = {
       kategoryPengeluaran: {
         type: Sequelize.STRING
       },
-      tujuanPengeluan: {
+      tujuanPengeluaran: {
         type: Sequelize.STRING
       },
       asalBarang: {

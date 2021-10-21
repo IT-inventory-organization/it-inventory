@@ -21,7 +21,7 @@ const reportDataPetiKemas = db.define('DataPetiKemas', {
   },
 }, {
   tableName: 'DataPetiKemas',
-  freezeTableName:true,
+  freezeTableName: true,
 })
 
 module.exports = reportDataPetiKemas;

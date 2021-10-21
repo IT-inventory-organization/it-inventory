@@ -12,6 +12,7 @@ const dataBarang = (req, res, next) => {
         const Decrypt = Encryption.AESDecrypt(req.body.dataBarang);
 
         for (let i = 0; i < Decrypt.listDataBarang.length; i++) {
+            // Decrypt.listDataBarang[i].nilaiPabeanHargaPenyerahan = parseFloat(Decrypt.listDataBarang[i].nilaiPabeanHargaPenyerahan)
             Decrypt.listDataBarang[i].isDelete = false;
             Decrypt.listDataBarang[i].reportId = Decrypt.reportId; 
         }
@@ -20,15 +21,39 @@ const dataBarang = (req, res, next) => {
             listDataBarang: Decrypt.listDataBarang,
             reportId: Decrypt.reportId
         }
-        // console.log(req.body.DataToInput); return;
         
         next();
     } catch (error) {
-        console.log(error);
         return errorResponse(res, Http.badRequest, "Failed To Add Data", error)
     }
 };
 
+const BDataBarang = (req, res, next) => {
+    try {
+        if(!req.body || typeof req.body === 'undefined'){
+            return errorResponse(res, Http.badRequest, "No Document Is Provided");
+        }
+
+        const Decrypt = Encryption.AESDecrypt(req.body.dataBarang);
+        // console.log('asdasdasdasdsa',Decrypt)
+        for(let i = 0; i < Decrypt.listDataBarang.length; i++){
+            Decrypt.listDataBarang[i].reportId = Decrypt.reportId
+        }
+        // console.log(req.body)
+        req.body.DataToInput = {
+            ...Decrypt
+        }
+
+        // console.log(req.body.DataToInput);
+
+        next();
+    } catch (error) {
+        console.log(error)
+        return errorResponse(res, Http.badRequest, "Failed To Add Data Barang", error)
+    }
+}
+
 module.exports = {
-    dataBarang
+    dataBarang,
+    BDataBarang
 }

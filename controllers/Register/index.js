@@ -43,12 +43,11 @@ const bundleReg = (req, res, next) => {
 }
 
 async function Register(req, res){
-    // console.log(req)
+
 
     const validation = validationResult(req);
     if(!validation.isEmpty()){
         let i = 1;
-        // console.log(typeof validation.array()[i].msg)
         if(typeof validation.array()[i] === 'undefined'){
             i = 0
         }

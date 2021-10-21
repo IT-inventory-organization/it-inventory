@@ -28,6 +28,7 @@ const authorization = async (model, id, req, extraCondition = false) => {
         return true
       }
     } else {
+      
       if(result.userId === req.currentUser) {
         return true
       }

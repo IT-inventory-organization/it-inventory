@@ -1,4 +1,5 @@
 const reportIdentitasPengirim = require('../../database/models/identitaspengirim');
+const { isExist } = require('../checkExistingDataFromTable');
 
 const createReportIdentitasPengirim = async (data, transaction = null) => {
     try {
@@ -11,13 +12,18 @@ const createReportIdentitasPengirim = async (data, transaction = null) => {
     }
 }
 
-const updateReportIdentitasPengirim = async (data, idIdentitasPengirim, idReport, returning = false, transaction = null) => {
+const updateReportIdentitasPengirim = async (data, idReport, returning = false, transaction = null) => {
     try {
-        const result = await reportIdentitasPengirim.update(data, {
+        const query = {
             where: {
-                id: idIdentitasPengirim,
-                reportId: idReport,
-            },
+                id: data.id,
+                reportId: idReport
+            }
+        }
+
+        await isExist(reportIdentitasPengirim, query)
+        const result = await reportIdentitasPengirim.update(data, {
+            ...query,
             returning: returning,
             transaction: transaction
         });

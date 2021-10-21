@@ -13,7 +13,7 @@ const reportTransaksiPerdagangan = db.define('TransaksiPerdagangan', {
     type: Sequelize.STRING
   },
   kursNDPBM: {
-    type: Sequelize.INTEGER
+    type: Sequelize.DECIMAL
   },
   cif: {
     type: Sequelize.DECIMAL

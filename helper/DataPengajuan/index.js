@@ -1,6 +1,7 @@
 const reportDataPengajuan = require('../../database/models/datapengajuan');
 const authorization = require('../authorization');
 const Report = require('../../database/models/report');
+const { isExist } = require('../checkExistingDataFromTable');
 
 const createDataPengajuan = async (data, transaction) => {
     try {
@@ -39,16 +40,21 @@ const getDataPengajuan = async(idReport, type, transaction = null) => {
     }
 }
 
-const updateDataPengajuan = async (data, idToUpdate, idReport, returning = false, transaction = null) => {
+const updateDataPengajuan = async (data, idReport, returning = false, transaction = null) => {
     try {
-        const result = await reportDataPengajuan.update(data, {
-            where:{ 
-                id: idToUpdate,
+        const query = {
+            where: {
+                id: data.id,
                 reportId: idReport
-            },
+            }
+        }
+        await isExist(reportDataPengajuan, query);
+        const result = await reportDataPengajuan.update(data, {
+            ...query,
             returning: returning,
             transaction: transaction
         });
+
         if(result[0] == 0){
             throw new Error(`Data Didn't Exists`);
         }

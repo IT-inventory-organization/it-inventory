@@ -15,7 +15,7 @@ const authentication = async (req, res, next) =>{
     const decode = await verifyToken(token);
     const {user_id: id} = decode;
     const user = await User.findOne({where: {id}, include:[Role]});
-    // console.info(decode)
+
     if (user){
       req.currentUser = user.id;
       req.currentRole = user.Role.name
