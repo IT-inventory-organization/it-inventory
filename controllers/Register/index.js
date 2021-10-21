@@ -4,7 +4,8 @@ const {createHashText } = require('../../helper/bcrypt');
 const User = require('../../database/models/user');
 const { Op } = require('sequelize');
 const {errorResponse, successResponse} = require('../../helper/Response')
-const httpStatus = require("../../helper/Httplib")
+const httpStatus = require("../../helper/Httplib");
+const Encryption = require('../../helper/encription');
 
 const checkInputRegister = [
     body('name').notEmpty().trim().withMessage("Name Is Required"),
@@ -13,10 +14,10 @@ const checkInputRegister = [
     body('email').notEmpty().isEmail().withMessage("Email is Required").trim(),
     body('mobile_phone').notEmpty().withMessage("Mobile Phone Number Is Required").trim().custom( checkPhoneNumber ),
     body('username').notEmpty().withMessage("Username is Required").trim(),
-    body('password').notEmpty().custom(value => passwordFormat(value)).withMessage("Password is Required").trim(),
+    body('password').notEmpty().trim().custom(value => passwordFormat(value)).withMessage("Password is Required"),
     body('phone').notEmpty().custom(checkPhoneNumber).withMessage("Phone Number is Required").trim(),
     body('confirmPassword').custom((value, {req}) => {
-        if(value.length == 0){
+        if(typeof value === 'undefined' || value.length == 0){
             throw new Error("Confirm Password Cannot Empty");
         }
         if(value !== req.body.password){
@@ -27,12 +28,33 @@ const checkInputRegister = [
     }).trim()
 ];
 
+const bundleReg = (req, res, next) => {
+    try {
+        const Decrypt = Encryption.AESDecrypt(req.body.dataRegister);
+        req.body = {
+            ...Decrypt
+        };
+        delete req.body.dataRegister;
+        
+        next();
+    } catch (error) {
+        throw error;
+    }
+}
+
 async function Register(req, res){
+
+
     const validation = validationResult(req);
     if(!validation.isEmpty()){
-        return errorResponse(res, httpStatus.badRequest, validation.array()[0].msg);
+        let i = 1;
+        if(typeof validation.array()[i] === 'undefined'){
+            i = 0
+        }
+    
+        return errorResponse(res, httpStatus.badRequest, validation.array()[i].msg);
     }
-
+    
     const dataToInput = {
         name: req.body.name,
         address: req.body.address,
@@ -66,7 +88,6 @@ async function Register(req, res){
 
         return successResponse(res, httpStatus.created, "Registration Success", {email: req.body.email})
     } catch (error) {
-        console.log(error)
         return errorResponse(res, httpStatus.internalServerError, 'Registeration Seems Failed, Please Try Again Later', error.message)
     }
 }
@@ -98,6 +119,10 @@ async function Register(req, res){
 // }
 
 module.exports = (routes) => {
-    routes.post('/', checkInputRegister, Register)
+    routes.post('/', 
+        bundleReg,
+        checkInputRegister, 
+        Register
+    )
     // routes.post('/deactivated/:id', deactivated)
 }

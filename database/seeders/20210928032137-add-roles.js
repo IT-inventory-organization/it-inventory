@@ -20,7 +20,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date()
       }, {
-          name: 'Bea Cukai',
+          name: 'User',
           createdAt: new Date(),
           updatedAt: new Date()
       }
@@ -34,6 +34,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-      await queryInterface.bulkInsert('Roles', null,{});
+      await queryInterface.bulkDelete('Roles', null);
   }
 };

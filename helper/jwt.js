@@ -3,11 +3,12 @@ const CONFIG = require("../config.js");
 
 const generateToken = (payload) => {
   const token = jwt.sign(payload, CONFIG.get("JWT_SECRET_KEY"));
-  return token;
+  return token
 };
 
-const verifyToken = (token) => {
-  return jwt.verify(token, CONFIG.get("JWT_SECRET_KEY"));
+const verifyToken = async (token) => {
+  const decode = jwt.verify(token, CONFIG.get("JWT_SECRET_KEY"))
+  return decode
 };
 
 module.exports = {
