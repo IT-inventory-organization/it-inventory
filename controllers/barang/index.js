@@ -112,7 +112,6 @@ const getAnItem = async(req, res) => {
 
         return successResponse(res, Http.ok, "", result);
     } catch (error) {
-        console.log(error)
         return errorResponse(res, Http.internalServerError, "Failed Fetch Item")        
     }
 }
@@ -145,7 +144,7 @@ const updateStock = async(req, res) => {
             idBarang: id,
             quantityItem: total,
             status: status,
-            desc: Decrypt.desc
+            desc: getDesc(status)
         }, transaction);
         
         await transaction.commit()
@@ -153,6 +152,14 @@ const updateStock = async(req, res) => {
     } catch (error) {
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message)
+    }
+}
+
+const getDesc = (val) => {
+    if ((/(increase)/).test(val)){
+        return 'Penambahan Barang';
+    } else if((/(decrease)/).test(val)){
+        return 'Pengurangan Barang';
     }
 }
 
