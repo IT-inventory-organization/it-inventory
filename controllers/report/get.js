@@ -224,8 +224,8 @@ const getXMLReport = async (req, res) => {
             xml += `<DETIL>`;
             xml += `<BARANG>`;
             xml += `<SERI_BRG></SERI_BRG>`;
-            xml += `<HS_CODE>${listBarang[i].hsCode}</HS_CODE>`;
-            xml += `<UR_BRG>${listBarang[i].uraian}</UR_BRG>`;
+            xml += `<HS_CODE>${listBarang[i].Barangs.hsCode}</HS_CODE>`;
+            xml += `<UR_BRG>${listBarang[i].Barangs.uraian}</UR_BRG>`;
             xml += `<KD_NEG_ASAL></KD_NEG_ASAL>`;
             xml += `<JML_KMS></JML_KMS>`;
             xml += `<JNS_KMS></JNS_KMS>`;

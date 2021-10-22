@@ -231,6 +231,14 @@ const decrypt = async(req, res) => {
     )
 }
 
+const duplicate = async(req, res) => {
+    try {
+        
+    } catch (error) {
+        return errorResponse(res, Http.internalServerError, "Failed");
+    }
+}
+
 module.exports = (routes) => {
     // Create report
     routes.post('/', // --> url
@@ -289,6 +297,8 @@ module.exports = (routes) => {
         validationResponse,
         addDataBarang
     );
+
+    routes.post('/duplicate/:id', )
     
     /**
      * Testign purpose

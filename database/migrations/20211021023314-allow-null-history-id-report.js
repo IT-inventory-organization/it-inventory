@@ -28,7 +28,7 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     await queryInterface.changeColumn('histories', 'reportId', {
-      allowNull: false,
+      allowNull: true,
       type: Sequelize.INTEGER,
       references: {
         model: "Reports",
