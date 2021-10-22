@@ -19,23 +19,20 @@ const authorization = require("../authorization");
 const reportDataLartas = require('../../database/models/datalartas');
 const Barang = require('../../database/models/barang');
 const { isExist } = require('../checkExistingDataFromTable');
-// const sequelize = require('../../configs/database');
 
-const createReport = async (data, transaction) => {
+const createReport = async (data) => {
+    let transaction;
     try {
-        const result = await Report.create(data);
-        // DONT USE TRANSACTION
-        // DO NOTHING ON ERROR
-        // NESTED TRYCATCH MUST USE FINALLY ON THE INNER BLOCK
-        // try {
-        //     const resultActivity = await UserActivity.create(data.userId, result.id, "Create report")
-        // } catch (error) {
-            
-        // } finally {
+        transaction = await sequelize.transaction();
+        const result = await Report.create(data, {transaction});
 
-        // }
+        await Report.update({nomorAjuan: result.toJSON().id}, {where: {id: result.toJSON().id},transaction});
+        await transaction.commit();
         return result;
     } catch (error) {
+        if(transaction){
+            await transaction.rollback();
+        }
         throw Error(error.message);
     }
 }

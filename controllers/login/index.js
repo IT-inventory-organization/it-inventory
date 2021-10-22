@@ -45,7 +45,6 @@ const checkBody  = (email, password, res) => {
 }
 const loginAction = async (req, res) => {
   try {
-
     const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
     
     req.body.DataToInput = {

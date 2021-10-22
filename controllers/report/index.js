@@ -17,7 +17,8 @@ const {
     dataPetiKemasDanPengemas,
     dataPerkiraanTanggalPengeluaran,
     dataTempatPenimbunan,
-    dataLartas
+    dataLartas,
+    ppjk
 } = require('../../helper/bundleDataReportHeader');
 
 const sequelize = require('../../configs/database')
@@ -32,7 +33,8 @@ const {
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
     validationDataTempatPenimbunan,
-    validationDataLartas
+    validationDataLartas,
+    validationPPJK
 } = require('../../middlewares/validationDataHeader');
 
 const validationReport = require('../../middlewares/validationDataReport')
@@ -54,7 +56,14 @@ const Encryption = require('../../helper/encription');
 const { createUserActivity } = require('../../helper/UserActivity');
 const { bundleReport } = require('../../helper/bundleReport');
 const { createDataLartas } = require('../../helper/DataLartas');
+const { createPPJK } = require('../../helper/PPJK');
 
+/**
+ * Complete
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 const addReport = async (req, res) => {
     try {
 
@@ -81,11 +90,13 @@ const addDataHeader = async (req, res) => {
     try {
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
+        const { DataToInput: {dataPengajuan, identitasPPJK, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran}} = req.body;
         
         const dataPengajuanResult = await createDataPengajuan(dataPengajuan, transaction); // Simpan Ke Table Data Pengajuan
     
-        const identitasPenerimaResult = await createReportIdentitasPenerima(identitasPenerima, transaction); // Simpan Ke Table Identitas Penerima
+        const identitasPenerimaResult = await createReportIdentitasPenerima(identitasPenerima, transaction); // Revision
+
+        const ppjkResult = await createPPJK(identitasPPJK, transaction);
 
         const identitasPengirimResult = await createReportIdentitasPengirim(identitasPengirim, transaction); // Simpan Ke Table Identitas Pengirim
    
@@ -107,6 +118,7 @@ const addDataHeader = async (req, res) => {
         
         const dataToReturn = {
             dataPengajuanId: dataPengajuanResult.id,
+            ppjkId: ppjkResult.id,
             reportId: dataPengajuanResult.reportId,
             identitasPenerimaId: identitasPenerimaResult.id,
             identitasPengirimId: identitasPengirimResult.id,
@@ -129,6 +141,7 @@ const addDataHeader = async (req, res) => {
 
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
     } catch (error) {
+        console.log(error)
         await transaction.rollback();
 
         return errorResponse(res, Http.internalServerError, "Failed To Add Data")
@@ -253,6 +266,7 @@ module.exports = (routes) => {
     routes.post('/data-header',
         authentication,
         dataPengajuan,
+        ppjk,
         identitasPengirim,
         identitasPenerima,
         transaksiPerdagangan,
@@ -264,6 +278,7 @@ module.exports = (routes) => {
         dataPerkiraanTanggalPengeluaran,
         dataLartas,
         validationDataPengajuan,
+        validationPPJK,
         validationIdentitasPengirim,
         validationIdentitasPenerima,
         validationTransaksiPerdagangan,

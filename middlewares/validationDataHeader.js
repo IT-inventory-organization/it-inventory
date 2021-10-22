@@ -21,6 +21,13 @@ const validationDataPengajuan = [
     // body('reportId').trim().notEmpty().withMessage(`"Report Id" Is Required`),
 ]
 
+const validationPPJK = [
+    body('DataToInput.identitasPPJK.jenisIdentitasPPJK').trim().notEmpty().withMessage(`"Jenis Identitas PPJK" is Required`),
+    body('DataToInput.identitasPPJK.nomorIdentitasPPJK').trim().notEmpty().withMessage(`"Nomor Identitas PPJK" Is Requried`),
+    body('DataToInput.identitasPPJK.namaPPJK').trim().notEmpty().withMessage(`"Nama PPJK" Is Required`),
+    body('DataToInput.identitasPPJK.alamatPPJK').trim().notEmpty().withMessage(`"Alamat PPJK" Is Required`)
+]
+
 const validationIdentitasPengirim = [
     body('DataToInput.identitasPengirim.jenisIdentitasPengirim').trim().notEmpty().withMessage(`"Jenis Identitas Pengirim" Is Required`),
     body('DataToInput.identitasPengirim.nomorIdentitasPengirim').trim().notEmpty().withMessage(`"Nomor identitas Pengirim" Is Required`),
@@ -31,10 +38,10 @@ const validationIdentitasPengirim = [
 ]
 
 const validationIdentitasPenerima = [
-    body('DataToInput.identitasPenerima.jenisIdentitasPenerima').trim().notEmpty().withMessage(`"Jenis Identitas Penerima" Is Required`),
-    body('DataToInput.identitasPenerima.nomorIdentitasPenerima').trim().notEmpty().withMessage(`"Nomor identitas Penerima" Is Required`),
-    body('DataToInput.identitasPenerima.namaPenerima').trim().notEmpty().withMessage(`"Nama Penerima" Is Required`),
-    body('DataToInput.identitasPenerima.alamatPenerima').trim().notEmpty().withMessage(`"Alamat Penerima" Is Required`)
+    body('DataToInput.identitasPenerima.caraAngkutPenerima').trim().notEmpty().withMessage(`"Cara Angkut Penerima" Is Required`),
+    body('DataToInput.identitasPenerima.namaPengangkutPenerima').trim().notEmpty().withMessage(`"Nama Pengangkut Penerima" Is Required`),
+    body('DataToInput.identitasPenerima.benderePenerima').trim().notEmpty().withMessage(`"Bendera Penerima" Is Required`),
+    body('DataToInput.identitasPenerima.nomorVoyFlightPolPenerima').trim().notEmpty().withMessage(`Nomor Voy Flight Pol Penerima" Is Required`)
 ];
 
 const validationTransaksiPerdagangan = [
@@ -96,5 +103,6 @@ module.exports = {
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
     validationDataTempatPenimbunan,
-    validationDataLartas
+    validationDataLartas,
+    validationPPJK
 }

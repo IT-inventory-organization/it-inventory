@@ -14,9 +14,9 @@ module.exports = {
       await queryInterface.renameColumn('IdentitasPenerima', 'namaPenerima', 'namaPPJK'),
       await queryInterface.renameColumn('IdentitasPenerima', 'alamatPenerima', 'alamatPPJK'),
       await queryInterface.removeConstraint('IdentitasPenerima', 'IdentitasPenerima_reportId_fkey'),
-      await queryInterface.renameTable('IdentitasPenerima', 'PPJK'),
-      await queryInterface.addConstraint('PPJK', {
-        fields: ['reportId'], 
+      await queryInterface.renameTable('IdentitasPenerima', 'IdentitasPPJK'),
+      await queryInterface.addConstraint('IdentitasPPJK', {
+        fields: ['reportId'],
         type: 'FOREIGN KEY',
         name: 'FK_PPJK',
         references: {
@@ -40,12 +40,12 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     const promises = [
-      await queryInterface.renameColumn('PPJK', 'jenisIdentitasPPJK', 'jenisIdentitasPenerima'),
-      await queryInterface.renameColumn('PPJK', 'nomorIdentitasPPJK', 'nomorIdentitasPenerima'),
-      await queryInterface.renameColumn('PPJK', 'namaPPJK', 'namaPenerima'),
-      await queryInterface.renameColumn('PPJK', 'alamatPPJK', 'alamatPenerima'),
-      await queryInterface.removeConstraint('PPJK', 'FK_PPJK'),
-      await queryInterface.renameTable('PPJK', 'IdentitasPenerima'),
+      await queryInterface.renameColumn('IdentitasPPJK', 'jenisIdentitasPPJK', 'jenisIdentitasPenerima'),
+      await queryInterface.renameColumn('IdentitasPPJK', 'nomorIdentitasPPJK', 'nomorIdentitasPenerima'),
+      await queryInterface.renameColumn('IdentitasPPJK', 'namaPPJK', 'namaPenerima'),
+      await queryInterface.renameColumn('IdentitasPPJK', 'alamatPPJK', 'alamatPenerima'),
+      await queryInterface.removeConstraint('IdentitasPPJK', 'FK_PPJK'),
+      await queryInterface.renameTable('IdentitasPPJK', 'IdentitasPenerima'),
       await queryInterface.addConstraint('IdentitasPenerima', {
         fields: ['reportId'], 
         type: 'FOREIGN KEY',
