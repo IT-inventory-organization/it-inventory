@@ -174,13 +174,16 @@ module.exports={
             }else{
                 
 
-                let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`
+                let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`;
 
+                let countBarang = `SELECT count(*) FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery}`;
 
                 const result = await sequelize.query(sql);
+                const count = await sequelize.query(countBarang);
+                
                 return {
                     data: result[0],
-                    data_size: +result[0].length,
+                    data_size: +count[0][0].count,
                     page_size: +limit,
                     page: +pageSize || 1
                 };

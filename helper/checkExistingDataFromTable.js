@@ -9,9 +9,9 @@ module.exports = {
         if(typeof query === 'undefined' || Object.keys(query) === 0){
             throw new Error(`Something's went wrong`);
         }
-        const existed = model.findOne(query);
+        const existed = await model.findOne(query);
         if(!existed){
-            throw new Error(`Data Not Found`);
+            throw Error(`Data Not Found`);
         }
     }
     

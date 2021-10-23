@@ -147,11 +147,14 @@ const getXMLReport = async (req, res) => {
     const {id} = req.params;
     
     try {
-        const result = await getOneReport(req, id);
+        // console.log(id);
+        const found = await getOneReport(req, id);
 
         let xml = ``;
-
+        const result = found.toJSON();
         const listBarang = result.listBarangs;
+
+        console.log(listBarang)
 
         for(let i = 0; i < listBarang.length; i++){
             xml += `<HEADER>`;
@@ -181,10 +184,10 @@ const getXMLReport = async (req, res) => {
             xml += `<KD_NEG_PENGIRIM></KD_NEG_PENGIRIM>`;
             xml += `<NM_PENGIRIM>${result.IdentitasPengirim.namaPengirim}</NM_PENGIRIM>`;
             xml += `<AL_PENGIRIM>${result.IdentitasPengirim.alamatPengirim}</AL_PENGIRIM>`;
-            xml += `<JNS_ID_PENERIMA>${getCode(result.reportIdentitasPenerima.jenisIdentitasPenerima)}</JNS_ID_PENERIMA>`;
+            xml += `<JNS_ID_PENERIMA>${getCode(result.reportIdentitasPPJK.jenisIdentitasPPJK)}</JNS_ID_PENERIMA>`;
             xml += `<NO_ID_PENERIMA>0</NO_ID_PENERIMA>`;
-            xml += `<NM_PENERIMA>${result.reportIdentitasPenerima.namaPenerima}</NM_PENERIMA>`;
-            xml += `<AL_PENERIMA>${result.reportIdentitasPenerima.alamatPenerima}</AL_PENERIMA>`;
+            xml += `<NM_PENERIMA>${result.reportIdentitasPPJK.namaPPJK}</NM_PENERIMA>`;
+            xml += `<AL_PENERIMA>${result.reportIdentitasPPJK.alamatPPJK}</AL_PENERIMA>`;
             xml += `<TELP_PENERIMA></TELP_PENERIMA>`;
             xml += `<JNS_ID_PEMBERITAHU>${getCode(result.DataPengajuan.kategoryPemberitahuan)}</JNS_ID_PEMBERITAHU>`;
             xml += `<NO_ID_PEMBERITAHU></NO_ID_PEMBERITAHU>`;
@@ -224,8 +227,8 @@ const getXMLReport = async (req, res) => {
             xml += `<DETIL>`;
             xml += `<BARANG>`;
             xml += `<SERI_BRG></SERI_BRG>`;
-            xml += `<HS_CODE>${listBarang[i].Barangs.hsCode}</HS_CODE>`;
-            xml += `<UR_BRG>${listBarang[i].Barangs.uraian}</UR_BRG>`;
+            xml += `<HS_CODE>${listBarang[i].Barang.hsCode}</HS_CODE>`;
+            xml += `<UR_BRG>${listBarang[i].Barang.uraian}</UR_BRG>`;
             xml += `<KD_NEG_ASAL></KD_NEG_ASAL>`;
             xml += `<JML_KMS></JML_KMS>`;
             xml += `<JNS_KMS></JNS_KMS>`;

@@ -40,7 +40,7 @@ const validationIdentitasPengirim = [
 const validationIdentitasPenerima = [
     body('DataToInput.identitasPenerima.caraAngkutPenerima').trim().notEmpty().withMessage(`"Cara Angkut Penerima" Is Required`),
     body('DataToInput.identitasPenerima.namaPengangkutPenerima').trim().notEmpty().withMessage(`"Nama Pengangkut Penerima" Is Required`),
-    body('DataToInput.identitasPenerima.benderePenerima').trim().notEmpty().withMessage(`"Bendera Penerima" Is Required`),
+    body('DataToInput.identitasPenerima.benderaPenerima').trim().notEmpty().withMessage(`"Bendera Penerima" Is Required`),
     body('DataToInput.identitasPenerima.nomorVoyFlightPolPenerima').trim().notEmpty().withMessage(`Nomor Voy Flight Pol Penerima" Is Required`)
 ];
 

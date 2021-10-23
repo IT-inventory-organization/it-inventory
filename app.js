@@ -30,7 +30,7 @@ app.use(async (err, req, res, next) => {
   return res.status(500).json({ message, data });
 });
 
-app.listen(process.env.PORT || port, () => {
+app.listen(port, () => {
   console.log(`App listening on port ${port}`);
 });
 

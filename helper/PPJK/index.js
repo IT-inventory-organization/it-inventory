@@ -1,50 +1,47 @@
 const reportIdentitasPPJK = require('../../database/models/identitasppjk');
 const authorization = require('../authorization');
+const { isExist } = require('../checkExistingDataFromTable');
 
 module.exports = {
-    createPPJK: async (data, tranaction = null, returning = null) => {
+    /**
+     * Success
+     * @param {*} data 
+     * @param {*} tranaction 
+     * @param {*} returning 
+     * @returns 
+     */
+    createPPJK: async (data, tranaction = null) => {
         try {
             
             const result = await reportIdentitasPPJK.create(data, {
                 tranaction,
-                returning
+                returning: true
             });
-            console.log(data);
+            
             return result;
         } catch (error) {
-            console.log(error)
             throw Error(error.message)
         }
     },
-    updatePPJK: async (data, idReport, transaction = null, returning = null) => {
+    updatePPJK: async (data, idReport, returning = null, transaction = null) => {
         try {
-            if(! await authorization(reportIdentitasPPJK, idReport, req, true)){
-                return {
-                    error: `User Not Allowed`
-                }
-            }
-            const found = await reportIdentitasPPJK.findOne({
+            console.log(data);
+            const query = {
                 where: {
                     id: data.id,
                     reportId: idReport
                 }
-            });
-            if(!found){
-                return {
-                    error: `Data Not Found`
-                }
             }
+            await isExist(reportIdentitasPPJK, query)
 
             const update = await reportIdentitasPPJK.update(data, {
-                where: {
-                    id: data.id,
-                    reportId: idReport
-                },
+                ...query,
                 transaction,
                 returning
             })
             return update;
         } catch (error) {
+            console.log(error)
             throw Error('Failed To Update')
         }
     }

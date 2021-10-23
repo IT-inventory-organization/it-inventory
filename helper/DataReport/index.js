@@ -19,6 +19,7 @@ const authorization = require("../authorization");
 const reportDataLartas = require('../../database/models/datalartas');
 const Barang = require('../../database/models/barang');
 const { isExist } = require('../checkExistingDataFromTable');
+const reportIdentitasPPJK = require('../../database/models/identitasppjk');
 
 const createReport = async (data) => {
     let transaction;
@@ -34,6 +35,15 @@ const createReport = async (data) => {
             await transaction.rollback();
         }
         throw Error(error.message);
+    }
+}
+
+const createReportDuplicate = async (data) => {
+    try {
+        const result = await Report.create(data)
+        return result;
+    } catch (error) {
+        throw Error(error.message)
     }
 }
 
@@ -280,7 +290,7 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
             if(req.currentRole !== "Admin" && req.currentRole !== "Owner"){
                 qtSearch+=`AND `;
             }
-            qtSearch+=`("RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR "IPN"."namaPenerima" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%')`
+            qtSearch+=`("RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss')::text ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR ip."namaPPJK" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%' OR "RP"."nomorAjuan"::text ILIKE '%${searchQuery}%')`;
         }
 
         if(type != null){
@@ -312,16 +322,22 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
             }
         }
         
-        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+        // const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
 
+        const res = await sequelize.query(`SELECT "RP".id as id, "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", "RP"."nomorAjuan" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, ip."namaPPJK" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP"."id" = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+
+        const resCount = await sequelize.query(`SELECT count(*) FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US".id) LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP".id = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP".id = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} GROUP BY "RP"."createdAt" ${orderQuery}`);
+
+        // console.log(resCount[1])
         const data = {
             data: res[0],
-            data_size: res[0].length,
+            data_size: +resCount[1].rowCount,
             page_size: +pageSize,
             page: +pageNo || 1
         }
         return data;
     } catch (error) {
+        console.log(error)
         throw error
     }
 }
@@ -356,7 +372,7 @@ const getAllReportByType = async (req, pageSize, pageNo, type = null) => {
             }
         }
         
-        const sql = `SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP".status = 'merah' AND "RP"."isDelete" = false ${searchUser} ${typeQuery} LIMIT ${limit} OFFSET ${offset}`;
+        const sql = `SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPPJK" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPPJK" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP".status = 'merah' AND "RP"."isDelete" = false ${searchUser} ${typeQuery} LIMIT ${limit} OFFSET ${offset}`;
 
         const result = await sequelize.query(sql);
         return result;
@@ -369,6 +385,7 @@ const getOneReport = async(req, id, statusCheck = false) => {
     try {
         const query = {}
         query.where = {id}
+ 
         query.include = [
             {
                 model: reportListBarang,
@@ -396,6 +413,12 @@ const getOneReport = async(req, id, statusCheck = false) => {
             }, 
             {
                 model: reportIdentitasPenerima,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                }
+            },
+            {
+                model: reportIdentitasPPJK,
                 attributes: {
                     exclude: ['createdAt', 'updatedAt']
                 }
@@ -495,11 +518,12 @@ const getOneReport = async(req, id, statusCheck = false) => {
             ...query.where,
             isDelete: false
         }
-        const result = await Report.findOne(query);
 
+        const result = await Report.findOne(query);
+        console.log(result)
         return result
     } catch (error) {
-
+        console.log(error)
         throw new Error("Fail fetch data, please try again later, or refresh your browser")
     }
 }
@@ -607,5 +631,6 @@ module.exports = {
     checkAuthorization,
     getPerTable,
     getPerTableBarangDokumen,
-    getOneSpecificReport
+    getOneSpecificReport,
+    createReportDuplicate
 }

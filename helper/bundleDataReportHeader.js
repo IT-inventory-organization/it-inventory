@@ -27,6 +27,7 @@ const dataPengajuan = (req, res, next) => {
 const ppjk = (req, res, next) => {
     try {
         const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
+        console.log(Decrypt)
         const dataToInputPPJK = {
             ...Decrypt.identitasPPJK,
             reportId: Decrypt.reportId
@@ -38,6 +39,7 @@ const ppjk = (req, res, next) => {
 
         next();
     } catch (error) {
+        console.log(error)
         return errorResponse(res, Http.badRequest, "Failed Add Data", error.message)
     }
 }

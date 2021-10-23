@@ -165,20 +165,6 @@ const getDesc = (val) => {
     }
 }
 
-const getItemToChoose = async (req, res) => {
-    try {
-        const data = await getItem(req);
-
-        if(req.currentRole != 'Owner'){
-            await createUserActivity(req.currentUser, null, "Fetch Item To Choose An Item in Data Barang");
-        }
-
-        return successResponse(res, Http.ok, "", data.toJSON());
-    } catch (error) {
-        return errorResponse(res, Http.internalServerError, "Failed To Fetch Data")
-    }
-}
-
 const historyDataBarang = async (req, res) => {
     try {
         const {id} = req.params;
