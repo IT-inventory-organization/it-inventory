@@ -103,7 +103,7 @@ const getOne = async (req, res) => {
     try {
         
         const result = await getOneReport(req, id);
-        // console.log(result)
+        
         const data = result.toJSON();
 
         data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran = convertDate(data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran);
@@ -120,7 +120,6 @@ const getOne = async (req, res) => {
 
         return successResponse(res, httpStatus.ok, "", data);
     } catch (error) {
-        console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
     }
 }
@@ -147,14 +146,12 @@ const getXMLReport = async (req, res) => {
     const {id} = req.params;
     
     try {
-        // console.log(id);
+        
         const found = await getOneReport(req, id);
 
         let xml = ``;
         const result = found.toJSON();
         const listBarang = result.listBarangs;
-
-        console.log(listBarang)
 
         for(let i = 0; i < listBarang.length; i++){
             xml += `<HEADER>`;
@@ -319,7 +316,7 @@ const getDataActivityRedLine = async (req, res) => {
         const {pageSize, pageNo, type} = req.query;
         if(type === null || typeof type === 'undefined') {
             const result = await getAllReportByType(req, pageSize, pageNo);
-            return successResponse(res, httpStatus.ok, "", result[0]);
+            return successResponse(res, httpStatus.ok, "", result);
         }
 
         // Remove
@@ -329,7 +326,7 @@ const getDataActivityRedLine = async (req, res) => {
 
         const result = await getAllReportByType(req, pageSize, pageNo, type);
         
-        return successResponse(res, httpStatus.ok, "", result[0]);
+        return successResponse(res, httpStatus.ok, "", result);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, 'Failed To Fetch Red Line Activity');
     }

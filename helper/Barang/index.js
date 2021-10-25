@@ -26,6 +26,14 @@ const findBarang = async (id, idUser = null) => {
     return await Barang.findOne(query);
 }
 
+const countTotal = (arr) => {
+    let total = 0;
+    for (let i = 0; i < arr.length; i++) {
+        total += +arr[i].count
+    }
+    return total;
+}
+
 module.exports={
     createListItem: async (data, transaction = null) => {
         try {
@@ -159,7 +167,7 @@ module.exports={
                         searchQuery+=` barang.${column[i]}::text ILIKE '%${search}%' OR `;
                     }
                 }
-                searchQuery+=`)`
+                searchQuery+=`)`;
             }
 
             if(id){
@@ -172,7 +180,6 @@ module.exports={
                 const result = await sequelize.query(sql);
                 return result[0]
             }else{
-                
 
                 let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`;
 
@@ -183,7 +190,7 @@ module.exports={
                 
                 return {
                     data: result[0],
-                    data_size: +count[0][0].count,
+                    data_size: +countTotal(count[0]),
                     page_size: +limit,
                     page: +pageSize || 1
                 };
@@ -229,7 +236,7 @@ module.exports={
             }
             
             let quantity = resultFindItem.stock;
-            console.log(quantity, total, notificationType);
+            
             if(status != null){
                 if((/(increase)/gi).test(status)){
                     quantity += (+total);
@@ -251,8 +258,6 @@ module.exports={
                     quantity += (+total);
                 }
             }
-
-            // console.log(query, req.currentRole);
             
             const result = await Barang.update({
                 stock: quantity,
@@ -322,14 +327,6 @@ module.exports={
             return result;
         } catch (error) {
             throw error;
-        }
-    },
-
-    fetchHistoryIteBarang: async (req, idBarang) => {
-        try {
-            
-        } catch (error) {
-            throw error
         }
     }
 }

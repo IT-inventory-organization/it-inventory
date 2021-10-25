@@ -94,7 +94,6 @@ const updateDataHeader = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
-        console.log(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -158,7 +157,6 @@ const updateDataBarang = async (req, res) => {
          */
         await fullDelete(req, null, idReport, transaction)
         for(let i = 0; i < listDataBarang.length; i++) {
-            // console.log(i, listDataBarang[i])
 
             if(listDataBarang[i].id || typeof listDataBarang[i].id !== 'undefined'){
                 delete listDataBarang[i].id 
@@ -171,7 +169,6 @@ const updateDataBarang = async (req, res) => {
             if(result.error){
                 return errorResponse(res, Http.badRequest, result.error);
             }
-            // console.log('asd',result);
             resultsListBarang.push(result);
         }
 
@@ -185,7 +182,6 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        console.log(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -245,8 +241,6 @@ const updateStatusInvetory = async (req, res) => {
                 await insertHistory(data, transaction)
             }
         }
-
-        // console.log(result)
 
         await updateStatus(id, status, transaction);
 

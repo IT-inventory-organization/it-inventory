@@ -38,7 +38,7 @@ const setAssociations = function() {
   Report.hasOne(reportDataLartas, {foreignKey: 'reportId'});
   Report.hasOne(reportIdentitasPPJK, {foreignKey: 'reportId'});
 
-  reportIdentitasPenerima.belongsTo(Report, {foreignKey: 'reportId'}); // Change
+  reportIdentitasPenerima.belongsTo(Report, {foreignKey: 'reportId'});
   reportIdentitasPengirim.belongsTo(Report, {foreignKey: 'reportId'});
   reportDataBeratDanVolume.belongsTo(Report, {foreignKey: 'reportId'});
   reportDataPelabuhanMuatBongkar.belongsTo(Report, {foreignKey: 'reportId'});
