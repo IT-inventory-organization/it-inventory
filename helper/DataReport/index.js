@@ -328,7 +328,6 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
 
         const resCount = await sequelize.query(`SELECT count(*) FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US".id) LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP".id = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP".id = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} GROUP BY "RP"."createdAt" ${orderQuery}`);
 
-        // console.log(resCount[1])
         const data = {
             data: res[0],
             data_size: +resCount[1].rowCount,
