@@ -48,7 +48,6 @@ const createListBarang = async (data, transaction = null, reportId = null) => {
         
         return result;
     } catch (error) {
-        console.log(error)
         throw error;
     }
     
@@ -123,14 +122,11 @@ const fullDelete = async (req, idListBarang = null, idReport, transaction = null
                 },
                 transaction: transaction,
                 returning: returning,
-                logging: console.log
             }
         )
-        // console.log(result);return;
         
         return result;
     } catch (error) {
-        console.log(error)
         throw error
     }
 }

@@ -185,7 +185,7 @@ const historyDataBarang = async (req, res) => {
 
         for(let i =0; i < result.length; i++){
             let obj = {};
-            // console.log(name)
+
             obj['name'] = name[0].name;
             const keys = Object.keys(result[i]);
             for(let j = 0; j < keys.length; j++){
@@ -204,7 +204,6 @@ const historyDataBarang = async (req, res) => {
         
         return successResponse(res, Http.ok, "Success Fetching Item History", qry);
     } catch (error) {
-        console.log(error)
         return errorResponse(res, Http.internalServerError, error)
     }
 }

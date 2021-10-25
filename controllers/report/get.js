@@ -103,7 +103,7 @@ const getOne = async (req, res) => {
     try {
         
         const result = await getOneReport(req, id);
-        // console.log(result)
+        
         const data = result.toJSON();
 
         data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran = convertDate(data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran);
@@ -120,7 +120,6 @@ const getOne = async (req, res) => {
 
         return successResponse(res, httpStatus.ok, "", data);
     } catch (error) {
-        console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
     }
 }
@@ -147,14 +146,13 @@ const getXMLReport = async (req, res) => {
     const {id} = req.params;
     
     try {
-        // console.log(id);
+        
         const found = await getOneReport(req, id);
 
         let xml = ``;
         const result = found.toJSON();
         const listBarang = result.listBarangs;
-
-        console.log(listBarang)
+        console.log(result.TransaksiPerdagangan.cif)
 
         for(let i = 0; i < listBarang.length; i++){
             xml += `<HEADER>`;
@@ -205,7 +203,7 @@ const getXMLReport = async (req, res) => {
             xml += `<BRUTO></BRUTO>`;
             xml += `<TOT_DIBAYAR></TOT_DIBAYAR>`;
             xml += `<NPWP_BILLING></NPWP_BILLING>`;
-            xml += `<NAMA_BILLING>helen </NAMA_BILLING>`;
+            xml += `<NAMA_BILLING></NAMA_BILLING>`;
             xml += `<HEADER_PUNGUTAN>`;
             xml += `<PUNGUTAN_TOTAL>`; // 1
             xml += `<KD_PUNGUTAN></KD_PUNGUTAN>`;
@@ -289,7 +287,7 @@ const getXMLReport = async (req, res) => {
         }
 
         
-        return successResponse(res, httpStatus.ok, "", xml);
+        return successResponse(res, httpStatus.ok, xml, xml);
     } catch (error) {
         console.error(error)
         return errorResponse(res, httpStatus.internalServerError, 'Failed Create XML Format');
@@ -319,7 +317,7 @@ const getDataActivityRedLine = async (req, res) => {
         const {pageSize, pageNo, type} = req.query;
         if(type === null || typeof type === 'undefined') {
             const result = await getAllReportByType(req, pageSize, pageNo);
-            return successResponse(res, httpStatus.ok, "", result[0]);
+            return successResponse(res, httpStatus.ok, "", result);
         }
 
         // Remove
@@ -329,7 +327,7 @@ const getDataActivityRedLine = async (req, res) => {
 
         const result = await getAllReportByType(req, pageSize, pageNo, type);
         
-        return successResponse(res, httpStatus.ok, "", result[0]);
+        return successResponse(res, httpStatus.ok, "", result);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, 'Failed To Fetch Red Line Activity');
     }

@@ -25,7 +25,6 @@ module.exports = {
     },
     updatePPJK: async (data, idReport, returning = null, transaction = null) => {
         try {
-            console.log(data);
             const query = {
                 where: {
                     id: data.id,
@@ -41,7 +40,7 @@ module.exports = {
             })
             return update;
         } catch (error) {
-            console.log(error)
+
             throw Error('Failed To Update')
         }
     }

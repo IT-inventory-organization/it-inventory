@@ -141,7 +141,6 @@ const addDataHeader = async (req, res) => {
 
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);
     } catch (error) {
-        console.log(error)
         await transaction.rollback();
 
         return errorResponse(res, Http.internalServerError, "Failed To Add Data")
@@ -204,7 +203,7 @@ const addDataBarang = async (req, res) => {
 
         // Loop Dengan Async
         for (let index = 0; index < listDataBarang.length; index++) {
-            // console.log(listDataBarang[index]);
+            
             let res = await createListBarang(listDataBarang[index], transaction, reportId);
             
             if(res.error){
@@ -229,7 +228,6 @@ const addDataBarang = async (req, res) => {
 
         return successResponse(res, Http.created, "Success Adding List Barang", dataToReturn);
     } catch (error) {
-        console.log(error)
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message)
     }
@@ -270,20 +268,18 @@ const duplicateData = async(req, res, next) => {
             typeReport: convert.typeReport,
             BCDocumentType: convert.BCDocumentType,
             nomorAjuan: convert.nomorAjuan,
-            status: convert.status
+            // status: convert.status
         }
 
         req.body = {
             Report: report,
             ConvertResult: convert
         };
-
-        console.log(req.body)
         
         next();
 
     } catch (error) {
-        console.log(error)
+
         return errorResponse(res, Http.internalServerError, "Failed Duplicate The Report");
     }
 }
@@ -377,10 +373,8 @@ const duplicateReport = async (req, res, next) => {
             Barang: barang
         }
 
-        // console.log(req.body);
         next()
     } catch (error) {
-        console.log(error);
         return errorResponse(res, Http.internalServerError, "Failed Add Report")
     }
 }
@@ -445,7 +439,6 @@ const duplicateLanjutan = async(req, res, next) => {
         
         next();
     } catch (error) {
-        console.log(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -470,9 +463,8 @@ const duplicateBarang = async(req, res) => {
             await createUserActivity(req.currentUser, req.id, "Duplicate Report");
         }
 
-        return successResponse(res, Http.created, "Success Create Duplicate Report");
+        return successResponse(res, Http.created, "Success Duplicate Report");
     } catch (error) {
-        console.log(error)
         if(transaction){
             await transaction.rollback();
         }

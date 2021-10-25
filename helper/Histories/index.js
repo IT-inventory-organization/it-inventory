@@ -5,6 +5,7 @@ const Barang = require("../../database/models/barang");
 const reportIdentitasPenerima = require("../../database/models/identitaspenerima");
 const reportListDokumen = require("../../database/models/listdokumen");
 const { Op } = require("sequelize");
+const reportIdentitasPPJK = require("../../database/models/identitasppjk");
 
 module.exports = {
     insertHistory: async(data, transaction) => {
@@ -29,15 +30,15 @@ module.exports = {
                 include: [
                     {
                         model: Report,
-                        attributes: ['jenisPemberitahuan', 'typeReport', 'BCDocumentType', ['id', 'nomorAjuan']],
+                        attributes: ['jenisPemberitahuan', 'typeReport', 'BCDocumentType', 'nomorAjuan'],
                         where: {
                             isDelete: false,
                             userId: req.currentUser
                         },
                         include: [
                             {
-                                model: reportIdentitasPenerima,
-                                attributes: ['namaPenerima'],
+                                model: reportIdentitasPPJK,
+                                attributes: ['namaPPJK'],
                                 // as: 'asd'
                             }
                         ],
