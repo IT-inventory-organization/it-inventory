@@ -33,7 +33,6 @@ const softDeleteListDokumen = async (reportId, req, transaction = null) => {
             throw new Error('User Is Not Authorized To Access Data');
         }
                 
-        
         const result = await reportListDokumen.update({
             isDelete: true
         }, {
