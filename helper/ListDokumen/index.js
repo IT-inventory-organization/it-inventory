@@ -29,9 +29,9 @@ const updateListDokumen = async (data, idToUpdate , returning = false, transacti
 
 const softDeleteListDokumen = async (reportId, req, transaction = null) => {
     try {
-        if(!await authorization(reportListDokumen, reportId, req, true)){
-            throw new Error('User Is Not Authorized To Access Data');
-        }
+        // if(!await authorization(reportListDokumen, reportId, req, true)){
+        //     throw new Error('User Is Not Authorized To Access Data');
+        // }
                 
         const result = await reportListDokumen.update({
             isDelete: true
