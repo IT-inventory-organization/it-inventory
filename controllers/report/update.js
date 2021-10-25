@@ -250,7 +250,9 @@ const updateStatusInvetory = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Status");
     } catch (error) {
-        await transaction.rollback();
+        if(transaction){
+            await transaction.rollback();
+        }
         return errorResponse(res, Http.internalServerError, error.message);
     }
 }

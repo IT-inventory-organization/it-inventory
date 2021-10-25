@@ -152,6 +152,7 @@ const getXMLReport = async (req, res) => {
         let xml = ``;
         const result = found.toJSON();
         const listBarang = result.listBarangs;
+        console.log(result.TransaksiPerdagangan.cif)
 
         for(let i = 0; i < listBarang.length; i++){
             xml += `<HEADER>`;
@@ -202,7 +203,7 @@ const getXMLReport = async (req, res) => {
             xml += `<BRUTO></BRUTO>`;
             xml += `<TOT_DIBAYAR></TOT_DIBAYAR>`;
             xml += `<NPWP_BILLING></NPWP_BILLING>`;
-            xml += `<NAMA_BILLING>helen </NAMA_BILLING>`;
+            xml += `<NAMA_BILLING></NAMA_BILLING>`;
             xml += `<HEADER_PUNGUTAN>`;
             xml += `<PUNGUTAN_TOTAL>`; // 1
             xml += `<KD_PUNGUTAN></KD_PUNGUTAN>`;
@@ -286,7 +287,7 @@ const getXMLReport = async (req, res) => {
         }
 
         
-        return successResponse(res, httpStatus.ok, "", xml);
+        return successResponse(res, httpStatus.ok, xml, xml);
     } catch (error) {
         console.error(error)
         return errorResponse(res, httpStatus.internalServerError, 'Failed Create XML Format');
