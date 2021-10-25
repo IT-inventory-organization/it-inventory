@@ -9,7 +9,8 @@ const {
     validationDataPetiKemasDanPengemas,
     validationDataPerkiraanTanggalPengeluaran,
     validationDataTempatPenimbunan,
-    validationDataLartas
+    validationDataLartas,
+    validationPPJK
 } = require('../../middlewares/validationDataHeader');
 const {
     dataPengajuan,
@@ -23,7 +24,8 @@ const {
     dataPerkiraanTanggalPengeluaran,
     dataTempatPenimbunan,
     idReport,
-    dataLartas
+    dataLartas,
+    ppjk
 } = require('../../helper/bundleDataReportHeader');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const { validationResponse } = require('../../middlewares/validationResponse');
@@ -56,6 +58,7 @@ const { updateStockItem } = require('../../helper/Barang');
 const { insertHistory } = require('../../helper/Histories');
 const { isExist } = require('../../helper/checkExistingDataFromTable');
 const Report = require('../../database/models/report');
+const { updatePPJK } = require('../../helper/PPJK');
 
 const updateDataHeader = async (req, res) => {
     let transaction;
@@ -63,8 +66,8 @@ const updateDataHeader = async (req, res) => {
         const {id} = req.params;
         transaction = await sequelize.transaction();
 
-        const { DataToInput: {dataPengajuan, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
-    
+        const { DataToInput: {dataPengajuan, identitasPPJK, identitasPengirim, identitasPenerima, transaksiPerdagangan, dataPengangkutan, dataPelabuhanMuatBongkar, dataBeratDanVolume, dataPetiKemasDanPengemas, dataLartas, dataTempatPenimbunan, dataPerkiraanTanggalPengeluaran, dataSearchReport}} = req.body;
+
         await checkAuthorization(req, id, transaction)
 
         // const { dataPengajuanId, identitasPenerimaId, identitasPengirimId, transaksiPerdaganganId, pengangkutanId, pelabuhanMuatBongkarId, beratDanVolumeId, petiKemasDanPengemasId, dataLartasId, tempatPenimbunanId, perkiraanTanggalId } = dataSearchReport; 
@@ -72,6 +75,7 @@ const updateDataHeader = async (req, res) => {
         // return;
         const dataPengajuanUpdate = await updateDataPengajuan(dataPengajuan, id, false, transaction);
         const identitasPengirimUpdate = await updateReportIdentitasPengirim(identitasPengirim, id, false, transaction);
+        const ppjkUpdate = await updatePPJK(identitasPPJK, id, false, transaction);
         const identitasPenerimaUpdate = await updateReportIdentitasPenerima(identitasPenerima, id, false, transaction);
         const transaksiPerdaganganUpdate = await updateReportTransaksiPerdagangan(transaksiPerdagangan, id, false, transaction);
         
@@ -90,8 +94,9 @@ const updateDataHeader = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Report", perkiraanTanggalPengeluaranUpdate);
     } catch (error) {
-        console.log(error)
-        await transaction.rollback();
+        if(transaction){
+            await transaction.rollback();
+        }
         return errorResponse(res, Http.internalServerError, "Failed To Update Report");
     }
 }
@@ -152,7 +157,6 @@ const updateDataBarang = async (req, res) => {
          */
         await fullDelete(req, null, idReport, transaction)
         for(let i = 0; i < listDataBarang.length; i++) {
-            // console.log(i, listDataBarang[i])
 
             if(listDataBarang[i].id || typeof listDataBarang[i].id !== 'undefined'){
                 delete listDataBarang[i].id 
@@ -165,7 +169,6 @@ const updateDataBarang = async (req, res) => {
             if(result.error){
                 return errorResponse(res, Http.badRequest, result.error);
             }
-            // console.log('asd',result);
             resultsListBarang.push(result);
         }
 
@@ -179,7 +182,6 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, 'Success Update Item', dataToReturn);
     } catch (error) {
-        console.log(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -240,8 +242,6 @@ const updateStatusInvetory = async (req, res) => {
             }
         }
 
-        // console.log(result)
-
         await updateStatus(id, status, transaction);
 
         if(req.currentRole !== 'Owner'){
@@ -285,6 +285,7 @@ module.exports = (routes) => {
         authentication,
         dataPengajuan,
         identitasPengirim,
+        ppjk,
         identitasPenerima,
         transaksiPerdagangan,
         dataPengangkut,
@@ -295,7 +296,8 @@ module.exports = (routes) => {
         dataTempatPenimbunan,
         dataLartas,
         idReport,
-        validationDataPengajuan, 
+        validationDataPengajuan,
+        validationPPJK,
         validationIdentitasPengirim, 
         validationIdentitasPenerima,
         validationTransaksiPerdagangan,

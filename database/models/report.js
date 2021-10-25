@@ -44,6 +44,10 @@ const Report = db.define('Report', {
   isDelete: {
     type: Sequelize.BOOLEAN,
     defaultValue: false
+  },
+  nomorAjuan: {
+    type: Sequelize.INTEGER,
+    allowNull: true
   }
 }, {
   tableName: 'Reports',

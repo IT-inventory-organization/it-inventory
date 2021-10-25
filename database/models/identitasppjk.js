@@ -2,32 +2,31 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const reportIdentitasPenerima = db.define('IdentitasPenerima', {
-  caraAngkutPenerima: {
+const reportIdentitasPPJK = db.define('reportIdentitasPPJK', {
+  jenisIdentitasPPJK: {
     type: Sequelize.STRING
   },
-  namaPengangkutPenerima: {
+  nomorIdentitasPPJK: {
     type: Sequelize.STRING
   },
-  benderaPenerima: {
+  namaPPJK: {
     type: Sequelize.STRING
   },
-  nomorVoyFlightPolPenerima: {
+  alamatPPJK: {
     type: Sequelize.STRING
   },
   reportId: {
     allowNull: false,
     type: Sequelize.INTEGER,
     references: {
-      model: 'Reports',
-      key: 'id'
+      model: "Reports",
+      key: "id"
     },
     onDelete: 'cascade',
     onUpdate: 'cascade'
-  }
+  },
 }, {
-  tableName: 'IdentitasPenerima',
-  freezeTableName:true,
+  tableName: 'IdentitasPPJK',
 })
 
-module.exports = reportIdentitasPenerima;
+module.exports = reportIdentitasPPJK;

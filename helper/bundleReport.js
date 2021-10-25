@@ -8,8 +8,7 @@ const bundleReport = (req, res, next) => {
         const {type} = req.query;
 
         const arr = ['BC 2.3', 'BC 2.7', 'BC 4.0', 'BC 2.6.2', 'BC 4.1', 'BC 2.5', 'BC 2.7', 'BC 2.6.1', 'BC 01', 'BC 02', 'BC 03'];
-        const out  = ['BC 02', 'BC 03'];
-        const inOut = ['BC 01', 'BC 2.3', 'BC 2.7'];
+        const inOut = ['BC 01', 'BC 2.3', 'BC 2.7', 'BC 03', 'BC 02'];
         const In = ['BC 4.0', 'BC 2.6.2'];
         const Out = ['BC 4.1', 'BC 2.6.1', 'BC 2.5'];
 
