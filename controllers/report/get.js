@@ -146,7 +146,6 @@ const getXMLReport = async (req, res) => {
     const {id} = req.params;
     
     try {
-        
         const found = await getOneReport(req, id);
 
         let xml = ``;
