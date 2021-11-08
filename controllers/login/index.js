@@ -45,6 +45,7 @@ const checkBody  = (email, password, res) => {
 }
 const loginAction = async (req, res) => {
   try {
+    // console.log(req.body)
     const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
     
     req.body.DataToInput = {
@@ -77,6 +78,7 @@ const loginAction = async (req, res) => {
       return errorResponse(res, httpStatus.unauthenticated, "Login failed, enter the correct password!")
     }
   } catch (error) {
+    console.log(error)
     // if there is a system error
     return errorResponse(res, httpStatus.internalServerError, "Login failed!")
   }

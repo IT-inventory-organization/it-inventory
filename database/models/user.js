@@ -3,9 +3,9 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const User = db.define('Users', {
-  name: {
+  owner_name: {
     type: Sequelize.STRING,
-    unique: true
+    // unique: true
   },
   email: {
     type: Sequelize.STRING
@@ -13,7 +13,7 @@ const User = db.define('Users', {
   npwp: {
     type: Sequelize.STRING,
   },
-  address: {
+  address_company: {
     type: Sequelize.STRING,
   },
   mobile_phone: {
@@ -21,6 +21,7 @@ const User = db.define('Users', {
   },
   username: {
     type: Sequelize.STRING,
+    unique: true
   },
   password: {
     type: Sequelize.STRING,
@@ -30,6 +31,18 @@ const User = db.define('Users', {
   },
   phone: {
     type: Sequelize.STRING,
+  },
+  address_owner: {
+    allowNull: true,
+    type: Sequelize.STRING,
+  },
+  company_name: {
+    allowNull: true,
+    type: Sequelize.STRING
+  },
+  business_field: {
+    allowNull: true,
+    type: Sequelize.STRING
   },
   role_id: {
     type: Sequelize.INTEGER,
