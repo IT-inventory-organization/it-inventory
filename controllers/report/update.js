@@ -119,9 +119,8 @@ const updateDataLanjutan = async (req, res) => {
             }
             promises.push(await createListDokumen(element, transaction));
         }
-
         const petiKemasResult = await updateDataPetiKemas(dataPetiKemas, idReport, false, transaction);
-
+        
         if(req.currentRole !== 'Owner'){
             await createUserActivity(req.currentUser, idReport, `Updating "Data Lanjutan" Report`);
         }
@@ -133,7 +132,6 @@ const updateDataLanjutan = async (req, res) => {
             reportId: promises[0].reportId
         })
     } catch (error) {
-        console.error(error);
         await transaction.rollback();
         return errorResponse(res, Http.internalServerError, error.message);
     }
@@ -250,7 +248,9 @@ const updateStatusInvetory = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Success Updating Status");
     } catch (error) {
-        await transaction.rollback();
+        if(transaction){
+            await transaction.rollback();
+        }
         return errorResponse(res, Http.internalServerError, error.message);
     }
 }
