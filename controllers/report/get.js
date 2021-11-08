@@ -103,7 +103,7 @@ const getOne = async (req, res) => {
     try {
         
         const result = await getOneReport(req, id);
-        // console.log(result)
+        
         const data = result.toJSON();
 
         data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran = convertDate(data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran);
@@ -120,7 +120,6 @@ const getOne = async (req, res) => {
 
         return successResponse(res, httpStatus.ok, "", data);
     } catch (error) {
-        console.error(error)
         return errorResponse(res, httpStatus.internalServerError, "Failed To Get Report");
     }
 }
@@ -147,11 +146,13 @@ const getXMLReport = async (req, res) => {
     const {id} = req.params;
     
     try {
-        const result = await getOneReport(req, id);
+        
+        const found = await getOneReport(req, id);
 
         let xml = ``;
-
+        const result = found.toJSON();
         const listBarang = result.listBarangs;
+        console.log(result.TransaksiPerdagangan.cif)
 
         for(let i = 0; i < listBarang.length; i++){
             xml += `<HEADER>`;
@@ -181,10 +182,10 @@ const getXMLReport = async (req, res) => {
             xml += `<KD_NEG_PENGIRIM></KD_NEG_PENGIRIM>`;
             xml += `<NM_PENGIRIM>${result.IdentitasPengirim.namaPengirim}</NM_PENGIRIM>`;
             xml += `<AL_PENGIRIM>${result.IdentitasPengirim.alamatPengirim}</AL_PENGIRIM>`;
-            xml += `<JNS_ID_PENERIMA>${getCode(result.reportIdentitasPenerima.jenisIdentitasPenerima)}</JNS_ID_PENERIMA>`;
+            xml += `<JNS_ID_PENERIMA>${getCode(result.reportIdentitasPPJK.jenisIdentitasPPJK)}</JNS_ID_PENERIMA>`;
             xml += `<NO_ID_PENERIMA>0</NO_ID_PENERIMA>`;
-            xml += `<NM_PENERIMA>${result.reportIdentitasPenerima.namaPenerima}</NM_PENERIMA>`;
-            xml += `<AL_PENERIMA>${result.reportIdentitasPenerima.alamatPenerima}</AL_PENERIMA>`;
+            xml += `<NM_PENERIMA>${result.reportIdentitasPPJK.namaPPJK}</NM_PENERIMA>`;
+            xml += `<AL_PENERIMA>${result.reportIdentitasPPJK.alamatPPJK}</AL_PENERIMA>`;
             xml += `<TELP_PENERIMA></TELP_PENERIMA>`;
             xml += `<JNS_ID_PEMBERITAHU>${getCode(result.DataPengajuan.kategoryPemberitahuan)}</JNS_ID_PEMBERITAHU>`;
             xml += `<NO_ID_PEMBERITAHU></NO_ID_PEMBERITAHU>`;
@@ -202,7 +203,7 @@ const getXMLReport = async (req, res) => {
             xml += `<BRUTO></BRUTO>`;
             xml += `<TOT_DIBAYAR></TOT_DIBAYAR>`;
             xml += `<NPWP_BILLING></NPWP_BILLING>`;
-            xml += `<NAMA_BILLING>helen </NAMA_BILLING>`;
+            xml += `<NAMA_BILLING></NAMA_BILLING>`;
             xml += `<HEADER_PUNGUTAN>`;
             xml += `<PUNGUTAN_TOTAL>`; // 1
             xml += `<KD_PUNGUTAN></KD_PUNGUTAN>`;
@@ -224,8 +225,8 @@ const getXMLReport = async (req, res) => {
             xml += `<DETIL>`;
             xml += `<BARANG>`;
             xml += `<SERI_BRG></SERI_BRG>`;
-            xml += `<HS_CODE>${listBarang[i].hsCode}</HS_CODE>`;
-            xml += `<UR_BRG>${listBarang[i].uraian}</UR_BRG>`;
+            xml += `<HS_CODE>${listBarang[i].Barang.hsCode}</HS_CODE>`;
+            xml += `<UR_BRG>${listBarang[i].Barang.uraian}</UR_BRG>`;
             xml += `<KD_NEG_ASAL></KD_NEG_ASAL>`;
             xml += `<JML_KMS></JML_KMS>`;
             xml += `<JNS_KMS></JNS_KMS>`;
@@ -286,7 +287,7 @@ const getXMLReport = async (req, res) => {
         }
 
         
-        return successResponse(res, httpStatus.ok, "", xml);
+        return successResponse(res, httpStatus.ok, xml, xml);
     } catch (error) {
         console.error(error)
         return errorResponse(res, httpStatus.internalServerError, 'Failed Create XML Format');
@@ -316,7 +317,7 @@ const getDataActivityRedLine = async (req, res) => {
         const {pageSize, pageNo, type} = req.query;
         if(type === null || typeof type === 'undefined') {
             const result = await getAllReportByType(req, pageSize, pageNo);
-            return successResponse(res, httpStatus.ok, "", result[0]);
+            return successResponse(res, httpStatus.ok, "", result);
         }
 
         // Remove
@@ -326,7 +327,7 @@ const getDataActivityRedLine = async (req, res) => {
 
         const result = await getAllReportByType(req, pageSize, pageNo, type);
         
-        return successResponse(res, httpStatus.ok, "", result[0]);
+        return successResponse(res, httpStatus.ok, "", result);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, 'Failed To Fetch Red Line Activity');
     }

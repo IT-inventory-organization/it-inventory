@@ -19,24 +19,31 @@ const authorization = require("../authorization");
 const reportDataLartas = require('../../database/models/datalartas');
 const Barang = require('../../database/models/barang');
 const { isExist } = require('../checkExistingDataFromTable');
-// const sequelize = require('../../configs/database');
+const reportIdentitasPPJK = require('../../database/models/identitasppjk');
 
-const createReport = async (data, transaction) => {
+const createReport = async (data) => {
+    let transaction;
     try {
-        const result = await Report.create(data);
-        // DONT USE TRANSACTION
-        // DO NOTHING ON ERROR
-        // NESTED TRYCATCH MUST USE FINALLY ON THE INNER BLOCK
-        // try {
-        //     const resultActivity = await UserActivity.create(data.userId, result.id, "Create report")
-        // } catch (error) {
-            
-        // } finally {
+        transaction = await sequelize.transaction();
+        const result = await Report.create(data, {transaction});
 
-        // }
+        await Report.update({nomorAjuan: result.toJSON().id}, {where: {id: result.toJSON().id},transaction});
+        await transaction.commit();
         return result;
     } catch (error) {
+        if(transaction){
+            await transaction.rollback();
+        }
         throw Error(error.message);
+    }
+}
+
+const createReportDuplicate = async (data) => {
+    try {
+        const result = await Report.create(data)
+        return result;
+    } catch (error) {
+        throw Error(error.message)
     }
 }
 
@@ -165,67 +172,67 @@ const deleteReport = async(idType, req) => {
             throw new Error('User Is Not Authorized To Delete This Data');
         }
         transaction = await sequelize.transaction();
-        const query = {
-            where: {
-                id: idType,
-                userId: req.currentUser,
-                isDelete: false
-            }
-        }
+        // const query = {
+        //     where: {
+        //         id: idType,
+        //         userId: req.currentUser,
+        //         isDelete: false
+        //     }
+        // }
 
-        const foundExistingReport = await Report.findOne({
-            ...query,
-            transaction
-        })
+        // const foundExistingReport = await Report.findOne({
+        //     ...query,
+        //     transaction
+        // })
 
-        if(!foundExistingReport){
-            throw new Error(`Data Not Found, Delete failed`);
-        }
+        // if(!foundExistingReport){
+        //     throw new Error(`Data Not Found, Delete failed`);
+        // }
 
-        const jenisPemberitahuan = foundExistingReport.toJSON().jenisPemberitahuan;
+        // const jenisPemberitahuan = foundExistingReport.toJSON().jenisPemberitahuan;
 
-        const foundlistBarang = await reportListBarang.findAll({where: {reportId: idType}, transaction});
+        // const foundlistBarang = await reportListBarang.findAll({where: {reportId: idType}, transaction});
         
-        if(!foundlistBarang){
-            throw new Error(`Data Not Found, Delete Failed`);
-        }
-        let resultsChange = [];
+        // if(!foundlistBarang){
+        //     throw new Error(`Data Not Found, Delete Failed`);
+        // }
+        // let resultsChange = [];
         
 
-        if(jenisPemberitahuan === 'Export'){
-            for (let i = 0; i < foundlistBarang.length; i++) {
-                const listBarang = foundlistBarang[i].toJSON();
-                const Inc = await Barang.increment('stock', {
-                    by: listBarang.quantity,
-                    where: {
-                        id: listBarang.idBarang,
-                        userId: req.currentUser
-                    },
-                    transaction
-                })
-                resultsChange.push(Inc);
-            }
-        }else if(jenisPemberitahuan === 'Import'){
-            for (let i = 0; i < foundlistBarang.length; i++) {
-                const listBarang = foundlistBarang[i].toJSON();
-                const Dec = await Barang.decrement('stock', {
-                    by: listBarang.quantity,
-                    where: {
-                        id: listBarang.idBarang,
-                        userId: req.currentUser 
-                    },
-                    transaction
-                })
-                if(Dec[0][0][0].stock < 0){
-                    throw new Error('Stock Reach Minus, Delete Failed')
-                }
-                resultsChange.push(Dec);
-            }
-        }
+        // if(jenisPemberitahuan === 'Export'){
+        //     for (let i = 0; i < foundlistBarang.length; i++) {
+        //         const listBarang = foundlistBarang[i].toJSON();
+        //         const Inc = await Barang.increment('stock', {
+        //             by: listBarang.quantity,
+        //             where: {
+        //                 id: listBarang.idBarang,
+        //                 userId: req.currentUser
+        //             },
+        //             transaction
+        //         })
+        //         resultsChange.push(Inc);
+        //     }
+        // }else if(jenisPemberitahuan === 'Import'){
+        //     for (let i = 0; i < foundlistBarang.length; i++) {
+        //         const listBarang = foundlistBarang[i].toJSON();
+        //         const Dec = await Barang.decrement('stock', {
+        //             by: listBarang.quantity,
+        //             where: {
+        //                 id: listBarang.idBarang,
+        //                 userId: req.currentUser 
+        //             },
+        //             transaction
+        //         })
+        //         if(Dec[0][0][0].stock < 0){
+        //             throw new Error('Stock Reach Minus, Delete Failed')
+        //         }
+        //         resultsChange.push(Dec);
+        //     }
+        // }
 
-        if(resultsChange.length !== foundlistBarang.length){
-            throw new Error('Failed Delete Report');
-        }
+        // if(resultsChange.length !== foundlistBarang.length){
+        //     throw new Error('Failed Delete Report');
+        // }
 
         const result = await Report.update({
             isDelete: true,
@@ -283,7 +290,7 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
             if(req.currentRole !== "Admin" && req.currentRole !== "Owner"){
                 qtSearch+=`AND `;
             }
-            qtSearch+=`("RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR "IPN"."namaPenerima" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%')`
+            qtSearch+=`("RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss')::text ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR ip."namaPPJK" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%' OR "RP"."nomorAjuan"::text ILIKE '%${searchQuery}%')`;
         }
 
         if(type != null){
@@ -314,19 +321,30 @@ const getAllReport = async (req, pageSize, pageNo, sortBy, searchQuery = null, t
                 }
             }
         }
-        
-        const res = await sequelize.query(`SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory","RP"."id" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+
+        const res = await sequelize.query(`SELECT "RP".id as id, "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", "RP"."nomorAjuan" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, ip."namaPPJK" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP"."id" = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+
+        const resCount = await sequelize.query(`SELECT count(*) FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US".id) LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP".id = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP".id = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} GROUP BY "RP"."createdAt" ${orderQuery}`);
 
         const data = {
             data: res[0],
-            data_size: res[0].length,
+            data_size: +countTotal(resCount[0]),
             page_size: +pageSize,
             page: +pageNo || 1
         }
+
         return data;
     } catch (error) {
         throw error
     }
+}
+
+const countTotal = (arr) => {
+    let total = 0;
+    for (let i = 0; i < arr.length; i++) {
+        total += +arr[i].count
+    }
+    return total;
 }
 
 const getAllReportByType = async (req, pageSize, pageNo, type = null) => {
@@ -359,10 +377,21 @@ const getAllReportByType = async (req, pageSize, pageNo, type = null) => {
             }
         }
         
-        const sql = `SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPenerima" as penerima, "RP".status as jalur FROM "Reports" as "RP" INNER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") INNER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") INNER JOIN "IdentitasPenerima" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP".status = 'merah' AND "RP"."isDelete" = false ${searchUser} ${typeQuery} LIMIT ${limit} OFFSET ${offset}`;
+        const sql = `SELECT "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, "IPN"."namaPPJK" as penerima, "RP".status as jalur FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP".status = 'merah' AND "RP"."isDelete" = false ${searchUser} ${typeQuery} LIMIT ${limit} OFFSET ${offset}`;
+
+        const count = `SELECT count(*) FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as "IPN" ON ("RP"."id" = "IPN"."reportId") WHERE "RP".status = 'merah' AND "RP"."isDelete" = false ${searchUser} ${typeQuery}`;
 
         const result = await sequelize.query(sql);
-        return result;
+        const countAll = await sequelize.query(count);
+        
+        const data = {
+            data: result[0],
+            data_size: +countTotal(countAll[0]),
+            page_size: +pageSize,
+            page: +pageNo || 1
+        }
+
+        return data;
     } catch (error) {
         return error;
     }
@@ -372,6 +401,7 @@ const getOneReport = async(req, id, statusCheck = false) => {
     try {
         const query = {}
         query.where = {id}
+ 
         query.include = [
             {
                 model: reportListBarang,
@@ -399,6 +429,12 @@ const getOneReport = async(req, id, statusCheck = false) => {
             }, 
             {
                 model: reportIdentitasPenerima,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt']
+                }
+            },
+            {
+                model: reportIdentitasPPJK,
                 attributes: {
                     exclude: ['createdAt', 'updatedAt']
                 }
@@ -498,6 +534,7 @@ const getOneReport = async(req, id, statusCheck = false) => {
             ...query.where,
             isDelete: false
         }
+
         const result = await Report.findOne(query);
 
         return result
@@ -610,5 +647,6 @@ module.exports = {
     checkAuthorization,
     getPerTable,
     getPerTableBarangDokumen,
-    getOneSpecificReport
+    getOneSpecificReport,
+    createReportDuplicate
 }

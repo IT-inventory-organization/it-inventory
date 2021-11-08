@@ -18,6 +18,7 @@ const UserActivity = require("./useractivity");
 const reportDataLartas = require("./datalartas");
 const Barang = require("./barang");
 const Histories = require("./history");
+const reportIdentitasPPJK = require("./identitasppjk");
 
 const setAssociations = function() {
   Report.hasOne(reportIdentitasPenerima, {foreignKey: 'reportId'});
@@ -34,7 +35,8 @@ const setAssociations = function() {
   Report.hasMany(reportListBarang, {foreignKey: 'reportId'});
   Report.hasMany(reportListDokumen, {foreignKey: 'reportId'});
   Report.belongsTo(User, {foreignKey: "userId"})
-  Report.hasOne(reportDataLartas, {foreignKey: 'reportId'})
+  Report.hasOne(reportDataLartas, {foreignKey: 'reportId'});
+  Report.hasOne(reportIdentitasPPJK, {foreignKey: 'reportId'});
 
   reportIdentitasPenerima.belongsTo(Report, {foreignKey: 'reportId'});
   reportIdentitasPengirim.belongsTo(Report, {foreignKey: 'reportId'});
@@ -50,6 +52,10 @@ const setAssociations = function() {
   reportListBarang.belongsTo(Report, {foreignKey: 'reportId'});
   reportListDokumen.belongsTo(Report, {foreignKey: 'reportId'});
   reportDataLartas.belongsTo(Report, {foreignKey: 'reportId'});
+  /**
+   * New
+   */
+  reportIdentitasPPJK.belongsTo(Report, {foreignKey: 'reportId'}); 
 
   Role.hasOne(User, {foreignKey: 'role_id'});
   User.belongsTo(Role, {foreignKey: 'role_id'})

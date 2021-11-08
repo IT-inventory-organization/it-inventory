@@ -24,11 +24,37 @@ const dataPengajuan = (req, res, next) => {
     }
 }
 
+const ppjk = (req, res, next) => {
+    try {
+        const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
+
+        const dataToInputPPJK = {
+            ...Decrypt.identitasPPJK,
+            reportId: Decrypt.reportId
+        }
+        req.body.DataToInput = {
+            ...req.body.DataToInput,
+            identitasPPJK: dataToInputPPJK
+        }
+
+        next();
+    } catch (error) {
+
+        return errorResponse(res, Http.badRequest, "Failed Add Data", error.message)
+    }
+}
+
 const identitasPenerima = (req, res, next) => {
     try {
 
         const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
-
+        /**
+         * Key
+         * caraAngkutPenerima
+         * namaPengangkutPenerima
+         * benderaPenerima
+         * nomorVoyFlightPolPenerima
+         */
         const dataToInputIdentitasPenerima = {
             ...Decrypt.identitasPenerima,
             reportId: Decrypt.reportId
@@ -278,5 +304,6 @@ module.exports = {
     dataPerkiraanTanggalPengeluaran,
     dataTempatPenimbunan,
     idReport,
-    dataLartas
+    dataLartas,
+    ppjk
 }
