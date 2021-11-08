@@ -4,6 +4,7 @@ const db = require('../../configs/database');
 
 const User = db.define('Users', {
   owner_name: {
+    allowNull: false,
     type: Sequelize.STRING,
     // unique: true
   },
@@ -27,6 +28,7 @@ const User = db.define('Users', {
     type: Sequelize.STRING,
   },
   is_active: {
+    defaultValue: true,
     type: Sequelize.BOOLEAN,
   },
   phone: {
