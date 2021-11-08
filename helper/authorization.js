@@ -24,6 +24,7 @@ const authorization = async (model, id, req, extraCondition = false) => {
     }
     
     if('Report' in result) {
+      console.log(result.toJSON(), req.currentUser, id)
       if (result.Report.userId === req.currentUser) {
         return true
       }

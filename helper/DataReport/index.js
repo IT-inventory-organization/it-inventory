@@ -172,67 +172,67 @@ const deleteReport = async(idType, req) => {
             throw new Error('User Is Not Authorized To Delete This Data');
         }
         transaction = await sequelize.transaction();
-        const query = {
-            where: {
-                id: idType,
-                userId: req.currentUser,
-                isDelete: false
-            }
-        }
+        // const query = {
+        //     where: {
+        //         id: idType,
+        //         userId: req.currentUser,
+        //         isDelete: false
+        //     }
+        // }
 
-        const foundExistingReport = await Report.findOne({
-            ...query,
-            transaction
-        })
+        // const foundExistingReport = await Report.findOne({
+        //     ...query,
+        //     transaction
+        // })
 
-        if(!foundExistingReport){
-            throw new Error(`Data Not Found, Delete failed`);
-        }
+        // if(!foundExistingReport){
+        //     throw new Error(`Data Not Found, Delete failed`);
+        // }
 
-        const jenisPemberitahuan = foundExistingReport.toJSON().jenisPemberitahuan;
+        // const jenisPemberitahuan = foundExistingReport.toJSON().jenisPemberitahuan;
 
-        const foundlistBarang = await reportListBarang.findAll({where: {reportId: idType}, transaction});
+        // const foundlistBarang = await reportListBarang.findAll({where: {reportId: idType}, transaction});
         
-        if(!foundlistBarang){
-            throw new Error(`Data Not Found, Delete Failed`);
-        }
-        let resultsChange = [];
+        // if(!foundlistBarang){
+        //     throw new Error(`Data Not Found, Delete Failed`);
+        // }
+        // let resultsChange = [];
         
 
-        if(jenisPemberitahuan === 'Export'){
-            for (let i = 0; i < foundlistBarang.length; i++) {
-                const listBarang = foundlistBarang[i].toJSON();
-                const Inc = await Barang.increment('stock', {
-                    by: listBarang.quantity,
-                    where: {
-                        id: listBarang.idBarang,
-                        userId: req.currentUser
-                    },
-                    transaction
-                })
-                resultsChange.push(Inc);
-            }
-        }else if(jenisPemberitahuan === 'Import'){
-            for (let i = 0; i < foundlistBarang.length; i++) {
-                const listBarang = foundlistBarang[i].toJSON();
-                const Dec = await Barang.decrement('stock', {
-                    by: listBarang.quantity,
-                    where: {
-                        id: listBarang.idBarang,
-                        userId: req.currentUser 
-                    },
-                    transaction
-                })
-                if(Dec[0][0][0].stock < 0){
-                    throw new Error('Stock Reach Minus, Delete Failed')
-                }
-                resultsChange.push(Dec);
-            }
-        }
+        // if(jenisPemberitahuan === 'Export'){
+        //     for (let i = 0; i < foundlistBarang.length; i++) {
+        //         const listBarang = foundlistBarang[i].toJSON();
+        //         const Inc = await Barang.increment('stock', {
+        //             by: listBarang.quantity,
+        //             where: {
+        //                 id: listBarang.idBarang,
+        //                 userId: req.currentUser
+        //             },
+        //             transaction
+        //         })
+        //         resultsChange.push(Inc);
+        //     }
+        // }else if(jenisPemberitahuan === 'Import'){
+        //     for (let i = 0; i < foundlistBarang.length; i++) {
+        //         const listBarang = foundlistBarang[i].toJSON();
+        //         const Dec = await Barang.decrement('stock', {
+        //             by: listBarang.quantity,
+        //             where: {
+        //                 id: listBarang.idBarang,
+        //                 userId: req.currentUser 
+        //             },
+        //             transaction
+        //         })
+        //         if(Dec[0][0][0].stock < 0){
+        //             throw new Error('Stock Reach Minus, Delete Failed')
+        //         }
+        //         resultsChange.push(Dec);
+        //     }
+        // }
 
-        if(resultsChange.length !== foundlistBarang.length){
-            throw new Error('Failed Delete Report');
-        }
+        // if(resultsChange.length !== foundlistBarang.length){
+        //     throw new Error('Failed Delete Report');
+        // }
 
         const result = await Report.update({
             isDelete: true,
