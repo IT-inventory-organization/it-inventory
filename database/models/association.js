@@ -1,15 +1,3 @@
-const reportDataBeratDanVolume = require("./databeratdanvolume");
-const reportDataPelabuhanMuatBongkar = require("./datapelabuhanmuatbongkar");
-const reportDataPengajuan = require("./datapengajuan");
-const reportDataPengangkutan = require("./datapengangkutan");
-const reportDataPerkiraanTanggalPengeluaran = require("./dataperkiraantanggalpengeluaran");
-const reportDataPetiKemas = require("./datapetikemas");
-const reportDataPetiKemasDanPengemas = require("./datapetikemasdanpengemas");
-const reportDataTempatPenimbunan = require("./datatempatpenimbunan");
-const reportIdentitasPenerima = require("./identitaspenerima");
-const reportIdentitasPengirim = require("./identitaspengirim");
-const reportListBarang = require("./listbarang");
-const reportListDokumen = require("./listdokumen");
 const Report = require("./report");
 const Role = require("./role");
 const reportTransaksiPerdagangan = require("./transaksiperdagangan");
@@ -19,81 +7,68 @@ const reportDataLartas = require("./datalartas");
 const Barang = require("./barang");
 const Histories = require("./history");
 const reportIdentitasPPJK = require("./identitasppjk");
-const DataPemasukan = require("./dokumen_pemasukan");
+const DokumenPemasukan = require("./dokumen_pemasukan");
+const DokumenTambahan = require("./dokumen_tambahan");
+const DataPelabuhan = require("./data_pelabuhan");
+const IdentitasBarang = require("./identitas_barang");
+const DataKapal = require("./data_kapal");
+const PembeliBarang = require("./pembeli_barang");
+const PPJK = require("./ppjk");
+const data_barang = require("./data_barang");
+const berat_dan_volume = require("./berat_dan_volume");
+const DataPengangkutan = require("./data_pengangkutan");
+const MataUang = require("./mata_uang");
+const PengusahaPLB = require("./pengusaha_plb");
+const PenjualBarang = require("./penjual_barang");
+const TempatPenimbunan = require("./tempat_penimbunan");
+const Roles = require("./role");
+const InfoPengguna = require("./info_pengguna");
 
 const setAssociations = function() {
-  Report.hasOne(reportIdentitasPenerima, {foreignKey: 'reportId'});
-  Report.hasOne(reportIdentitasPengirim, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataBeratDanVolume, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataPelabuhanMuatBongkar, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataPengajuan, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataPengangkutan, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataPerkiraanTanggalPengeluaran, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataPetiKemas, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataPetiKemasDanPengemas, {foreignKey: 'reportId'});
-  Report.hasOne(reportDataTempatPenimbunan, {foreignKey: 'reportId'});
-  Report.hasOne(reportTransaksiPerdagangan, {foreignKey: 'reportId'});
-  Report.hasMany(reportListBarang, {foreignKey: 'reportId'});
-  Report.hasMany(reportListDokumen, {foreignKey: 'reportId'});
-  Report.belongsTo(User, {foreignKey: "userId"})
-  Report.hasOne(reportDataLartas, {foreignKey: 'reportId'});
-  Report.hasOne(reportIdentitasPPJK, {foreignKey: 'reportId'});
-
-  reportIdentitasPenerima.belongsTo(Report, {foreignKey: 'reportId'});
-  reportIdentitasPengirim.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataBeratDanVolume.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataPelabuhanMuatBongkar.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataPengajuan.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataPengangkutan.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataPerkiraanTanggalPengeluaran.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataPetiKemas.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataPetiKemasDanPengemas.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataTempatPenimbunan.belongsTo(Report, {foreignKey: 'reportId'});
-  reportTransaksiPerdagangan.belongsTo(Report, {foreignKey: 'reportId'});
-  reportListBarang.belongsTo(Report, {foreignKey: 'reportId'});
-  reportListDokumen.belongsTo(Report, {foreignKey: 'reportId'});
-  reportDataLartas.belongsTo(Report, {foreignKey: 'reportId'});
-  /**
-   * New
-   */
-  reportIdentitasPPJK.belongsTo(Report, {foreignKey: 'reportId'}); 
-
-  Role.hasOne(User, {foreignKey: 'role_id'});
-  User.belongsTo(Role, {foreignKey: 'role_id'})
-
-  User.hasMany(UserActivity, {foreignKey: "userId"})
-  Report.hasMany(UserActivity, {foreignKey: "reportId"})
-  UserActivity.belongsTo(User, {foreignKey: "userId"})
-  UserActivity.belongsTo(Report, {foreignKey: "reportId"})
-  User.hasMany(Report, {foreignKey: "userId"});
-
-  // Barang
-  User.hasMany(Barang, {foreignKey: 'id'});
-  Barang.belongsTo(User, {foreignKey: 'userId'});
-
-  // Mandatory
-  Report.belongsToMany(Barang, {through: reportListBarang, foreignKey: 'reportId'});
-  Barang.belongsToMany(Report, {through: reportListBarang, foreignKey: 'idBarang'});
-
-  Barang.hasMany(reportListBarang, {foreignKey: 'idBarang'});
-  reportListBarang.belongsTo(Barang, {foreignKey: 'idBarang'});
-  reportListBarang.belongsTo(Report, {foreignKey: 'reportId'});
-
-  // Mandatory
-  Report.belongsToMany(Barang, {through: Histories, foreignKey: 'reportId'});
-  Barang.belongsToMany(Report, {through: Histories, foreignKey: 'idBarang'});
-
-  // Barang.belongsToMany(Histories, {foreignKey: 'idBarang'});
-  // Report.belongsToMany(Histories, {foreignKey: 'reportId'});
-  Histories.belongsTo(Barang, {foreignKey: 'idBarang'});
-  Histories.belongsTo(Report, {foreignKey: 'reportId'});
 
   /**
    * * New Database Relations
+   * * Report Relation With Other Report
    */
 
-  Report.hasOne(DataPemasukan, {foreignKey: 'reportId'})
-  
+  Report.hasOne(DokumenPemasukan, {foreignKey: 'reportId'});
+  Report.hasOne(DokumenTambahan, {foreignKey: 'reportId'});
+  Report.hasOne(DataPelabuhan, {foreignKey: 'reportId'});
+  Report.hasOne(DataKapal, {foreignKey: 'reportId'});
+  Report.hasOne(IdentitasBarang, {foreignKey: 'reportId'});
+  Report.hasOne(PembeliBarang, {foreignKey: 'reportId'});
+  Report.hasOne(PPJK, {foreignKey: 'reportId'});
+  Report.hasOne(berat_dan_volume, {foreignKey: 'report_id'});
+  Report.hasOne(DataPengangkutan, {foreignKey: 'reportId'});
+  Report.hasOne(MataUang, {foreignKey: 'reportId'});
+  Report.hasOne(PembeliBarang, {foreignKey: 'reportId'});
+  Report.hasOne(PengusahaPLB, {foreignKey: 'report_id'});
+  Report.hasOne(PenjualBarang, {foreignKey: 'report_id'});
+  Report.hasOne(TempatPenimbunan, {foreignKey: 'report_id'});
+  Report.hasMany(data_barang, {foreignKey: 'report_id'});
+
+
+  DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
+  DokumenTambahan.belongsTo(Report, {foreignKey: 'reportId'});
+  DataPelabuhan.belongsTo(Report, {foreignKey: 'reportId'});
+  DataKapal.belongsTo(Report, {foreignKey: 'reportId'});
+  IdentitasBarang.belongsTo(Report, {foreignKey: 'reportId'});
+  PembeliBarang.belongsTo(Report, {foreignKey: 'reportId'});
+  PPJK.belongsTo(Report, {foreignKey: 'reportId'});
+  data_barang.belongsTo(Report, {foreignKey: 'report_id'});
+  berat_dan_volume.belongsTo(Report, {foreignKey: 'report_id'});
+
+  /**
+   * * Roles Relation With User
+   */
+  Roles.hasOne(InfoPengguna, {foreignKey: 'role_id'});
+  InfoPengguna.belongsTo(Roles, {foreignKey: 'role_id'});
+
+  /**
+   * * Report Relation With User
+   */
+  InfoPengguna.hasMany(Report, {foreignKey:'user_id'});
+  Report.belongsTo(InfoPengguna, {foreignKey: 'user_id'})
 };
 
 module.exports = setAssociations;

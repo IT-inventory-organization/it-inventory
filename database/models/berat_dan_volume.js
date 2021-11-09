@@ -1,6 +1,5 @@
 'use strict';
 const Sequelize = require('sequelize');
-const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
 const berat_dan_volume = db.define('berat_dan_volume', {
@@ -12,7 +11,17 @@ const berat_dan_volume = db.define('berat_dan_volume', {
   },
   volume: {
     type: Sequelize.DECIMAL
-  }  
+  },
+  report_id: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'reports',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'cascade'
+  },
 }, {
   tableName: 'berat_dan_volume',
   freezeTableName: true,

@@ -2,30 +2,25 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const DokumenTambahan = db.define('dokumen_tambahan', {
-  nomorBC10: {
+const IdentitasBarang = db.define('identitas_barang', {
+  negara_asal: {
     allowNull: true,
     type: Sequelize.STRING
   },
-  nomorBC11: {
-    allowNull:true,
+  jenis_barang: {
     type: Sequelize.STRING
   },
-  nomorBL: {
-    allowNull: true,
+  nilai_barang: {
+    type: Sequelize.INTEGER
+  },
+  cara_pembayaran: {
     type: Sequelize.STRING
   },
-  tanggalBC10: {
-    allowNull: true,
+  asal_barang: {
     type: Sequelize.STRING
   },
-  tanggalBC11: {
-    allowNull: true,
-    type: Sequelize.STRING
-  },
-  tanggalBL: {
-    allowNull: true,
-    type: Sequelize.STRING
+  jumlah_barang: {
+    type: Sequelize.INTEGER
   },
   reportId: {
     allowNull: false,
@@ -34,12 +29,15 @@ const DokumenTambahan = db.define('dokumen_tambahan', {
       model: 'reports',
       key: 'id'
     },
-    onDelete: 'cascade',
-    onUpdate: 'cascade'
+    onUpdate: 'cascade',
+    onDelete: 'cascade'
+  },
+  jumlah_kemasan: {
+    type: Sequelize.INTEGER
   },
 }, {
-  tableName: 'dokumen_tambahan',
+  tableName: 'identitas_barang',
   freezeTableName: true,
 })
 
-module.exports = DokumenTambahan;
+module.exports = IdentitasBarang;

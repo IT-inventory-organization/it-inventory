@@ -11,20 +11,16 @@ module.exports = {
      *   isBetaMember: false
      * }], {});
     */
-    await queryInterface.bulkInsert('Roles', [{
-          name: 'Admin',
-          createdAt: new Date(),
-          updatedAt: new Date()
-      },{
-          name: 'Owner',
-          createdAt: new Date(),
-          updatedAt: new Date()
-      }, {
-          name: 'User',
-          createdAt: new Date(),
-          updatedAt: new Date()
-      }
-    ], {})
+    const data = [{
+      name: 'Owner',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },{
+      name: 'User',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }];
+   await queryInterface.bulkInsert('roles', data , {})
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -34,6 +30,6 @@ module.exports = {
      * Example:
      * await queryInterface.bulkDelete('People', null, {});
      */
-      await queryInterface.bulkDelete('Roles', null);
+    await queryInterface.bulkDelete('roles', null, {})
   }
 };

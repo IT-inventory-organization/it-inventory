@@ -1,34 +1,39 @@
 'use strict';
 const Sequelize = require('sequelize');
-const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
-const PengusahaPLB = db.define('pengusaha_PLB', {
-  jenis_identitas_penjual: {
+const MataUang = db.define('mata_uang', {
+  valuta: {
     type: Sequelize.STRING
   },
-  nama_penjual: {
+  freight: {
+    type: Sequelize.INTEGER
+  },
+  ndbpm_kurs: {
+    type: Sequelize.DECIMAL
+  },
+  cif: {
+    type: Sequelize.DECIMAL
+  },
+  transaksi_lainnya: {
     type: Sequelize.STRING
   },
-  nomor_identitas_penjual: {
-    type: Sequelize.STRING
+  harga_penyerahan: {
+    type: Sequelize.DECIMAL
   },
-  alamat_penjual: {
-    type: sequelize.STRING
-  },
-  report_id: {
+  reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {
       model: 'reports',
-      key: 'id'
+      key:'id'
     },
     onUpdate: 'cascade',
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'pengusaha_PLB',
+  tableName: 'mata_uang',
   freezeTableName: true,
 })
 
-module.exports = PengusahaPLB;
+module.exports = MataUang;

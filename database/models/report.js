@@ -12,6 +12,13 @@ const Report = db.define('report', {
   jenisDokumenBC: {
     type: Sequelize.STRING
   },
+  user_id: {
+    type: Sequelize.INTEGER,
+    references: {
+      model: 'info_pengguna',
+      key: 'id'
+    }
+  }
 }, {
   tableName: 'report',
   freezeTableName: true,

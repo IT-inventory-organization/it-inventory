@@ -15,7 +15,17 @@ const pengirim_barang = db.define('pengirim_barang', {
   },
   alamat_penjual: {
     type: sequelize.STRING
-  }
+  },
+  report_id: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'reports',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'cascade'
+  },
 }, {
   tableName: 'pengirim_barang',
   freezeTableName: true,
