@@ -1,162 +1,91 @@
-const { Op } = require("sequelize");
-const { body, validationResult } = require("express-validator");
-const { generateToken } = require("../../helper/jwt");
-const { errorResponse, successResponse } = require("../../helper/Response");
-const httpStatus = require("../../helper/Httplib")
-const { checkHashText } = require("../../helper/bcrypt");
-const User = require("../../database/models/user");
-const Role = require("../../database/models/role");
+const { Op } = require('sequelize');
+const { body, validationResult } = require('express-validator');
+const { generateToken } = require('../../helper/jwt');
+const { errorResponse, successResponse } = require('../../helper/Response');
+const Http = require('../../helper/Httplib');
+const { checkHashText } = require('../../helper/bcrypt');
+const InfoPengguna = require('../../database/models/info_pengguna');
+const Roles = require('../../database/models/role');
 const Encryption = require('../../helper/encription');
 
-const validationBody = [
-  body("DataToInput.email").isLength({ min: 1 }).withMessage("Email/Npwp/username is required"),
-  body("DataToInput.password").isLength({ min: 1 }).withMessage("A password is required"),
+const validationLogin = [
+    body('email').notEmpty().trim().withMessage('Email / NPWP / Username Kosong'),
+    body('password').notEmpty().trim().withMessage('Password Kosong')
 ];
 
-const getUserData = async (email) => {
-  try {
-    return await User.findOne({
-      where: {
-        [Op.or]: [
-          { email: email },
-          { npwp: email },
-          { username: email },
-        ],
-        is_active: true
-      },
-      include: {
-        model: Role,
-        attributes: ['name']
-      }
-    });
-  } catch (error) {
-    throw error
-  }
+const getUserData = async(email) => {    
+    return await InfoPengguna.findOne({
+        where: {
+            [Op.or]: [
+                {email: email},
+                {npwp: email},
+                {username: email}
+            ],
+            is_active: true
+        },
+        include: {
+            model: Roles,
+            attributes: ['name']
+        }
+    })
 }
 
-const checkBody  = (email, password, res) => {
-
-  if(typeof email === 'undefined' || email.length == 0){
-    return errorResponse(res, httpStatus.badRequest, "Email / Npwp / Username is required");
-  }
-  if(typeof password === 'undefined' || password.length == 0){
-    return errorResponse(res, httpStatus.badRequest, "A Password Is Required");
-  }
-}
-const loginAction = async (req, res) => {
-  try {
-    // console.log(req.body)
-    const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
-    
-    req.body.DataToInput = {
-      ...Decrpypt
-    };
-    delete req.body.dataLogin;
-
-    checkBody(req.body.DataToInput.email, req.body.DataToInput.password, res);
-    
-    const getUser = await getUserData(req.body.DataToInput.email);
-
-    // if username, email and npwp don't exist
-    if (!getUser) {
-      return errorResponse(res, httpStatus.notFound, "User not found!")
+const bundleLogin = (req, res, next) => {
+    try {
+        const Decrypt = Encryption.AESDecrypt(req.body.dataLogin);
+        req.body = {
+            ...Decrypt
+        }
+        // console.log(req.body);
+        next()
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
-
-    const result = getUser.toJSON();
-    
-    // Check password
-    if (checkHashText(result.password, req.body.DataToInput.password)) {
-      // User Biasa
-      if(result.Role.name !== "User"){
-        return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
-      }
-      // if the password is correct
-      const token = generateToken({ email: result.email, user_id: result.id })
-      return res.status(httpStatus.ok).json({success: true, message: "Success login", data: token})
-    } else {
-      // if the password is not correct
-      return errorResponse(res, httpStatus.unauthenticated, "Login failed, enter the correct password!")
-    }
-  } catch (error) {
-    console.log(error)
-    // if there is a system error
-    return errorResponse(res, httpStatus.internalServerError, "Login failed!")
-  }
-};
-
-const loginActionBeaCukai = async(req, res) => {
-  try {
-    const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
-    
-    req.body.DataToInput = {
-      ...Decrpypt
-    };
-    delete req.body.dataLogin;
-
-    checkBody(req.body.DataToInput.email, req.body.DataToInput.password, res);
-
-    const getUser = await getUserData(req.body.DataToInput.email);
-
-    if (!getUser) {
-      return errorResponse(res, httpStatus.notFound, "User not found!")
-    }
-    
-    const result = getUser.toJSON();
-
-    
-    if (checkHashText(result.password, req.body.DataToInput.password)) {
-      // Bea Cukai
-      if(result.Role.name !== "Admin"){ 
-        return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
-      }  
-      // if the password is correct
-      const token = generateToken({ email: result.email, user_id: result.id })
-      return res.status(httpStatus.ok).json({success: true, message: "Login Success", data: token})
-    } else {
-      // if the password is not correct
-      return errorResponse(res, httpStatus.unauthenticated, "Login failed, enter the correct password!")
-    }
-  } catch (error) {
-    return errorResponse(res, httpStatus.internalServerError, "Login failed")
-  }
 }
 
-const loginActionOwner = async(req, res)=> {
-  try {
-    const Decrpypt = Encryption.AESDecrypt(req.body.dataLogin);
-    
-    req.body.DataToInput = {
-      ...Decrpypt
-    };
-    delete req.body.dataLogin;
-
-    checkBody(req.body.DataToInput.email, req.body.DataToInput.password, res);
-
-    const getUser = await getUserData(req.body.DataToInput.email);
-
-    if(!getUser){
-      return errorResponse(res, httpStatus.notFound, "User not found!");
+const login = async(req, res) => {
+    const validation = validationResult(req);
+    if(!validation.isEmpty()){
+        return errorResponse(res, Http.badRequest, validation.array()[0].msg);
     }
 
-    const result = getUser.toJSON();
+    try {
+        // ambil User
+        const resultLoginData = await getUserData(req.body.email);
+        
+        // cek user ada / tidak
+        if(!resultLoginData){
+            return errorResponse(res, Http.notFound, `Pengguna Dengan ${req.body.email} Tidak Ada`);
+        }
 
-    if(checkHashText(result.password, req.body.DataToInput.password)){
-      if(result.Role.name !== 'Owner'){
-        return errorResponse(res, httpStatus.unauthenticated, "Login failed! Unauthorized Role");
-      }
+        // convert ke josn
+        const result = resultLoginData.toJSON();
+        console.log(result, req.body)
+        // cek password database dengan passwor yang diinput user
+        if(checkHashText(result.password, req.body.password)){
 
-      const token = generateToken({email: result.email, user_id: result.id});
-      return res.status(httpStatus.ok).json({success: true, message: "Login Success", data: token});
-    }else{
-      return errorResponse(res, httpStatus.unauthenticated, "Login failed, Enter the correct Password");
+            // jika role bukan user
+            if(result.role.name !== 'User'){
+                return errorResponse(res, Http.unauthenticated, "Login failed! Unauthorized Role");
+            };
+
+            // buat token
+            const token = generateToken({email: result.email, user_id: result.id});
+
+            // return json
+            return res.status(Http.ok).json({
+                success: true,
+                message: 'Berhasil Login',
+                data: token
+            })
+        }else{
+            return errorResponse(res, Http.unauthenticated, "Gagal Login, cek username dan password")
+        }
+    } catch (error) {
+        return errorResponse(res, Http.internalServerError, "Login Failed, cek usernam dan password")
     }
-  } catch (error) {
-    return errorResponse(res, httpStatus.internalServerError, "Login failed");
-  }
 }
 
-module.exports = (router) => {
-  router.post("/", validationBody, loginAction);
-  router.post("/bea-cukai", validationBody, loginActionBeaCukai);
-  router.post("/owner", validationBody, loginActionOwner);
-};
+module.exports = routes => {
+    routes.post('/', bundleLogin, validationLogin, login)
+}

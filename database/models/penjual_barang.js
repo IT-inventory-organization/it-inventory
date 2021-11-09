@@ -14,7 +14,7 @@ const PenjualBarang = db.define('penjual_barang', {
     type: Sequelize.STRING
   },
   alamat_penjual: {
-    type: sequelize.STRING
+    type: Sequelize.STRING
   },
   report_id: {
     type: Sequelize.INTEGER,

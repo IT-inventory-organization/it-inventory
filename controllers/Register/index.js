@@ -1,22 +1,22 @@
-const {body, validationResult } = require('express-validator');
-const {passwordFormat, checkPhoneNumber}= require("../../helper/validation");
+const {body, validationResult} = require('express-validator');
+const {passwordFormat, checkPhoneNumber} = require('../../helper/validation');
 const {createHashText } = require('../../helper/bcrypt');
-const User = require('../../database/models/user');
+const InfoPengguna = require('../../database/models/info_pengguna');
 const { Op } = require('sequelize');
-const {errorResponse, successResponse} = require('../../helper/Response')
-const httpStatus = require("../../helper/Httplib");
-const Encryption = require('../../helper/encription');
+const { errorResponse, successResponse} = require('../../helper/Response');
+const Http = require('../../helper/Httplib');
+const Encrypt = require('../../helper/encription');
 
 const checkInputRegister = [
-    body('owner_name').notEmpty().trim().withMessage("Name Is Required"), // Owner Name 
-    body('npwp').notEmpty().trim().withMessage("NPWP Is Required"), // 
-    body('address_company').notEmpty().trim().withMessage("Address Is Required").isLength({min: 10}), // Address Company
-    body('email').notEmpty().isEmail().withMessage("Email is Required").trim(),
-    body('mobile_phone').notEmpty().withMessage("Mobile Phone Number Is Required").trim().custom( checkPhoneNumber ),
-    body('username').notEmpty().withMessage("Username is Required").trim(),
-    body('password').notEmpty().trim().custom(value => passwordFormat(value)).withMessage("Password is Required"),
-    // body('phone').notEmpty().custom(checkPhoneNumber).withMessage("Phone Number is Required").trim(),
-    body('confirmPassword').custom((value, {req}) => {
+    body('nama_perusahaan').notEmpty().trim().withMessage('Nama Perusahaan Kosong'),
+    body('npwp').notEmpty().trim().withMessage('NPWP Kosong'),
+    body('alamat').notEmpty().trim().withMessage('Alamat Kosong'),
+    body('nomor_telepon').notEmpty().trim().withMessage('Nomor Telepon Kosong'),
+    body('bidang_usaha').notEmpty().trim().withMessage('Bidang Usaha Kosong'),
+    body('nama_pemilik').notEmpty().trim().withMessage('Nama Pemilik Kosong'),
+    body('password').notEmpty().trim().custom(passwordFormat).withMessage('Password Kosong'),
+    body('email').notEmpty().trim().withMessage('Email Kosong'),
+    body('confirm_password').custom((value, {req}) => {
         if(typeof value === 'undefined' || value.length == 0){
             throw new Error("Confirm Password Cannot Empty");
         }
@@ -24,101 +24,81 @@ const checkInputRegister = [
             throw new Error('Password Confirmation dose not match with password');
         }
         return true;
-    }).trim(),
-    body('company_name').notEmpty().trim().withMessage("Company Name Is Required"),
-    body('business_field').notEmpty().trim().withMessage("Business Field Is Required")
-];
+    }).trim()
+]
 
-const bundleReg = (req, res, next) => {
+/**
+ * * Decrypt Result And Create new Object 
+ * @returns 
+ */
+const bundleRegister = (req, res, next) => {
     try {
-        const Decrypt = Encryption.AESDecrypt(req.body.dataRegister);
+        const Decrypt = Encrypt.AESDecrypt(req.body.dataRegister);
         req.body = {
             ...Decrypt
-        };
-        console.log(req.body);
-        delete req.body.dataRegister;
-        
-        next();
+        }
+        // console.log(req.body)
+        next()
     } catch (error) {
-    
-        throw error;
+        return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
 }
 
-async function Register(req, res){
-
+const register = async (req, res) => {
+    /**
+     * * Return Validation
+     */
     const validation = validationResult(req);
     if(!validation.isEmpty()){
-        let i = 1;
-        if(typeof validation.array()[i] === 'undefined'){
-            i = 0
-        }
-    
-        return errorResponse(res, httpStatus.badRequest, validation.array()[i].msg);
+        return errorResponse(res, Http.badRequest, validation.array()[0].msg);
     }
+
+    delete req.body.confirm_password;
     
-    delete req.body.confirmPassword
-    const dataToInput = {
-        ...req.body
+    const dataInput = {
+        nama_perusahaan: req.body.nama_perusahaan,
+        npwp: req.body.npwp,
+        alamat: req.body.alamat,
+        nomor_telepon: req.body.nomor_telepon,
+        bidang_usaha: req.body.bidang_usaha,
+        nama_pemilik: req.body.nama_pemilik,
+        email: req.body.email,
+        password: createHashText(req.body.password),
     }
 
     try {
-        // Ambil Data User 
-        const data = await User.findOne({
+        // Cari Data User Telebih dahulu
+        const data = await InfoPengguna.findOne({
             where: {
                 [Op.or]: [
                     {email: req.body.email},
                     {npwp: req.body.npwp},
-                    {username: req.body.username}
+                    
                 ]
             }
-        });
+        })
 
-        // Jika Sudah ada
+        // Jika Ada Maka Return Respon Error User Sudah Dibuat 
         if(data){
-            return errorResponse(res, httpStatus.badRequest, 'User is already exists');
+            return errorResponse(res, Http.badRequest, "Pengguna Sudah Ada")
         }
 
-        await User.create(dataToInput);
+        // Jika Tidak Buat User Baru
+        const resultUser = await InfoPengguna.create(dataInput, {returning: true});
+        
 
-        return successResponse(res, httpStatus.created, "Registration Success", {email: req.body.email})
+        // Jika Gagal Maka Return Respon Error Gagal Memebut User Baru
+        if(!resultUser){
+            return errorResponse(res, Http.conflict, "Gagal Membuat Pengguna Baru");
+        }
+
+        return successResponse(res, Http.created, "Berhasil Membuat Pengguna Baru");
     } catch (error) {
         console.log(error)
-        return errorResponse(res, httpStatus.internalServerError, 'Registeration Seems Failed, Please Try Again Later', error.message)
+        return errorResponse(res, Http.internalServerError, "Gagal Membuat Pengguna Baru")
     }
 }
 
-// async function deactivated(req, res) {
-//     try {
-//         const data = await User.update({
-//             is_active: false,
-//         }, {
-//             where: {
-//                 id: req.params.id
-//             },
-//             returning: true
-//         });
-//         returnValue.message = 'Berhasil Menghapus User ';
-//         returnValue.status = true;
-//         returnValue.data = {
-//             email: data.email,
-//             id: data.id
-//         };
-
-//         return res.json(returnValue).status(200);
-//     } catch (error) {
-//         returnValue.message = 'Gagal Untuk Menghapus User';
-//         returnValue.status = false;
-//         returnValue.data = {};
-//         return res.json(returnValue).status(201);
-//     }
-// }
-
-module.exports = (routes) => {
-    routes.post('/', 
-        bundleReg,
-        checkInputRegister, 
-        Register
-    )
-    // routes.post('/deactivated/:id', deactivated)
+module.exports = routes => {
+    routes.post('/', bundleRegister, checkInputRegister, register)
 }

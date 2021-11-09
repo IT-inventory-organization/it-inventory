@@ -39,6 +39,19 @@ const InfoPengguna = db.define('info_pengguna', {
     allowNull: false,
     type: Sequelize.STRING
   },
+  role_id: {
+    type: Sequelize.INTEGER,
+    defaultValue: 2,
+    allowNull: false
+  },
+  email: {
+    allowNull: false,
+    type: Sequelize.STRING
+  },
+  username: {
+    allowNull: true,
+    type: Sequelize.STRING
+  }
 }, {
   tableName: 'info_pengguna',
   freezeTableName: true,

@@ -1,5 +1,6 @@
 const {verifyToken} = require("../helper/jwt");
-const User = require("../database/models/user");
+// const User = require("../database/models/user");
+const InfoPengguna = require('../database/models/info_pengguna');
 const { errorResponse } = require("../helper/Response");
 const httpStatus = require("../helper/Httplib");
 const Role = require("../database/models/role");
@@ -14,7 +15,7 @@ const authentication = async (req, res, next) =>{
   try {
     const decode = await verifyToken(token);
     const {user_id: id} = decode;
-    const user = await User.findOne({where: {id}, include:[Role]});
+    const user = await InfoPengguna.findOne({where: {id}, include:[Role]});
 
     if (user){
       req.currentUser = user.id;
