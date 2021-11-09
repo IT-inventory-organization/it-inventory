@@ -146,7 +146,6 @@ const getXMLReport = async (req, res) => {
     const {id} = req.params;
     
     try {
-        
         const found = await getOneReport(req, id);
 
         let xml = ``;
@@ -286,7 +285,6 @@ const getXMLReport = async (req, res) => {
             await createUserActivity(req.currentUser, id, "Viewing XML Format");
         }
 
-        
         return successResponse(res, httpStatus.ok, xml, xml);
     } catch (error) {
         console.error(error)
