@@ -1,28 +1,21 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('DataPetiKemas', {
+    await queryInterface.createTable('reports', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      dataKontainer: {
+      jenisPemberitahuan: {
         type: Sequelize.STRING
       },
-      volumeKontainer: {
-        type: Sequelize.DECIMAL
+      diAjukanDiKantor: {
+        type: Sequelize.STRING
       },
-      reportId: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Reports",
-          key: "id"
-        },
-        onDelete: 'cascade',
-        onUpdate: 'cascade'
+      jenisDokumenBC: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -32,9 +25,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      freezeTableName: true,
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('DataPetiKemas');
+    await queryInterface.dropTable('reports');
   }
 };

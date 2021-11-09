@@ -19,6 +19,7 @@ const reportDataLartas = require("./datalartas");
 const Barang = require("./barang");
 const Histories = require("./history");
 const reportIdentitasPPJK = require("./identitasppjk");
+const DataPemasukan = require("./dokumen_pemasukan");
 
 const setAssociations = function() {
   Report.hasOne(reportIdentitasPenerima, {foreignKey: 'reportId'});
@@ -86,6 +87,12 @@ const setAssociations = function() {
   // Report.belongsToMany(Histories, {foreignKey: 'reportId'});
   Histories.belongsTo(Barang, {foreignKey: 'idBarang'});
   Histories.belongsTo(Report, {foreignKey: 'reportId'});
+
+  /**
+   * * New Database Relations
+   */
+
+  Report.hasOne(DataPemasukan, {foreignKey: 'reportId'})
   
 };
 

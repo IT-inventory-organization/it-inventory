@@ -1,37 +1,43 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('DataPengajuan', {
+    await queryInterface.createTable('dokumen_tambahan', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      kantorPabeanAsal: {
+      nomorBC10: {
+        allowNull: true,
         type: Sequelize.STRING
       },
-      kategoryPemberitahuan: {
+      nomorBC11: {
+        allowNull:true,
         type: Sequelize.STRING
       },
-      kategoryPengeluaran: {
+      nomorBL: {
+        allowNull: true,
         type: Sequelize.STRING
       },
-      tujuanPengeluaran: {
+      tanggalBC10: {
+        allowNull: true,
         type: Sequelize.STRING
       },
-      asalBarang: {
+      tanggalBC11: {
+        allowNull: true,
         type: Sequelize.STRING
       },
-      caraPembayaran: {
+      tanggalBL: {
+        allowNull: true,
         type: Sequelize.STRING
       },
       reportId: {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: "Reports",
-          key: "id"
+          model: 'reports',
+          key: 'id'
         },
         onDelete: 'cascade',
         onUpdate: 'cascade'
@@ -44,9 +50,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      freezeTableName: true
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('DataPengajuan');
+    await queryInterface.dropTable('dokumen_tambahan');
   }
 };

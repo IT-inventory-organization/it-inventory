@@ -136,7 +136,6 @@ const addDataHeader = async (req, res) => {
             await createUserActivity(req.currentUser, dataPengajuan.reportId, `Create Report "Data Header"`);
         }
 
-
         await transaction.commit();
 
         return successResponse(res, Http.created, "Success Adding Data Header", dataToReturn);

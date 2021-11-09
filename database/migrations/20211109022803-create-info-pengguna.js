@@ -1,40 +1,48 @@
 'use strict';
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('IdentitasPengirim', {
+    await queryInterface.createTable('info_pengguna', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      jenisIdentitasPengirim: {
-        type: Sequelize.STRING
-      },
-      nomorIdentitasPengirim: {
-        type: Sequelize.STRING
-      },
-      namaPengirim: {
-        type: Sequelize.STRING
-      },
-      alamatPengirim: {
-        type: Sequelize.STRING
-      },
-      nomorIjinBpkPengirim: {
-        type: Sequelize.STRING
-      },
-      tanggalIjinBpkPengirim: {
-        type: Sequelize.DATEONLY
-      },
-      reportId: {
+      nama_perusahaan: {
         allowNull: false,
-        type: Sequelize.INTEGER,
-        references: {
-          model: "Reports",
-          key: "id"
-        },
-        onDelete: 'cascade',
-        onUpdate: 'cascade'
+        type: Sequelize.STRING
+      },
+      npwp: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      alamat: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      nomor_telepon: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      fax: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      bidang_usaha: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      nama_pemilik: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      alamat_pemilik: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
+      password: {
+        allowNull: false,
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
@@ -44,9 +52,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      freezeTableName: true
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('IdentitasPengirim');
+    await queryInterface.dropTable('info_pengguna');
   }
 };
