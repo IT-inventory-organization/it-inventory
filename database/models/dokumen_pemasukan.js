@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const DataPemasukan = db.define('dokumen_pemasukan', {
+const DokumenPemasukan = db.define('dokumen_pemasukan', {
   reportId: {
     allowNull: false,
     type: Sequelize.INTEGER,
@@ -26,4 +26,4 @@ const DataPemasukan = db.define('dokumen_pemasukan', {
   freezeTableName: true,
 })
 
-module.exports = DataPemasukan;
+module.exports = DokumenPemasukan;

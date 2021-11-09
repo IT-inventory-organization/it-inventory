@@ -1,6 +1,5 @@
 'use strict';
 const Sequelize = require('sequelize');
-const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
 const data_barang = db.define('data_barang', {
@@ -36,6 +35,16 @@ const data_barang = db.define('data_barang', {
   },
   cukai: {
     type: Sequelize.DECIMAL
+  },
+  report_id: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'reports',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'cascade'
   },
 }, {
   tableName: 'data_barang',

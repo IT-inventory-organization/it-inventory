@@ -2,20 +2,23 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const TempatPenimbunan = db.define('tempat_penimbunan', {
-  tempat_penimbunan: {
+const PembeliBarang = db.define('pembeli_barang', {
+  jenis_identitas_pembeli: {
     type: Sequelize.STRING
   },
-  perkiraan_tanggal_pengeluaran: {
-    type: Sequelize.DATE
+  nama_pembeli: {
+    type: Sequelize.STRING
   },
-  is_tempat_penimbunan: {
-    type: Sequelize.BOOLEAN
+  nomor_identitas_pembeli: {
+    type: Sequelize.STRING
   },
-  report_id: {
+  alamat_pembeli: {
+    type: Sequelize.STRING
+  },
+  reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,
-    references: {
+    refereces: {
       model: 'reports',
       key: 'id'
     },
@@ -23,8 +26,8 @@ const TempatPenimbunan = db.define('tempat_penimbunan', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'tempat_penimbunan',
+  tableName: 'pembeli_barang',
   freezeTableName: true,
 })
 
-module.exports = TempatPenimbunan;
+module.exports = PembeliBarang;

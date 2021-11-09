@@ -1,34 +1,33 @@
 'use strict';
 const Sequelize = require('sequelize');
-const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
-const PengusahaPLB = db.define('pengusaha_PLB', {
-  jenis_identitas_penjual: {
+const PPJK = db.define('ppjk', {
+  jenis_identitas_ppjk: {
     type: Sequelize.STRING
   },
-  nama_penjual: {
+  nama_ppjk: {
     type: Sequelize.STRING
   },
-  nomor_identitas_penjual: {
+  nomor_identitas_ppjk: {
     type: Sequelize.STRING
   },
-  alamat_penjual: {
-    type: sequelize.STRING
+  alamat_ppjk: {
+    type: Sequelize.STRING
   },
-  report_id: {
+  reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {
       model: 'reports',
       key: 'id'
     },
-    onUpdate: 'cascade',
-    onDelete: 'cascade'
+    onUpdate:'cascade',
+    onDelete:'cascade'
   },
 }, {
-  tableName: 'pengusaha_PLB',
+  tableName: 'ppjk',
   freezeTableName: true,
 })
 
-module.exports = PengusahaPLB;
+module.exports = PPJK;

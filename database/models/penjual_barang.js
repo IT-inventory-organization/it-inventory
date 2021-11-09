@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
-const penjual_barang = db.define('penjual_barang', {
+const PenjualBarang = db.define('penjual_barang', {
   jenis_identitas_penjual: {
     type: Sequelize.STRING
   },
@@ -15,10 +15,20 @@ const penjual_barang = db.define('penjual_barang', {
   },
   alamat_penjual: {
     type: sequelize.STRING
-  }
+  },
+  report_id: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'reports',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'cascade'
+  },
 }, {
   tableName: 'penjual_barang',
   freezeTableName: true,
 })
 
-module.exports = penjual_barang;
+module.exports = PenjualBarang;
