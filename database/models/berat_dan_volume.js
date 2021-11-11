@@ -3,16 +3,16 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const berat_dan_volume = db.define('berat_dan_volume', {
-  berat_muatan: {
+  beratMuatan: {
     type: Sequelize.DECIMAL
   },
-  berat_kapal_dengan_muatan: {
+  beratKapalDenganMuatan: {
     type: Sequelize.DECIMAL
   },
   volume: {
     type: Sequelize.DECIMAL
   },
-  report_id: {
+  reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {

@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const InfoPengguna = db.define('info_pengguna', {
-  nama_perusahaan: {
+  namaPerusahaan: {
     allowNull: false,
     type: Sequelize.STRING
   },
@@ -15,7 +15,7 @@ const InfoPengguna = db.define('info_pengguna', {
     allowNull: false,
     type: Sequelize.STRING
   },
-  nomor_telepon: {
+  nomorTelepon: {
     allowNull: false,
     type: Sequelize.STRING
   },
@@ -23,15 +23,15 @@ const InfoPengguna = db.define('info_pengguna', {
     allowNull: true,
     type: Sequelize.STRING
   },
-  bidang_usaha: {
+  bidangUsaha: {
     allowNull: false,
     type: Sequelize.STRING
   },
-  nama_pemilik: {
+  namaPemilik: {
     allowNull: false,
     type: Sequelize.STRING
   },
-  alamat_pemilik: {
+  alamatPemilik: {
     allowNull: true,
     type: Sequelize.STRING
   },
@@ -39,7 +39,7 @@ const InfoPengguna = db.define('info_pengguna', {
     allowNull: false,
     type: Sequelize.STRING
   },
-  role_id: {
+  roleId: {
     type: Sequelize.INTEGER,
     defaultValue: 2,
     allowNull: false

@@ -21,7 +21,7 @@ const getUserData = async(email) => {
                 {npwp: email},
                 {username: email}
             ],
-            is_active: true
+            isActive: true
         },
         include: {
             model: Roles,

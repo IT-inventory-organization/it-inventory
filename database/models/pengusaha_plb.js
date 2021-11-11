@@ -4,19 +4,19 @@ const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
 const PengusahaPLB = db.define('pengusaha_PLB', {
-  jenis_identitas_penjual: {
+  jenisIdentitasPenjual: {
     type: Sequelize.STRING
   },
-  nama_penjual: {
+  namaPenjual: {
     type: Sequelize.STRING
   },
-  nomor_identitas_penjual: {
+  nomorIdentitasPenjual: {
     type: Sequelize.STRING
   },
-  alamat_penjual: {
+  alamatPenjual: {
     type: Sequelize.STRING
   },
-  report_id: {
+  reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {

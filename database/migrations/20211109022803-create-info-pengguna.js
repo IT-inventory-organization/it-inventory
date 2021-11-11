@@ -8,7 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      nama_perusahaan: {
+      namaPerusahaan: {
         allowNull: false,
         type: Sequelize.STRING
       },
@@ -20,7 +20,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      nomor_telepon: {
+      nomorTelepon: {
         allowNull: false,
         type: Sequelize.STRING
       },
@@ -28,15 +28,15 @@ module.exports = {
         allowNull: true,
         type: Sequelize.STRING
       },
-      bidang_usaha: {
+      bidangUsaha: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      nama_pemilik: {
+      namaPemilik: {
         allowNull: false,
         type: Sequelize.STRING
       },
-      alamat_pemilik: {
+      alamatPemilik: {
         allowNull: true,
         type: Sequelize.STRING
       },

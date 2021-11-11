@@ -3,25 +3,25 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const data_barang = db.define('data_barang', {
-  kode_barang: {
+  kodeBarang: {
     type: Sequelize.STRING
   },
-  nama_barang: {
+  namaBarang: {
     type: Sequelize.STRING
   },
   uraian: {
     type: Sequelize.STRING
   },
-  netto_brutto_volume: {
+  nettoBruttoVolume: {
     type: Sequelize.DECIMAL
   },
-  satuan_kemasan: {
+  satuanKemasan: {
     type: Sequelize.STRING
   },
   stock: {
     type: Sequelize.DECIMAL
   },
-  pos_tarif: {
+  posTarif: {
     type: Sequelize.STRING
   },
   bm: {
@@ -36,7 +36,7 @@ const data_barang = db.define('data_barang', {
   cukai: {
     type: Sequelize.DECIMAL
   },
-  report_id: {
+  reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {

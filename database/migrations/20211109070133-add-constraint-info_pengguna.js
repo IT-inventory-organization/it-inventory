@@ -9,7 +9,7 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     const promises = [
-      await queryInterface.addColumn('info_pengguna', 'role_id', {
+      await queryInterface.addColumn('info_pengguna', 'roleId', {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
@@ -19,7 +19,7 @@ module.exports = {
         onUpdate: 'cascade',
         onDelete: 'cascade',
       }),
-      await queryInterface.addColumn('info_pengguna', 'is_active', {
+      await queryInterface.addColumn('info_pengguna', 'isActive', {
         allowNull: false,
         type: Sequelize.BOOLEAN,
         defaultValue: true

@@ -3,19 +3,19 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const DataKapal = db.define('data_kapal', {
-  voyage_kapal: {
+  voyageKapal: {
     type: Sequelize.STRING
   },
-  bendera_kapal: {
+  benderaKapal: {
     type: Sequelize.STRING
   },
-  nama_kapal: {
+  namaKapal: {
     type: Sequelize.STRING
   },
-  tanggal_kedatangan: {
+  tanggalKedatangan: {
     type: Sequelize.DATE
   },
-  tanggal_keberangkatan: {
+  tanggalKeberangkatan: {
     type: Sequelize.DATE
   },
   reportId:{

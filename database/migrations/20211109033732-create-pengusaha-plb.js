@@ -8,19 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      jenis_identitas_pengusaha_PLB: {
+      jenisIdentitasPengusahaPLB: {
         type: Sequelize.STRING
       },
-      nama_pengusaha_PLB: {
+      namaPengusahaPLB: {
         type: Sequelize.STRING
       },
-      nomor_identitas_pegusaha_PLB: {
+      nomorIdentitasPegusahaPLB: {
         type: Sequelize.STRING
       },
-      alamat_pengusaha_PLB: {
+      alamatPengusahaPLB: {
         type: Sequelize.STRING
       },
-      report_id: {
+      reportId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {

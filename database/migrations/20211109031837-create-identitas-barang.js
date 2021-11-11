@@ -8,23 +8,23 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      negara_asal: {
+      negaraAsal: {
         allowNull: true,
         type: Sequelize.STRING
       },
-      jenis_barang: {
+      jenisBarang: {
         type: Sequelize.STRING
       },
-      nilai_barang: {
+      nilaiBarang: {
         type: Sequelize.INTEGER
       },
-      cara_pembayaran: {
+      caraPembayaran: {
         type: Sequelize.STRING
       },
-      asal_barang: {
+      asalBarang: {
         type: Sequelize.STRING
       },
-      jumlah_barang: {
+      jumlahBarang: {
         type: Sequelize.INTEGER
       },
       reportId: {
@@ -37,7 +37,7 @@ module.exports = {
         onUpdate: 'cascade',
         onDelete: 'cascade'
       },
-      jumlah_kemasan: {
+      jumlahKemasan: {
         type: Sequelize.INTEGER
       },
       createdAt: {

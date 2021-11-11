@@ -53,15 +53,15 @@ const register = async (req, res) => {
         return errorResponse(res, Http.badRequest, validation.array()[0].msg);
     }
 
-    delete req.body.confirm_password;
+    delete req.body.confirmPassword;
     
     const dataInput = {
-        nama_perusahaan: req.body.nama_perusahaan,
+        namaPerusahaan: req.body.namaPerusahaan,
         npwp: req.body.npwp,
         alamat: req.body.alamat,
-        nomor_telepon: req.body.nomor_telepon,
-        bidang_usaha: req.body.bidang_usaha,
-        nama_pemilik: req.body.nama_pemilik,
+        nomorTelepon: req.body.nomorTelepon,
+        bidangUsaha: req.body.bidangUsaha,
+        namaPemilik: req.body.namaPemilik,
         email: req.body.email,
         password: createHashText(req.body.password),
     }

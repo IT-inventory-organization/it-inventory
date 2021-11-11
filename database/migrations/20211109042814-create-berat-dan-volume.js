@@ -8,16 +8,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      berat_muatan: {
+      beratMuatan: {
         type: Sequelize.DECIMAL
       },
-      berat_kapal_dengan_muatan: {
+      beratKapalDenganMuatan: {
         type: Sequelize.DECIMAL
       },
       volume: {
         type: Sequelize.DECIMAL
       },
-      report_id: {
+      reportId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {

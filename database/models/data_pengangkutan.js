@@ -3,19 +3,19 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const DataPengangkutan = db.define('data_pengangkutan', {
-  cara_angkut: {
+  caraAngkut: {
     type: Sequelize.STRING
   },
   bendera: {
     type: Sequelize.STRING
   },
-  nama_pengangkut: {
+  namaPengangkut: {
     type: Sequelize.STRING
   },
-  nomor_voy_flight_pol: {
+  nomorVoyFlightPol: {
     type: Sequelize.STRING
   },
-  report_id: {
+  reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,
     references: {
