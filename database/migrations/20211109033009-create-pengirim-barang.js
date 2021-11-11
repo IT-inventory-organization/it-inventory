@@ -8,19 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      jenis_identitas_pengirim: {
+      jenisIdentitasPengirim: {
         type: Sequelize.STRING
       },
-      nama_pengirim: {
+      namaPengirim: {
         type: Sequelize.STRING
       },
-      nomor_identitas_pengirim: {
+      nomorIdentitasPengirim: {
         type: Sequelize.STRING
       },
-      alamat_pengirim: {
+      alamatPengirim: {
         type: Sequelize.STRING
       },
-      report_id: {
+      reportId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {

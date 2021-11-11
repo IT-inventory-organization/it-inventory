@@ -6,13 +6,13 @@ const PembeliBarang = db.define('pembeli_barang', {
   jenis_identitas_pembeli: {
     type: Sequelize.STRING
   },
-  nama_pembeli: {
+  namaPembeli: {
     type: Sequelize.STRING
   },
-  nomor_identitas_pembeli: {
+  nomorIdentitasPembeli: {
     type: Sequelize.STRING
   },
-  alamat_pembeli: {
+  alamatPembeli: {
     type: Sequelize.STRING
   },
   reportId: {

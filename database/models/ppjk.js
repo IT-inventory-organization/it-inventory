@@ -3,16 +3,16 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const PPJK = db.define('ppjk', {
-  jenis_identitas_ppjk: {
+  jenisIdentitasPpjk: {
     type: Sequelize.STRING
   },
-  nama_ppjk: {
+  namaPpjk: {
     type: Sequelize.STRING
   },
-  nomor_identitas_ppjk: {
+  nomorIdentitasPpjk: {
     type: Sequelize.STRING
   },
-  alamat_ppjk: {
+  alamatPpjk: {
     type: Sequelize.STRING
   },
   reportId: {

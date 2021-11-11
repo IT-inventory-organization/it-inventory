@@ -9,7 +9,7 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     const promises = [
-      await queryInterface.addColumn('reports', 'user_id', {
+      await queryInterface.addColumn('reports', 'userId', {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {

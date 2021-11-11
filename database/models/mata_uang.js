@@ -9,16 +9,16 @@ const MataUang = db.define('mata_uang', {
   freight: {
     type: Sequelize.INTEGER
   },
-  ndbpm_kurs: {
+  ndbpmKurs: {
     type: Sequelize.DECIMAL
   },
   cif: {
     type: Sequelize.DECIMAL
   },
-  transaksi_lainnya: {
+  transaksiLainnya: {
     type: Sequelize.STRING
   },
-  harga_penyerahan: {
+  hargaPenyerahan: {
     type: Sequelize.DECIMAL
   },
   reportId: {

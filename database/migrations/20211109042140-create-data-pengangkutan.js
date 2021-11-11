@@ -8,19 +8,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      cara_angkut: {
+      caraAngkut: {
         type: Sequelize.STRING
       },
       bendera: {
         type: Sequelize.STRING
       },
-      nama_pengangkut: {
+      namaPengangkut: {
         type: Sequelize.STRING
       },
-      nomor_voy_flight_pol: {
+      nomorVoyFlightPol: {
         type: Sequelize.STRING
       },
-      report_id: {
+      reportId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {

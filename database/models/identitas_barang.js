@@ -7,19 +7,19 @@ const IdentitasBarang = db.define('identitas_barang', {
     allowNull: true,
     type: Sequelize.STRING
   },
-  jenis_barang: {
+  jenisBarang: {
     type: Sequelize.STRING
   },
-  nilai_barang: {
+  nilaiBarang: {
     type: Sequelize.INTEGER
   },
-  cara_pembayaran: {
+  caraPembayaran: {
     type: Sequelize.STRING
   },
-  asal_barang: {
+  asalBarang: {
     type: Sequelize.STRING
   },
-  jumlah_barang: {
+  jumlahBarang: {
     type: Sequelize.INTEGER
   },
   reportId: {
@@ -32,7 +32,7 @@ const IdentitasBarang = db.define('identitas_barang', {
     onUpdate: 'cascade',
     onDelete: 'cascade'
   },
-  jumlah_kemasan: {
+  jumlahKemasan: {
     type: Sequelize.INTEGER
   },
 }, {

@@ -8,16 +8,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      tempat_penimbunan: {
+      tempatPenimbunan: {
         type: Sequelize.STRING
       },
-      perkiraan_tanggal_pengeluaran: {
+      perkiraanTanggalPengeluaran: {
         type: Sequelize.DATE
       },
-      is_tempat_penimbunan: {
+      isTempatPenimbunan: {
         type: Sequelize.BOOLEAN
       },
-      report_id: {
+      reportId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
