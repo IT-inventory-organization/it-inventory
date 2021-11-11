@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const Report = db.define('report', {
+const Report = db.define('reports', {
   jenisPemberitahuan: {
     type: Sequelize.STRING
   },
@@ -12,15 +12,17 @@ const Report = db.define('report', {
   jenisDokumenBC: {
     type: Sequelize.STRING
   },
-  user_id: {
+  userId: {
     type: Sequelize.INTEGER,
     references: {
       model: 'info_pengguna',
       key: 'id'
-    }
+    },
+    onUpdate: 'cascade',
+    onDelete: 'cascade'
   }
 }, {
-  tableName: 'report',
+  tableName: 'reports',
   freezeTableName: true,
 })
 

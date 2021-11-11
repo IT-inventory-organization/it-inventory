@@ -5,6 +5,7 @@ const authentication = require('../../middlewares/authentication');
 const { createDataBarang, dataBarang} = require('../../helper/bundleDataBarang');
 const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
+const { saveDataBarang } = require('../../helper/Repository/dataBarang');
 
 const validationBarang = [
     body('lists.dataBarang.*.posTarif').trim().notEmpty().withMessage(`"Pos Tarif Is Required`),
@@ -54,7 +55,7 @@ const createListBarang = async(req, res) => {
 
         const resultBarang = [];
         for (let i = 0; i < lists.dataBarang.length; i++) {
-            const result = await createListBarang(lists.dataBarang[i], trans);   
+            const result = await saveDataBarang(lists.dataBarang[i], trans);   
             resultBarang.push(result)
         }
         
@@ -66,7 +67,7 @@ const createListBarang = async(req, res) => {
         if(trans){
             await trans.rollback()
         }
-        return errorResponse(res, Http.internalServerError, "Failed To Add Barang")
+        return errorResponse(res, +error.status, error.message)
     }
     
 }

@@ -1,3 +1,5 @@
+const { errorResponse } = require("./Response");
+
 module.exports = {
     reverseJenisPemberiahuan: (val) => {
         let CValue = '';
@@ -10,4 +12,4 @@ module.exports = {
         }
         return CValue;
     }
-} 
+}
