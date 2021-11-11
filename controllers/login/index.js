@@ -60,7 +60,7 @@ const login = async(req, res) => {
 
         // convert ke josn
         const result = resultLoginData.toJSON();
-        console.log(result, req.body)
+ 
         // cek password database dengan passwor yang diinput user
         if(checkHashText(result.password, req.body.password)){
 
@@ -82,6 +82,7 @@ const login = async(req, res) => {
             return errorResponse(res, Http.unauthenticated, "Gagal Login, cek username dan password")
         }
     } catch (error) {
+        console.log(error)
         return errorResponse(res, Http.internalServerError, "Login Failed, cek usernam dan password")
     }
 }

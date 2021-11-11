@@ -61,8 +61,6 @@ const setAssociations = function() {
    */
   InfoPengguna.hasMany(Report, {foreignKey:'userId'});
   Report.belongsTo(InfoPengguna, {foreignKey: 'userId'})
-  // Report.hasMany(InfoPengguna, {foreignKey: 'userId'});
-  // InfoPengguna.belongsTo(Report, {foreignKey: 'userId'})
 };
 
 module.exports = setAssociations;
