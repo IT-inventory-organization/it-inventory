@@ -22,7 +22,7 @@ const formatDataDokumenMasukan = (req, res, next) => {
     }
 }
 
-const formatDataDokumenTambahan = async (req, res, next) => {
+const formatDataDokumenTambahan =  (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -40,7 +40,7 @@ const formatDataDokumenTambahan = async (req, res, next) => {
     }
 } 
 
-const formatDataDokumenPelabuhan = async(req, res, next) => {
+const formatDataDokumenPelabuhan = (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -52,16 +52,36 @@ const formatDataDokumenPelabuhan = async(req, res, next) => {
             }
         }
 
-        // console.log(req.body.ref)
         next()
     } catch (error) {
-        console.log(error)
+        
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")
+    }
+}
+
+const formatDataDokumenKapal = (req, res, next) => {
+    try {
+        const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
+
+        req.body.ref = {
+            ...req.body.ref,
+            dataKapal: {
+                ...Decrypt.dataKapal,
+                reportId: Decrypt.reportId
+            }
+        }
+
+        // console.log(req.body);
+        next();
+    } catch (error) {
+        console.log(error)
+        return errorResponse(res, Http.badRequest, "Gagal Menyimpan data");
     }
 }
 
 module.exports = {
     formatDataDokumenMasukan,
     formatDataDokumenTambahan,
-    formatDataDokumenPelabuhan
+    formatDataDokumenPelabuhan,
+    formatDataDokumenKapal
 }

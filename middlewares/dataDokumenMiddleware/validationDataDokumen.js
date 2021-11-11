@@ -16,12 +16,22 @@ const vDataTambahan = [
 ];
 
 const vDataPelabuhan = [
-  body('ref.dataPelabuhan.pelabuhan').notEmpty().trim().isString().withMessage("Pelabuhan Kolom Kosong"),
+  body('ref.dataPelabuhan.pelabuhan').notEmpty().trim().isString().withMessage("Kolom Pelabuhan Terjadi Kesalahan"),
   body('ref.dataPelabuhan.status').notEmpty().trim().withMessage("Status Pelabuhan Tidak Ada")
-]
+];
+
+const vDataKapal = [
+  body('ref.dataKapal.voyageKapal').trim().notEmpty().isString().withMessage("Kolom Voyage Kapal Terjadi Kesalahan"),
+  body('ref.dataKapal.benderaKapal').trim().notEmpty().withMessage("Kolom Bendera Kapal Terjadi Kesalahan"),
+  body('ref.dataKapal.namaKapal').trim().notEmpty().isString().withMessage("Kolom Nama Kanpal Terjadi Kesalahan"),
+  body('ref.dataKapal.tanggaLKedatangan').trim().custom(checkFormat),
+  body('ref.dataKapal.tanggalKeberangkatan').trim().custom(checkFormat)
+];
+
 
 module.exports = {
   vDataPengajuan,
   vDataTambahan,
-  vDataPelabuhan
+  vDataPelabuhan,
+  vDataKapal
 }
