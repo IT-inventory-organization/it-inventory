@@ -3,7 +3,7 @@ const DokumenPemasukan = require("../../database/models/dokumen_pemasukan")
 const saveDataPengajuan = async (data, transaction) => {
     try {
         const result = await DokumenPemasukan.create(data, {
-            transaction: transaction,
+            transaction,
             returning: true 
         });
         return result;
