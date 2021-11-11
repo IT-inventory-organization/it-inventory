@@ -8,7 +8,9 @@ const saveDataBarang = async(data, transaction) => {
         return res;
     } catch (error) {
         if(error.name == "SequelizeValidationError"){
-            throw ForeignKeyViolation('Terjadi Kesalahan Pada Server')
+            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server')
+        }else{
+            throw new ConflictCreateData("Gagal Menyimpan Data")
         }
     }
 }

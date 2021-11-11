@@ -8,6 +8,10 @@ const sequelize = require('../../configs/database');
 const { saveDataBarang } = require('../../helper/Repository/dataBarang');
 
 const validationBarang = [
+    body('lists.dataBarang.*.kodeBarang').trim().notEmpty().withMessage("Kode Barang Kosong"),
+    body('lists.dataBarang.*.namaBarang').trim().notEmpty().withMessage("Nama Barang Kosong"),
+    body('lists.dataBarang.*.satuanKemasan').trim().notEmpty().withMessage("Satuan Kemasan Kosong"),
+    body('lists.dataBarang.*.stock').trim().notEmpty().withMessage("Kolom Stock Kosong"),
     body('lists.dataBarang.*.posTarif').trim().notEmpty().withMessage(`"Pos Tarif Is Required`),
     body('lists.dataBarang.*.uraian').trim().notEmpty().withMessage(`Uraian is Required`),
     body('lists.dataBarang.*.nettoBruttoVolume').trim().notEmpty().withMessage(`"Netto, Bruto, Volume" Is Required`),
@@ -51,7 +55,6 @@ const createListBarang = async(req, res) => {
         trans = await sequelize.transaction();
         
         const {lists} = req.body;
-
 
         const resultBarang = [];
         for (let i = 0; i < lists.dataBarang.length; i++) {
