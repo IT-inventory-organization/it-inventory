@@ -14,6 +14,15 @@ const saveReport = async(data) => {
     }
 }
 
+const getReport = async(id) => {
+    try {
+        
+    } catch (error) {
+        console.log('Repository Trigger', error)
+        return false
+    }
+}
+
 module.exports = {
     saveReport
 }

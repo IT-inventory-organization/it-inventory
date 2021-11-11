@@ -1,11 +1,17 @@
 const { errorResponse, successResponse } = require('../../helper/Response')
 const Http = require('../../helper/Httplib');
-const { formatDataDokumen } = require('../../middlewares/reformatDataDokumen');
-const { vDataPengajuan } = require('../../middlewares/validationDataDokumen');
+const { 
+    formatDataDokumenMasukan, 
+    formatDataDokumenTambahan, 
+    formatDataDokumenPelabuhan 
+} = require('../../middlewares/dataDokumenMiddleware/reformatDataDokumen');
+const { vDataPengajuan, vDataTambahan } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const { saveDataPengajuan } = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
+const { saveDataTambahan } = require('../../helper/Repository/dataTambahan');
+const { saveDataPelabuhan } = require('../../helper/Repository/dataPelabuhan');
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
@@ -17,15 +23,17 @@ const saveDokumenPemasukan = async(req, res) => {
         /**
          * 
          */
-        const resultDataPemasukan = await saveDataPengajuan(ref.dataPengajuan, transaction);
-
+        const resultDataPemasukan = await saveDataPengajuan(ref.dataPemasukan, transaction);
+        const resultDataTambahan = await saveDataTambahan(ref.dataTambahan, transaction);
+        const resultDataPelabuhan = await saveDataPelabuhan(ref.DataPelabuhan, transaction);
         /**
          * 
          */
         await transaction.commit();
 
         const data = {
-            dataPengajuan: resultDataPemasukan.id
+            dataPengajuan: resultDataPemasukan.id,
+            dataTambahan: resultDataTambahan.id
         }
         
         if(req.currentRole){}
@@ -43,8 +51,11 @@ const saveDokumenPemasukan = async(req, res) => {
 module.exports = routes => {
     routes.post('/save/pemasukan',
         authentication,
-        formatDataDokumen, 
-        vDataPengajuan, 
+        formatDataDokumenMasukan, 
+        formatDataDokumenTambahan,
+        formatDataDokumenPelabuhan,
+        vDataPengajuan,
+        vDataTambahan,
         validationResponse, 
         saveDokumenPemasukan
     );
