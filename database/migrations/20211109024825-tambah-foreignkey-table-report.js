@@ -13,7 +13,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
         references: {
-          model: 'reports',
+          model: 'info_pengguna',
           key: 'id'
         },
         onUpdate: 'cascade',
@@ -35,7 +35,7 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     const promises = [
-      await queryInterface.removeColumn('reports', 'user_id'),
+      await queryInterface.removeColumn('reports', 'userId'),
       await queryInterface.removeColumn('reports', 'isDelete')
     ]
 

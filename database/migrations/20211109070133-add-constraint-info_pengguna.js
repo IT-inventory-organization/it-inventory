@@ -36,8 +36,8 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     const promises = [
-      await queryInterface.removeColumn('info_pengguna', 'role_id'),
-      await queryInterface.removeColumn('info_pengguna', 'is_active')
+      await queryInterface.removeColumn('info_pengguna', 'roleId'),
+      await queryInterface.removeColumn('info_pengguna', 'isActive')
     ];
 
     return Promise.all(promises)

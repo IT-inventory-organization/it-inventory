@@ -8,15 +8,15 @@ const Http = require('../../helper/Httplib');
 const Encrypt = require('../../helper/encription');
 
 const checkInputRegister = [
-    body('nama_perusahaan').notEmpty().trim().withMessage('Nama Perusahaan Kosong'),
+    body('namaPerusahaan').notEmpty().trim().withMessage('Nama Perusahaan Kosong'),
     body('npwp').notEmpty().trim().withMessage('NPWP Kosong'),
     body('alamat').notEmpty().trim().withMessage('Alamat Kosong'),
-    body('nomor_telepon').notEmpty().trim().withMessage('Nomor Telepon Kosong'),
-    body('bidang_usaha').notEmpty().trim().withMessage('Bidang Usaha Kosong'),
-    body('nama_pemilik').notEmpty().trim().withMessage('Nama Pemilik Kosong'),
-    body('password').notEmpty().trim().custom(passwordFormat).withMessage('Password Kosong'),
+    body('nomorTelepon').notEmpty().trim().withMessage('Nomor Telepon Kosong'),
+    body('bidangUsaha').notEmpty().trim().withMessage('Bidang Usaha Kosong'),
+    body('namaPemilik').notEmpty().trim().withMessage('Nama Pemilik Kosong'),
+    body('password').notEmpty().trim().custom(passwordFormat),
     body('email').notEmpty().trim().withMessage('Email Kosong'),
-    body('confirm_password').custom((value, {req}) => {
+    body('confirmPassword').custom((value, {req}) => {
         if(typeof value === 'undefined' || value.length == 0){
             throw new Error("Confirm Password Cannot Empty");
         }
@@ -77,7 +77,7 @@ const register = async (req, res) => {
                 ]
             }
         })
-
+        console.log('asd',data);
         // Jika Ada Maka Return Respon Error User Sudah Dibuat 
         if(data){
             return errorResponse(res, Http.badRequest, "Pengguna Sudah Ada")
