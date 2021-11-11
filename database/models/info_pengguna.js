@@ -40,9 +40,15 @@ const InfoPengguna = db.define('info_pengguna', {
     type: Sequelize.STRING
   },
   roleId: {
+    allowNull: false,
     type: Sequelize.INTEGER,
-    defaultValue: 2,
-    allowNull: false
+    references: {
+      model: 'roles',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'cascade',
+    defaultValue: 2
   },
   email: {
     allowNull: false,

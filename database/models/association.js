@@ -30,14 +30,14 @@ const setAssociations = function() {
   Report.hasOne(IdentitasBarang, {foreignKey: 'reportId'});
   Report.hasOne(PembeliBarang, {foreignKey: 'reportId'});
   Report.hasOne(PPJK, {foreignKey: 'reportId'});
-  Report.hasOne(berat_dan_volume, {foreignKey: 'report_id'});
+  Report.hasOne(berat_dan_volume, {foreignKey: 'reportId'});
   Report.hasOne(DataPengangkutan, {foreignKey: 'reportId'});
   Report.hasOne(MataUang, {foreignKey: 'reportId'});
   Report.hasOne(PembeliBarang, {foreignKey: 'reportId'});
-  Report.hasOne(PengusahaPLB, {foreignKey: 'report_id'});
-  Report.hasOne(PenjualBarang, {foreignKey: 'report_id'});
-  Report.hasOne(TempatPenimbunan, {foreignKey: 'report_id'});
-  Report.hasMany(data_barang, {foreignKey: 'report_id'});
+  Report.hasOne(PengusahaPLB, {foreignKey: 'reportId'});
+  Report.hasOne(PenjualBarang, {foreignKey: 'reportId'});
+  Report.hasOne(TempatPenimbunan, {foreignKey: 'reportId'});
+  Report.hasMany(data_barang, {foreignKey: 'reportId'});
 
 
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
@@ -47,20 +47,22 @@ const setAssociations = function() {
   IdentitasBarang.belongsTo(Report, {foreignKey: 'reportId'});
   PembeliBarang.belongsTo(Report, {foreignKey: 'reportId'});
   PPJK.belongsTo(Report, {foreignKey: 'reportId'});
-  data_barang.belongsTo(Report, {foreignKey: 'report_id'});
-  berat_dan_volume.belongsTo(Report, {foreignKey: 'report_id'});
+  data_barang.belongsTo(Report, {foreignKey: 'reportId'});
+  berat_dan_volume.belongsTo(Report, {foreignKey: 'reportId'});
 
   /**
    * * Roles Relation With User
    */
-  Roles.hasOne(InfoPengguna, {foreignKey: 'role_id'});
-  InfoPengguna.belongsTo(Roles, {foreignKey: 'role_id'});
+  Roles.hasOne(InfoPengguna, {foreignKey: 'roleId'});
+  InfoPengguna.belongsTo(Roles, {foreignKey: 'roleId'});
 
   /**
    * * Report Relation With User
    */
-  InfoPengguna.hasMany(Report, {foreignKey:'user_id'});
-  Report.belongsTo(InfoPengguna, {foreignKey: 'user_id'})
+  InfoPengguna.hasMany(Report, {foreignKey:'userId'});
+  Report.belongsTo(InfoPengguna, {foreignKey: 'userId'})
+  // Report.hasMany(InfoPengguna, {foreignKey: 'userId'});
+  // InfoPengguna.belongsTo(Report, {foreignKey: 'userId'})
 };
 
 module.exports = setAssociations;
