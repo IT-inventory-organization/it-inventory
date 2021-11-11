@@ -52,8 +52,8 @@ const formatDataDokumenPelabuhan = async(req, res, next) => {
             }
         }
 
-        console.log(req.body.ref)
-        // next()
+        // console.log(req.body.ref)
+        next()
     } catch (error) {
         console.log(error)
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")

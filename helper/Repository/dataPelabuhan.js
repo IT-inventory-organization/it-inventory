@@ -1,15 +1,19 @@
 const DataPelabuhan = require("../../database/models/data_pelabuhan")
-
+const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
 const saveDataPelabuhan = async(data, transaction) => {
     try {
         const result = await DataPelabuhan.create(data, {
-            transaction: transaction,
+            transaction,
             returning: true
         });
         return result;
     } catch (error) {
-        console.log('Repository, trigger', error)
-        return false
+        if(error.name === 'SequelizeValidationError'){
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
+        }else{
+            throw new ConflictCreateData("Gagal Menyimpan Data")
+        }
+
     }
 }
 

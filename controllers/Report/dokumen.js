@@ -5,7 +5,11 @@ const {
     formatDataDokumenTambahan, 
     formatDataDokumenPelabuhan 
 } = require('../../middlewares/dataDokumenMiddleware/reformatDataDokumen');
-const { vDataPengajuan, vDataTambahan } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
+const { 
+    vDataPengajuan, 
+    vDataTambahan, 
+    vDataPelabuhan 
+} = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const { saveDataPengajuan } = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
@@ -19,7 +23,7 @@ const saveDokumenPemasukan = async(req, res) => {
         const {ref} = req.body;
         // console.log(ref);return;
         transaction = await sequelize.transaction();
-        // let resultSaved = [];
+        let resultSaved = [];
         /**
          * 
          */
@@ -29,13 +33,13 @@ const saveDokumenPemasukan = async(req, res) => {
         /**
          * 
          */
-        await transaction.commit();
-
+        
         const data = {
             dataPengajuan: resultDataPemasukan.id,
-            dataTambahan: resultDataTambahan.id
+            dataTambahan: resultDataTambahan.id,
+            dataPelabuhan: resultDataPelabuhan.id
         }
-        
+        await transaction.commit();
         if(req.currentRole){}
 
         return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
@@ -43,7 +47,9 @@ const saveDokumenPemasukan = async(req, res) => {
         if(transaction){
             await transaction.rollback();
         }
-        return errorResponse(res, Http.internalServerError, "Gagal Menyimpan Data Dokumen Pemasukan");
+
+        return errorResponse(res, error.status, error.message);
+
     }
 }
 
@@ -56,6 +62,7 @@ module.exports = routes => {
         formatDataDokumenPelabuhan,
         vDataPengajuan,
         vDataTambahan,
+        vDataPelabuhan,
         validationResponse, 
         saveDokumenPemasukan
     );
