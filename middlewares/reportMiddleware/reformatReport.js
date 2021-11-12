@@ -10,7 +10,7 @@ const formatReport = (req, res, next) => {
             ...Decrypt,
             userId: +req.currentUser
         }
-    
+
         // console.log(req.body);
         next();
     } catch (error) {

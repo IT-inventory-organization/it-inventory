@@ -75,10 +75,4 @@ const createListBarang = async(req, res) => {
 
 module.exports = routes => {
     routes.post('/save', authentication, bundle, validationBarang, createListBarang); // Get All
-    // routes.get('/:id', authentication, getAnBarang); // Get One
-    // routes.post('/save', authentication, bundle, validationBarang, createBarangBarang);
-    // routes.put('/update/:id', authentication, bundle, validationBarang, editBarangBarang);
-    // routes.delete('/delete/:id', authentication, validationBarang, deleteBarangBarang);
-    // routes.put('/update-stock/:id', authentication, updateStock);
-    // routes.get('/history/:id', authentication, historyDataBarang);
 }
