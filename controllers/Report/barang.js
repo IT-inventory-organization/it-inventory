@@ -24,7 +24,6 @@ const bundle = (req, res, next) => {
         for (let i = 0; i < Decrypt.listDataBarang.length; i++) {
             Decrypt.listDataBarang[i].reportId = Decrypt.reportId;
 
-            
         }
         req.body.lists = {
             dataBarang: Decrypt.listDataBarang,
@@ -56,7 +55,7 @@ const createListBarang = async(req, res) => {
         const resultBarang = [];
         for (let i = 0; i < lists.dataBarang.length; i++) {
             const result = await saveDataBarang(lists.dataBarang[i], trans);   
-            resultBarang.push(result)
+            resultBarang.push(result);
         }
         
         await trans.commit();
