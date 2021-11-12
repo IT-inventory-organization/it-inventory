@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const PembeliBarang = db.define('pembeli_barang', {
-  jenis_identitas_pembeli: {
+  jenisIdentitasPembeli: {
     type: Sequelize.STRING
   },
   namaPembeli: {

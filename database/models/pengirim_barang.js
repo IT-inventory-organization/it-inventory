@@ -1,20 +1,19 @@
 'use strict';
 const Sequelize = require('sequelize');
-const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
 const pengirim_barang = db.define('pengirim_barang', {
-  jenisIdentitasPenjual: {
+  jenisIdentitasPengirim: {
     type: Sequelize.STRING
   },
-  namaPenjual: {
+  namaPengirim: {
     type: Sequelize.STRING
   },
-  nomorIdentitasPenjual: {
+  nomorIdentitasPengirim: {
     type: Sequelize.STRING
   },
-  alamatPenjual: {
-    type: sequelize.STRING
+  alamatPengirim: {
+    type: Sequelize.STRING
   },
   reportId: {
     type: Sequelize.INTEGER,

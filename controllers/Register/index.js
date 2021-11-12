@@ -77,7 +77,6 @@ const register = async (req, res) => {
                 ]
             }
         })
-        console.log('asd',data);
         // Jika Ada Maka Return Respon Error User Sudah Dibuat 
         if(data){
             return errorResponse(res, Http.badRequest, "Pengguna Sudah Ada")

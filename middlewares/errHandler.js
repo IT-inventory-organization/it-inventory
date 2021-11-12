@@ -18,8 +18,15 @@ function NotFoundException(message){
   this.status = httpStatus.notFound
 }
 
+function ServerFault(message){
+  this.message = message;
+  this.name = 'ServerFault';
+  this.status = httpStatus.internalServerError
+}
+
 module.exports = {
   ForeignKeyViolation,
   ConflictCreateData,
-  NotFoundException
+  NotFoundException,
+  ServerFault
 }

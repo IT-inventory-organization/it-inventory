@@ -1,19 +1,18 @@
 'use strict';
 const Sequelize = require('sequelize');
-const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
 const PengusahaPLB = db.define('pengusaha_PLB', {
-  jenisIdentitasPenjual: {
+  jenisIdentitasPengusahaPLB: {
     type: Sequelize.STRING
   },
-  namaPenjual: {
+  namaPengusahaPLB: {
     type: Sequelize.STRING
   },
-  nomorIdentitasPenjual: {
+  nomorIdentitasPengusahaPLB: {
     type: Sequelize.STRING
   },
-  alamatPenjual: {
+  alamatPengusahaPLB: {
     type: Sequelize.STRING
   },
   reportId: {

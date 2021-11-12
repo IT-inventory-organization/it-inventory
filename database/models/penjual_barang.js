@@ -1,9 +1,8 @@
 'use strict';
 const Sequelize = require('sequelize');
-const sequelize = require('../../configs/database');
 const db = require('../../configs/database');
 
-const PenjualBarang = db.define('penjual_barang', {
+const PenjualBarang = db.define('penjual-barang', {
   jenisIdentitasPenjual: {
     type: Sequelize.STRING
   },
@@ -27,7 +26,7 @@ const PenjualBarang = db.define('penjual_barang', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'penjual_barang',
+  tableName: 'penjual-barang',
   freezeTableName: true,
 })
 
