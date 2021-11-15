@@ -6,6 +6,8 @@ const { createDataBarang, dataBarang} = require('../../helper/bundleDataBarang')
 const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
 const { saveDataBarang } = require('../../helper/Repository/dataBarang');
+const { create } = require('nconf');
+const { internalServerError } = require('../../helper/Httplib');
 
 const validationBarang = [
     body('lists.dataBarang.*.posTarif').trim().notEmpty().withMessage(`"Pos Tarif Is Required`),
@@ -71,8 +73,52 @@ const createListBarang = async(req, res) => {
     
 }
 
+const updateDataBarang = async (req, res) => {
+    let transaction;
+    const{idreport} = req.params;
+
+    try {
+        const {DataToInput: {listDataBarang}} = req.body;
+        await isExist(Report, {where: {id: idreport, userId: req.currentUser}});
+        transaction = await sequelize.transaction();
+        let resulsListBarang = [];
+
+        await fullDelete(req, null, idReport, transaction)
+        for(let i = 0; i < listDataBarang.length; i++) {
+            if(listDataBarang[i].id || typeof listDataBarang[i].id !== 'undefined'){
+                delete listDataBarang[i].id
+            }
+
+            let result = await createListBarang(listDataBarang[i].id, transaction, idReport);
+            if(result.error){
+                return errorResponse(res, Http.badRequest, result.error);
+            }
+            resultsListBarang.push(result);
+        }
+
+        const dataReturn = {
+            listDataBarang: resulsListBarang.map(el => el.id),
+            reportId: resultsListBarang[0].id
+        }
+
+        await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
+
+        await transaction.commit();
+        return successResponse(res, Http.created, `Succes Update Item`, dataToReturn);
+    } catch (error) {
+        console.log(error)
+        if(transaction) {
+            await transaction.rollback();
+        }
+        return errorResponse (res, internalServerError, error.message)
+    }
+};
+
+
+
 
 
 module.exports = routes => {
     routes.post('/save', authentication, bundle, validationBarang, createListBarang); // Get All
+    routes.post('/updateDataBarang', updateDataBarang)
 }
