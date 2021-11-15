@@ -140,4 +140,36 @@ module.exports = routes => {
         validationResponse, 
         saveDokumenPemasukan
     );
+
+    routes.put('/update/pemasukan/:id',
+        authentication,
+        formatDataDokumenMasukan,
+        formatDataDokumenTambahan,
+        formatDataDokumenPelabuhan,
+        formatDataDokumenKapal,
+        formatDataDokumenIdentitasBarang,
+        formatDataDokumenPenjualBarang,
+        formatDataDokumenPengirimBarang,
+        formatDataDokumenPengusahaPLB,
+        formatDataDokumenPpjk,
+        formatDataDokumenMataUang,
+        formatDataDokumenDataPengangkutan,
+        formatDataDokumenBeratDanVolume,
+        formatDataDokumenTempatPenimbunan,
+        vDataPengajuan,
+        vDataTambahan,
+        vDataPelabuhan,
+        vDataKapal,
+        vIdentitasBarang,
+        vPenjualBarang,
+        vPengirimBarang,
+        vPengusahaPLB,
+        vPpjk,
+        vMataUang,
+        vDataPengangkutan,
+        vBeratDanVolume,
+        vTempatPenimbunan,
+        validationResponse, 
+        saveDokumenPemasukan
+    );
 }

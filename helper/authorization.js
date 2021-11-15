@@ -38,7 +38,6 @@ const authorization = async (model, id, req, extraCondition = false) => {
   } catch (error) {
     throw error
   }
-
 }
 
 module.exports = authorization;
