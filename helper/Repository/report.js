@@ -1,5 +1,4 @@
 const Report = require("../../database/models/report")
-const { errorResponse } = require("../Response")
 
 const saveReport = async(data) => {
     try {

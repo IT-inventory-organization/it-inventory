@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const DataKapal = db.define('data_kapal', {
+const DataKapal = db.define('dataKapal', {
   voyageKapal: {
     type: Sequelize.STRING
   },
@@ -29,7 +29,7 @@ const DataKapal = db.define('data_kapal', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'data_kapal',
+  tableName: 'dataKapal',
   freezeTableName: true,
 })
 

@@ -1,15 +1,13 @@
-const DokumenTambahan = require("../../database/models/dokumen_tambahan")
+const UserAvtivity = require("../../database/models/aktifitasuser");
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler")
 
-const saveDataTambahan = async(data, transaction) => {
+const saveAktifitasUser = async(data, transaction = null) => {
     try {
-        const result = await DokumenTambahan.create(data, {
+        await UserAvtivity.create(data, {
             transaction,
-            returning: true
-        })
-        return result
+        });
     } catch (error) {
-        if(error.name == "SequelizeValidationError"){
+        if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else{
             throw new ConflictCreateData("Gagal Menyimpan Data");
@@ -18,5 +16,5 @@ const saveDataTambahan = async(data, transaction) => {
 }
 
 module.exports = {
-    saveDataTambahan
+    saveAktifitasUser
 }

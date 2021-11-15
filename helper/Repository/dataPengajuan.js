@@ -1,4 +1,6 @@
-const DokumenPemasukan = require("../../database/models/dokumen_pemasukan")
+const DokumenPemasukan = require("../../database/models/dokumen_pemasukan");
+const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
+const { isExist } = require("../checkExistingDataFromTable");
 
 const saveDataPengajuan = async (data, transaction) => {
     try {
@@ -8,10 +10,41 @@ const saveDataPengajuan = async (data, transaction) => {
         });
         return result;
     } catch (error) {
-        return false
+        if(error.name == "SequelizeValidationError"){
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+        }else{
+            throw new ConflictCreateData("Gagal Menyimpan Data");
+        }
+    }
+}
+
+const updateDataPengajuan = async(data, transaction) => {
+    try {
+        const query = {
+            id: data.id
+        }
+
+        isExist(DokumenPemasukan, query);
+
+        const result = await DokumenPemasukan.update(data, {
+            query,
+            transaction,
+            returning: true
+        });
+
+        return result;
+    } catch (error) {
+        if(error.name == 'SequelizeValidationError'){
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
+        }else if(error.name == 'ServerFault' || error.name == 'NotFoundException'){
+            throw error
+        }else{
+            throw new ConflictCreateData('Gagal Menyimpan Data')
+        }
     }
 }
 
 module.exports = {
-    saveDataPengajuan
+    saveDataPengajuan,
+    updateDataPengajuan
 }

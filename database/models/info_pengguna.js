@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const InfoPengguna = db.define('info_pengguna', {
+const InfoPengguna = db.define('infoPengguna', {
   namaPerusahaan: {
     allowNull: false,
     type: Sequelize.STRING
@@ -59,7 +59,7 @@ const InfoPengguna = db.define('info_pengguna', {
     type: Sequelize.STRING
   }
 }, {
-  tableName: 'info_pengguna',
+  tableName: 'infoPengguna',
   freezeTableName: true,
 })
 

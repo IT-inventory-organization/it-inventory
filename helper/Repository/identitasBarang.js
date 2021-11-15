@@ -1,12 +1,13 @@
-const DokumenTambahan = require("../../database/models/dokumen_tambahan")
+const IdentitasBarang = require("../../database/models/identitas_barang")
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler")
 
-const saveDataTambahan = async(data, transaction) => {
+const saveIdentitasBarang = async(data, transaction) => {
     try {
-        const result = await DokumenTambahan.create(data, {
+        const result = await IdentitasBarang.create(data, {
             transaction,
             returning: true
-        })
+        });
+
         return result
     } catch (error) {
         if(error.name == "SequelizeValidationError"){
@@ -18,5 +19,5 @@ const saveDataTambahan = async(data, transaction) => {
 }
 
 module.exports = {
-    saveDataTambahan
+    saveIdentitasBarang
 }
