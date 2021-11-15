@@ -7,6 +7,7 @@ const { formatReport } = require('../../middlewares/reportMiddleware/reformatRep
 const { saveReport, getReportPerId } = require('../../helper/Repository/report');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
+const { convertDate } = require('../../helper/convert');
 
 const tambahReport = async (req, res) => {
     try {
@@ -35,16 +36,29 @@ const tambahReport = async (req, res) => {
     }
 }
 
+const _convertDate = (report) => {
+    report.dokumenPemasukan.tanggalDokumenPemasukan = convertDate(report.dokumenPemasukan.tanggalDokumenPemasukan);
+    report.dokumenTambahan.tanggalBC10 = convertDate(report.dokumenTambahan.tanggalBC10);
+    report.dokumenTambahan.tanggalBC11 = convertDate(report.dokumenTambahan.tanggalBC11);
+    report.dokumenTambahan.tanggalBL = convertDate(report.dokumenTambahan.tanggalBL);
+    report.dataKapal.tanggalKedatangan = convertDate(report.dataKapal.tanggalKedatangan);
+    report.dataKapal.tanggalKeberangkatan = convertDate(report.dataKapal.tanggalKeberangkatan);
+    report.tempatPenimbunan.perkiraanTanggalPengeluaran = convertDate(report.tempatPenimbunan.perkiraanTanggalPengeluaran);
+}
+
 const getReport = async(req, res) => {
     try {
         const report = await getReportPerId(req.params.idReport);
-
+        
+        _convertDate(report)
+    
         if(req.currentRole !== "Owner"){
             saveAktifitas({userId: req.currentUser, reportId: req.params.idReport, aktifitas: `Melihat Report ${req.params.idReport}`})
         }
 
         return successResponse(res, Http.ok, "", report)
     } catch (error) {
+        // console.log(error)
         return errorResponse(res, error.status, error.message);
     }
 }

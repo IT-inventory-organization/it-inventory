@@ -7,7 +7,7 @@ const TempatPenimbunan = db.define('tempatPenimbunan', {
     type: Sequelize.STRING
   },
   perkiraanTanggalPengeluaran: {
-    type: Sequelize.DATE
+    type: Sequelize.DATEONLY
   },
   isTempatPenimbunan: {
     type: Sequelize.BOOLEAN

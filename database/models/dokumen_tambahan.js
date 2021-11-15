@@ -17,15 +17,15 @@ const DokumenTambahan = db.define('dokumenTambahan', {
   },
   tanggalBC10: {
     allowNull: true,
-    type: Sequelize.STRING
+    type: Sequelize.DATEONLY
   },
   tanggalBC11: {
     allowNull: true,
-    type: Sequelize.STRING
+    type: Sequelize.DATEONLY
   },
   tanggalBL: {
     allowNull: true,
-    type: Sequelize.STRING
+    type: Sequelize.DATEONLY
   },
   reportId: {
     allowNull: false,

@@ -4,6 +4,7 @@ const { isExist } = require("../checkExistingDataFromTable");
 
 const saveDataPengajuan = async (data, transaction) => {
     try {
+        
         const result = await DokumenPemasukan.create(data, {
             transaction,
             returning: true 
@@ -21,11 +22,13 @@ const saveDataPengajuan = async (data, transaction) => {
 const updateDataPengajuan = async(data, transaction) => {
     try {
         const query = {
-            id: data.id
+            where:{
+                id: data.id
+            }
         }
 
         isExist(DokumenPemasukan, query);
-
+        return;
         const result = await DokumenPemasukan.update(data, {
             query,
             transaction,

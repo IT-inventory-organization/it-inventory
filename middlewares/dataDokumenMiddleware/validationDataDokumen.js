@@ -3,17 +3,17 @@ const { checkFormat } = require('../../helper/checkDateFormat');
 
 // Dokumen Pemasukan
 const vDataPengajuan = [
-    body('ref.dataPemasukan.nomorDokumenPemasukan').trim().isString().notEmpty().withMessage("Nomor Dokumen Pemasukan Harus Diisi"),
-    body('ref.dataPemasukan.tanggalDokumenPemasukan').trim().custom(checkFormat)
+    body('ref.dokumenPemasukan.nomorDokumenPemasukan').trim().isString().notEmpty().withMessage("Nomor Dokumen Pemasukan Harus Diisi"),
+    body('ref.dokumenPemasukan.tanggalDokumenPemasukan').trim().custom(checkFormat)
 ];
 
 const vDataTambahan = [
-  body('ref.dataTambahan.nomorBC10').trim().isString().notEmpty(),
-  body('ref.dataTambahan.nomorBC11').trim().isString().notEmpty(),
-  body('ref.dataTambahan.nomorBL').trim().isString(),
-  body('ref.dataTambahan.tanggalBC10').trim().custom(checkFormat),
-  body('ref.dataTambahan.tanggalBC11').trim().custom(checkFormat),
-  body('ref.dataTambahan.tanggalBL').trim().custom(checkFormat),
+  body('ref.dokumenTambahan.nomorBC10').trim().isString().notEmpty(),
+  body('ref.dokumenTambahan.nomorBC11').trim().isString().notEmpty(),
+  body('ref.dokumenTambahan.nomorBL').trim().isString(),
+  body('ref.dokumenTambahan.tanggalBC10').trim().notEmpty().custom(checkFormat),
+  body('ref.dokumenTambahan.tanggalBC11').trim().notEmpty().custom(checkFormat),
+  body('ref.dokumenTambahan.tanggalBL').trim().custom(checkFormat),
 ];
 
 const vDataPelabuhan = [
