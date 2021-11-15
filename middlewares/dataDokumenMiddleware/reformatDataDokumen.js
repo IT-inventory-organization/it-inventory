@@ -9,16 +9,15 @@ const formatDataDokumenMasukan = (req, res, next) => {
 
         req.body.ref = {
             ...req.body.ref,
-            dataPemasukan:{
-                ...Decrypt.dataPemasukan,
+            dokumenPemasukan:{
+                ...Decrypt.dokumenPemasukan,
                 reportId: Decrypt.reportId
             }
         }
     
-        // console.log(req.body);
         next();
     } catch (error) {
-        // console.log(error);
+        
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
@@ -27,14 +26,15 @@ const formatDataDokumenTambahan =  (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
+        // convert(Decrypt);
         req.body.ref = {
             ...req.body.ref,
-            dataTambahan:{
-                ...Decrypt.dataTambahan,
+            dokumenTambahan:{
+                ...Decrypt.dokumenTambahan,
                 reportId: Decrypt.reportId
             }
         }
-        // console.log(req.body.ref)
+        
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
@@ -95,7 +95,6 @@ const formatDataDokumenIdentitasBarang = (req, res, next) => {
         // console.log(req.body)
         next();
     } catch (error) {
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
@@ -262,7 +261,6 @@ const formatDataDokumenTempatPenimbunan = (req, res, next) => {
             }
         }
 
-        // console.log(req.body);
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")

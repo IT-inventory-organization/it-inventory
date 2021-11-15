@@ -41,11 +41,14 @@ const getReportPerId = async(id) => {
                 id: id,
                 isDelete: false
             },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'isDelete']
+            },
             include: [
                 {
                     model: DokumenPemasukan,
                     attributes: {
-                        exclude: ['updatedAt', 'createdAt']
+                        exclude: ['updatedAt', 'createdAt',]
                     }
                 },
                 {
@@ -127,7 +130,7 @@ const getReportPerId = async(id) => {
                     }
                 },
                 {
-                    model: dataBarng,
+                    model: dataBarang,
                     attributes: {
                         exclude: ['updatedAt', 'createdAt']
                     }
@@ -140,12 +143,13 @@ const getReportPerId = async(id) => {
         }
         return resultReportPerId.toJSON();
     } catch (error) {
+        // console.log('Repository Trigger', error)
         if(error.name == "ReferenceError"){
             throw new ServerFault("Terjadi Kesalahan Pada Server")
         }else{
             throw error
         }
-        console.log('Repository Trigger', error)
+        
     }
 }
 

@@ -14,6 +14,24 @@ const convertStrignToDateUTC = (dateString) => {
     return date;
 }
 
+const convertDate = (date) => {
+    if(!date){
+        return null;
+    }
+    const ISO = new Date(`${date}`);
+    return `${addZero(ISO.getDate())}-${addZero(ISO.getMonth()+1)}-${ISO.getFullYear()}`;
+}
+
+const addZero = (val) => {
+    if(val < 10){
+        return `0${val}`
+    }
+
+    return val
+}
+
+
 module.exports = {
-    convertStrignToDateUTC
+    convertStrignToDateUTC,
+    convertDate
 }

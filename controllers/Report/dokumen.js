@@ -32,7 +32,7 @@ const {
     vTempatPenimbunan
 } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
 const { validationResponse } = require('../../middlewares/validationResponse');
-const { saveDataPengajuan } = require('../../helper/Repository/dataPengajuan');
+const { saveDataPengajuan, updateDataPengajuan } = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
 const { saveDataTambahan } = require('../../helper/Repository/dataTambahan');
@@ -60,11 +60,9 @@ const saveDokumenPemasukan = async(req, res) => {
 
         transaction = await sequelize.transaction();
         // let resultSaved = [];
-        /**
-         * TODO: Tinggal Membuat Create Berat Dan Volume, dan Tempat Penimbunan, Tambah Aktifitas User
-         */
-        const resultDataPemasukan = await saveDataPengajuan(ref.dataPemasukan, transaction);
-        const resultDataTambahan = await saveDataTambahan(ref.dataTambahan, transaction);
+
+        const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);
+        const resultDataTambahan = await saveDataTambahan(ref.dokumenTambahan, transaction);
         const resultDataPelabuhan = await saveDataPelabuhan(ref.dataPelabuhan, transaction);
         const resultDataKapal = await saveDataKapal(ref.dataKapal, transaction);
         const resultIdentitasBarang = await saveIdentitasBarang(ref.identitasBarang, transaction);
@@ -97,13 +95,14 @@ const saveDokumenPemasukan = async(req, res) => {
             beratDanVolume: reusltBeratDanVolume.id,
             tempatPenimbunan: resultTempatPenimbunan.id
         }
-        await transaction.commit();
+        
         if(req.currentRole !== 'Owner'){
-            saveAktifitas({userId: req.currentUser, reportId: ref.dataPemasukan.reportId, aktifitas: "Membuat Dokumen PLB Baru"});
+            saveAktifitas({userId: req.currentUser, reportId: ref.dokumenPemasukan.reportId, aktifitas: "Membuat Dokumen PLB Baru"});
         }
-
+        await transaction.commit();
         return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
     } catch (error) {
+        console.log(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -114,6 +113,14 @@ const saveDokumenPemasukan = async(req, res) => {
 
 const updateDokumenPemasukan = async(req,res) => {
     const {idReport} = req.params;
+    let transaction
+    try {
+        const {ref} = req.body;
+
+        const updateDokumenPemasikan = await updateDataPengajuan(ref.dokumenPemasukan, transaction)
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 module.exports = routes => {
