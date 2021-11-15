@@ -12,7 +12,8 @@ const {
     formatDataDokumenPpjk,
     formatDataDokumenMataUang,
     formatDataDokumenDataPengangkutan,
-    formatDataDokumenTempatPenimbunan
+    formatDataDokumenTempatPenimbunan,
+    formatDataDokumenBeratDanVolume
 } = require('../../middlewares/dataDokumenMiddleware/reformatDataDokumen');
 const { 
     vDataPengajuan, 
@@ -26,6 +27,7 @@ const {
     vPpjk,
     vMataUang,
     vDataPengangkutan,
+    vBeratDanVolume,
     vTempatPenimbunan
 } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
 const { validationResponse } = require('../../middlewares/validationResponse');
@@ -43,6 +45,8 @@ const { saveDataPpjk } = require('../../helper/Repository/dataPpjk');
 const { saveMataUang } = require('../../helper/Repository/mataUang');
 const { saveDataPengangkutan } = require('../../helper/Repository/dataPengangkutan');
 const { saveTempatPenimbunan } = require('../../helper/Repository/tempatPenimbunan');
+const { saveBeratDanVolume } = require('../../helper/Repository/beratDanVolume');
+const { saveAktifitas } = require('../../helper/saveAktifitas');
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
@@ -67,6 +71,7 @@ const saveDokumenPemasukan = async(req, res) => {
         const resultPpjk = await saveDataPpjk(ref.ppjk, transaction);
         const resultMataUang = await saveMataUang(ref.mataUang, transaction);
         const resultDataPengangkutan = await saveDataPengangkutan(ref.dataPengangkutan, transaction);
+        const reusltBeratDanVolume = await saveBeratDanVolume(ref.beratDanVolume, transaction);
         const resultTempatPenimbunan = await saveTempatPenimbunan(ref.tempatPenimbunan, transaction);
         /**
          * 
@@ -84,11 +89,12 @@ const saveDokumenPemasukan = async(req, res) => {
             ppjk: resultPpjk.id,
             mataUang: resultMataUang.id,
             dataPengangkutan: resultDataPengangkutan.id,
+            beratDanVolume: reusltBeratDanVolume.id,
             tempatPenimbunan: resultTempatPenimbunan.id
         }
         await transaction.commit();
         if(req.currentRole !== 'Owner'){
-
+            saveAktifitas({userId: req.currentUser, reportId: ref.dataPemasukan.reportId, aktifitas: "Membuat Dokumen PLB Baru"});
         }
 
         return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
@@ -105,7 +111,7 @@ const saveDokumenPemasukan = async(req, res) => {
 module.exports = routes => {
     routes.post('/save/pemasukan',
         authentication,
-        formatDataDokumenMasukan, 
+        formatDataDokumenMasukan,
         formatDataDokumenTambahan,
         formatDataDokumenPelabuhan,
         formatDataDokumenKapal,
@@ -116,6 +122,7 @@ module.exports = routes => {
         formatDataDokumenPpjk,
         formatDataDokumenMataUang,
         formatDataDokumenDataPengangkutan,
+        formatDataDokumenBeratDanVolume,
         formatDataDokumenTempatPenimbunan,
         vDataPengajuan,
         vDataTambahan,
@@ -128,6 +135,7 @@ module.exports = routes => {
         vPpjk,
         vMataUang,
         vDataPengangkutan,
+        vBeratDanVolume,
         vTempatPenimbunan,
         validationResponse, 
         saveDokumenPemasukan

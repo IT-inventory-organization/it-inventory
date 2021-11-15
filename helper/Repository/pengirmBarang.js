@@ -1,9 +1,9 @@
-const pengirim_barang = require("../../database/models/pengirim_barang");
+const PengirimBarang = require("../../database/models/pengirim_barang");
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 
 const savePengirimBarang = async(data, transaction) => {
     try {
-        const result = await pengirim_barang.create(data, {
+        const result = await PengirimBarang.create(data, {
             transaction,
             returning: true
         });

@@ -1,14 +1,15 @@
 const { body, check } = require('express-validator');
 const { checkFormat } = require('../../helper/checkDateFormat');
 
+// Dokumen Pemasukan
 const vDataPengajuan = [
     body('ref.dataPemasukan.nomorDokumenPemasukan').trim().isString().notEmpty().withMessage("Nomor Dokumen Pemasukan Harus Diisi"),
     body('ref.dataPemasukan.tanggalDokumenPemasukan').trim().custom(checkFormat)
 ];
 
 const vDataTambahan = [
-  body('ref.dataTambahan.nomorBC10').trim().isString(),
-  body('ref.dataTambahan.nomorBC11').trim().isString(),
+  body('ref.dataTambahan.nomorBC10').trim().isString().notEmpty(),
+  body('ref.dataTambahan.nomorBC11').trim().isString().notEmpty(),
   body('ref.dataTambahan.nomorBL').trim().isString(),
   body('ref.dataTambahan.tanggalBC10').trim().custom(checkFormat),
   body('ref.dataTambahan.tanggalBC11').trim().custom(checkFormat),
@@ -24,7 +25,7 @@ const vDataKapal = [
   body('ref.dataKapal.voyageKapal').trim().notEmpty().isString().withMessage("Kolom Voyage Kapal Terjadi Kesalahan"),
   body('ref.dataKapal.benderaKapal').trim().notEmpty().withMessage("Kolom Bendera Kapal Terjadi Kesalahan"),
   body('ref.dataKapal.namaKapal').trim().notEmpty().isString().withMessage("Kolom Nama Kanpal Terjadi Kesalahan"),
-  body('ref.dataKapal.tanggaLKedatangan').trim().custom(checkFormat),
+  body('ref.dataKapal.tanggalKedatangan').trim().custom(checkFormat),
   body('ref.dataKapal.tanggalKeberangkatan').trim().custom(checkFormat)
 ];
 
@@ -39,10 +40,9 @@ const vIdentitasBarang = [
 ];
 
 const vPenjualBarang = [
-  body('ref.penjualBarang.jenisIdentitasPenjual').trim().notEmpty().isString().withMessage("Kolom Jenis Identitas Penjual Terjadi Kesalahan"),
-  body('ref.penjualBarang.namaPenjual').trim().notEmpty().withMessage("Kolom Nama Penjual Terjadi Kesalahan"),
-  body('ref.penjualBarang.nomorIdentitasPenjual').trim().notEmpty().isString().withMessage("Kolom Nomor Identitas Penjual Terjadi Kesalahan"),
-  body('ref.penjualBarang.alamatPenjual').trim().notEmpty().withMessage("Kolom Alamat Penjual Terjadi Kesalahan"),
+  body('ref.penjualBarang.jenisIdentitasPenjual').trim().isString().withMessage("Kolom Jenis Identitas Penjual Terjadi Kesalahan"),
+  body('ref.penjualBarang.namaPenjual').trim().isString().withMessage("Kolom Nama Penjual Terjadi Kesalahan"),
+  body('ref.penjualBarang.alamatPenjual').trim().isString().withMessage("Kolom Alamat Penjual Terjadi Kesalahan"),
 ];
 
 const vPengirimBarang = [
@@ -60,10 +60,10 @@ const vPengusahaPLB = [
 ]
 
 const vPpjk = [
-  body('ref.ppjk.jenisIdentitasPpjk').trim().notEmpty().isString().withMessage("Kolom Jenis Identitas PPJK Terjadi Kesalahan"),
-  body('ref.ppjk.namaPpjk').trim().notEmpty().withMessage("Kolom Nama PPJK Terjadi Kesalahan"),
-  body('ref.ppjk.nomorIdentitasPpjk').trim().notEmpty().isString().withMessage("Kolom Nomor Identitas PPJK Terjadi Kesalahan"),
-  body('ref.ppjk.alamatPpjk').trim().notEmpty().withMessage("Kolom Alamat PPJK Terjadi Kesalahan"),
+  body('ref.ppjk.jenisIdentitasPpjk').trim().isString().withMessage("Kolom Jenis Identitas PPJK Terjadi Kesalahan"),
+  body('ref.ppjk.namaPpjk').trim().isString().withMessage("Kolom Nama PPJK Terjadi Kesalahan"),
+  body('ref.ppjk.nomorIdentitasPpjk').trim().isString().withMessage("Kolom Nomor Identitas PPJK Terjadi Kesalahan"),
+  body('ref.ppjk.alamatPpjk').trim().isString().withMessage("Kolom Alamat PPJK Terjadi Kesalahan"),
 ]
 
 const vMataUang = [
@@ -82,9 +82,15 @@ const vDataPengangkutan = [
   body("ref.dataPengangkutan.nomorVoyFlightPol").trim().notEmpty().isString().withMessage("Kolom Nomor Voy Flight Pol Terjadi Kesalahan"),
 ]
 
+const vBeratDanVolume = [
+  body("ref.beratDanVolume.beratMuatan").trim().notEmpty().withMessage("Kolom Berta Muatan Terjadi Kesalahan"),
+  body("ref.beratDanVolume.volume").trim().notEmpty().withMessage("Kolom Volume Terjadi Kesalahan"),
+  body("ref.beratDanVolume.beratKapalDenganMuatan").trim().notEmpty().withMessage("Kolom Berat Kapal + Muatan Terjadi Kesalahan")
+]
+
 const vTempatPenimbunan = [
-  body('ref.tempatPenimbunan.tempatPenimbunan').trim().notEmpty().withMessage("Kolom Tempat Penimbunan Terjadi Kesalahan"),
-  body('ref.tempatPenimbunan.tanggalPengeluaran').trim().custom(checkFormat),
+  body('ref.tempatPenimbunan.tempatPenimbunan').trim().isString().withMessage("Kolom Tempat Penimbunan Terjadi Kesalahan"),
+  body('ref.tempatPenimbunan.perkiraanTanggalPengeluaran').trim().custom(checkFormat),
   body('ref.tempatPenimbunan.isTempatPenimbunan').trim().notEmpty()
 ]
 
@@ -100,5 +106,6 @@ module.exports = {
   vPpjk,
   vMataUang,
   vDataPengangkutan,
+  vBeratDanVolume,
   vTempatPenimbunan
 }

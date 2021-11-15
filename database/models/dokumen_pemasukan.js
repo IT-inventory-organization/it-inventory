@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const DokumenPemasukan = db.define('dokumen_pemasukan', {
+const DokumenPemasukan = db.define('dokumenPemasukan', {
   reportId: {
     allowNull: false,
     type: Sequelize.INTEGER,
@@ -22,7 +22,7 @@ const DokumenPemasukan = db.define('dokumen_pemasukan', {
     type: Sequelize.DATE
   },
 }, {
-  tableName: 'dokumen_pemasukan',
+  tableName: 'dokumenPemasukan',
   freezeTableName: true,
 })
 

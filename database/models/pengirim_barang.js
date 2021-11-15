@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const pengirim_barang = db.define('pengirim_barang', {
+const PengirimBarang = db.define('pengirimBarang', {
   jenisIdentitasPengirim: {
     type: Sequelize.STRING
   },
@@ -26,8 +26,8 @@ const pengirim_barang = db.define('pengirim_barang', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'pengirim_barang',
+  tableName: 'pengirimBarang',
   freezeTableName: true,
 })
 
-module.exports = pengirim_barang;
+module.exports = PengirimBarang;

@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const IdentitasBarang = db.define('identitas_barang', {
+const IdentitasBarang = db.define('identitasBarang', {
   negaraAsal: {
     allowNull: true,
     type: Sequelize.STRING
@@ -36,7 +36,7 @@ const IdentitasBarang = db.define('identitas_barang', {
     type: Sequelize.INTEGER
   },
 }, {
-  tableName: 'identitas_barang',
+  tableName: 'identitasBarang',
   freezeTableName: true,
 })
 

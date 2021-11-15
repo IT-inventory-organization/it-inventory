@@ -1,8 +1,8 @@
-const data_barang = require('../../database/models/data_barang');
+const dataBarang = require('../../database/models/data_barang');
 const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
 const saveDataBarang = async(data, transaction) => {
     try {
-        const res = await data_barang.create(data, {
+        const res = await dataBarang.create(data, {
             transaction 
         })
         return res;

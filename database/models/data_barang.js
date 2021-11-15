@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const data_barang = db.define('data_barang', {
+const dataBarang = db.define('dataBarang', {
   kodeBarang: {
     type: Sequelize.STRING
   },
@@ -47,8 +47,8 @@ const data_barang = db.define('data_barang', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'data_barang',
+  tableName: 'dataBarang',
   freezeTableName: true,
 })
 
-module.exports = data_barang;
+module.exports = dataBarang;
