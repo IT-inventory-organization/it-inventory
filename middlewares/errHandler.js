@@ -24,9 +24,16 @@ function ServerFault(message){
   this.status = httpStatus.internalServerError
 }
 
+function UnAuthorizedUser(message){
+  this.message = message;
+  this.name = "UnAuthorizedUser";
+  this.status = httpStatus.unauthorized;
+}
+
 module.exports = {
   ForeignKeyViolation,
   ConflictCreateData,
   NotFoundException,
-  ServerFault
+  ServerFault,
+  UnAuthorizedUser
 }

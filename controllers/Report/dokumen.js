@@ -13,7 +13,8 @@ const {
     formatDataDokumenMataUang,
     formatDataDokumenDataPengangkutan,
     formatDataDokumenTempatPenimbunan,
-    formatDataDokumenBeratDanVolume
+    formatDataDokumenBeratDanVolume,
+    formatDataDokumenPembeliBarang
 } = require('../../middlewares/dataDokumenMiddleware/reformatDataDokumen');
 const { 
     vDataPengajuan, 
@@ -47,6 +48,8 @@ const { saveDataPengangkutan } = require('../../helper/Repository/dataPengangkut
 const { saveTempatPenimbunan } = require('../../helper/Repository/tempatPenimbunan');
 const { saveBeratDanVolume } = require('../../helper/Repository/beratDanVolume');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
+const { authorizationReport } = require('../../helper/authorization');
+const { savePembeliBarang } = require('../../helper/Repository/pembeliBarang');
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
@@ -67,6 +70,7 @@ const saveDokumenPemasukan = async(req, res) => {
         const resultIdentitasBarang = await saveIdentitasBarang(ref.identitasBarang, transaction);
         const resultPenjualBarang = await savePenjualBarang(ref.penjualBarang, transaction);
         const resultPengirimBarang = await savePengirimBarang(ref.pengirimBarang, transaction);
+        const resultPembeliBarang = await savePembeliBarang(ref.pembeliBarang, transaction);
         const resultPengusahaPLB = await savePengusahaPLB(ref.pengusahaPLB, transaction);
         const resultPpjk = await saveDataPpjk(ref.ppjk, transaction);
         const resultMataUang = await saveMataUang(ref.mataUang, transaction);
@@ -86,6 +90,7 @@ const saveDokumenPemasukan = async(req, res) => {
             penjualBarang: resultPenjualBarang.id,
             pengirimBarang: resultPengirimBarang.id,
             pengusahaPLB: resultPengusahaPLB.id,
+            pembeliBarang: resultPembeliBarang.id,
             ppjk: resultPpjk.id,
             mataUang: resultMataUang.id,
             dataPengangkutan: resultDataPengangkutan.id,
@@ -107,6 +112,9 @@ const saveDokumenPemasukan = async(req, res) => {
     }
 }
 
+const updateDokumenPemasukan = async(req,res) => {
+    const {idReport} = req.params;
+}
 
 module.exports = routes => {
     routes.post('/save/pemasukan',
@@ -118,6 +126,7 @@ module.exports = routes => {
         formatDataDokumenIdentitasBarang,
         formatDataDokumenPenjualBarang,
         formatDataDokumenPengirimBarang,
+        formatDataDokumenPembeliBarang,
         formatDataDokumenPengusahaPLB,
         formatDataDokumenPpjk,
         formatDataDokumenMataUang,
@@ -141,8 +150,9 @@ module.exports = routes => {
         saveDokumenPemasukan
     );
 
-    routes.put('/update/pemasukan/:id',
+    routes.put('/update/pemasukan/:idReport',
         authentication,
+        authorizationReport,
         formatDataDokumenMasukan,
         formatDataDokumenTambahan,
         formatDataDokumenPelabuhan,
@@ -170,6 +180,6 @@ module.exports = routes => {
         vBeratDanVolume,
         vTempatPenimbunan,
         validationResponse, 
-        saveDokumenPemasukan
+        updateDokumenPemasukan
     );
 }
