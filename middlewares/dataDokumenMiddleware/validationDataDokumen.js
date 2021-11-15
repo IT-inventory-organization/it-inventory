@@ -59,6 +59,13 @@ const vPengusahaPLB = [
   body('ref.pengusahaPLB.alamatPengusahaPLB').trim().notEmpty().withMessage("Kolom Alamat Pengusaha PLB Terjadi Kesalahan"),
 ]
 
+const vPembeliBarang = [
+  body('ref.pembeliBarang.jenisIdentitasPembeli').trim().notEmpty().isString().withMessage("Kolom Jenis Identitas Pembeli Barang Terjadi Kesalahan"),
+  body('ref.pembeliBarang.namaPembeli').trim().notEmpty().withMessage("Kolom Nama Pembeli Barang Terjadi Kesalahan"),
+  body('ref.pembeliBarang.nomorIdentitasPembeli').trim().notEmpty().isString().withMessage("Kolom Nomor Identitas Pembeli Barang Terjadi Kesalahan"),
+  body('ref.pembeliBarang.alamatPembeli').trim().notEmpty().withMessage("Kolom Alamat Pembeli Barang Terjadi Kesalahan"),
+]
+
 const vPpjk = [
   body('ref.ppjk.jenisIdentitasPpjk').trim().isString().withMessage("Kolom Jenis Identitas PPJK Terjadi Kesalahan"),
   body('ref.ppjk.namaPpjk').trim().isString().withMessage("Kolom Nama PPJK Terjadi Kesalahan"),
@@ -102,6 +109,7 @@ module.exports = {
   vIdentitasBarang,
   vPenjualBarang,
   vPengirimBarang,
+  vPembeliBarang,
   vPengusahaPLB,
   vPpjk,
   vMataUang,

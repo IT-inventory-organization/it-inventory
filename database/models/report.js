@@ -20,6 +20,10 @@ const Report = db.define('report', {
     },
     onUpdate: 'cascade',
     onDelete: 'cascade'
+  },
+  isDelete: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
   }
 }, {
   tableName: 'report',

@@ -158,6 +158,24 @@ const formatDataDokumenPengusahaPLB = (req, res, next) => {
     }
 }
 
+const formatDataDokumenPembeliBarang = (req, res, next) => {
+    try {
+        const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
+
+        req.body.ref = {
+            ...req.body.ref,
+            pembeliBarang: {
+                ...Decrypt.pembeliBarang,
+                reportId: Decrypt.reportId
+            }
+        }
+
+        next();
+    } catch (error) {
+        return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
+    }
+}
+
 const formatDataDokumenPpjk = (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
@@ -259,6 +277,7 @@ module.exports = {
     formatDataDokumenIdentitasBarang,
     formatDataDokumenPenjualBarang,
     formatDataDokumenPengirimBarang,
+    formatDataDokumenPembeliBarang,
     formatDataDokumenPengusahaPLB,
     formatDataDokumenPpjk,
     formatDataDokumenMataUang,
