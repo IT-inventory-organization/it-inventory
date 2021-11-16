@@ -14,7 +14,7 @@ const formatDataDokumenMasukan = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-    
+        // console.log(req.body.ref)
         next();
     } catch (error) {
         
@@ -34,7 +34,7 @@ const formatDataDokumenTambahan =  (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-        
+
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");

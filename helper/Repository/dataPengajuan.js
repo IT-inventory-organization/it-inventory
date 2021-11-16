@@ -19,24 +19,27 @@ const saveDataPengajuan = async (data, transaction) => {
     }
 }
 
-const updateDataPengajuan = async(data, transaction) => {
+const updateDataPengajuan = async(data, reportId, transaction) => {
     try {
         const query = {
             where:{
-                id: data.id
+                id: data.id,
+                reportId
             }
         }
 
-        isExist(DokumenPemasukan, query);
-        return;
+        await isExist(DokumenPemasukan, query);
+        
         const result = await DokumenPemasukan.update(data, {
-            query,
+            ...query,
             transaction,
-            returning: true
+            returning: true,
+            plain: true
         });
 
-        return result;
+        return result[1].toJSON();
     } catch (error) {
+        console.log(error)
         if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
         }else if(error.name == 'ServerFault' || error.name == 'NotFoundException'){

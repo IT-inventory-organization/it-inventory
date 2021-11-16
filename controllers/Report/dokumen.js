@@ -35,13 +35,13 @@ const { validationResponse } = require('../../middlewares/validationResponse');
 const { saveDataPengajuan, updateDataPengajuan } = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
-const { saveDataTambahan } = require('../../helper/Repository/dataTambahan');
-const { saveDataPelabuhan } = require('../../helper/Repository/dataPelabuhan');
-const { saveDataKapal } = require('../../helper/Repository/dataKapal');
-const { saveIdentitasBarang } = require('../../helper/Repository/identitasBarang');
-const { savePenjualBarang } = require('../../helper/Repository/penjualBarang');
-const { savePengirimBarang } = require('../../helper/Repository/pengirmBarang');
-const { savePengusahaPLB } = require('../../helper/Repository/pengusahaPLB');
+const { saveDataTambahan, updateDataTambahan } = require('../../helper/Repository/dataTambahan');
+const { saveDataPelabuhan, updateDataPelabuhanRepo } = require('../../helper/Repository/dataPelabuhan');
+const { saveDataKapal, updateDataKapalRepo } = require('../../helper/Repository/dataKapal');
+const { saveIdentitasBarang, updateIdentitasBarangRepo } = require('../../helper/Repository/identitasBarang');
+const { savePenjualBarang, updatePenjualBarangRepo } = require('../../helper/Repository/penjualBarang');
+const { savePengirimBarang, updatePengirimBarangRepo } = require('../../helper/Repository/pengirmBarang');
+const { savePengusahaPLB, updatePengusahaPLBRepo } = require('../../helper/Repository/pengusahaPLB');
 const { saveDataPpjk } = require('../../helper/Repository/dataPpjk');
 const { saveMataUang } = require('../../helper/Repository/mataUang');
 const { saveDataPengangkutan } = require('../../helper/Repository/dataPengangkutan');
@@ -49,7 +49,7 @@ const { saveTempatPenimbunan } = require('../../helper/Repository/tempatPenimbun
 const { saveBeratDanVolume } = require('../../helper/Repository/beratDanVolume');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
-const { savePembeliBarang } = require('../../helper/Repository/pembeliBarang');
+const { savePembeliBarang, updatePembeliBarangRepo } = require('../../helper/Repository/pembeliBarang');
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
@@ -116,10 +116,42 @@ const updateDokumenPemasukan = async(req,res) => {
     let transaction
     try {
         const {ref} = req.body;
+        transaction = await sequelize.transaction();
 
-        const updateDokumenPemasikan = await updateDataPengajuan(ref.dokumenPemasukan, transaction)
+        const updateDokumenPemasukan = await updateDataPengajuan(ref.dokumenPemasukan, idReport, transaction)
+        const updateDokumenTambahan = await updateDataTambahan(ref.dokumenTambahan, idReport, transaction);
+        const updateDataPelabuhan = await updateDataPelabuhanRepo(ref.dataPelabuhan, idReport, transaction);
+        const updateDataKapal = await updateDataKapalRepo(ref.dataKapal, idReport, transaction);
+        const updateIdentitasBarang = await updateIdentitasBarangRepo(ref.identitasBarang, idReport, transaction);
+        const updatePenjualBarang = await updatePenjualBarangRepo(ref.penjualBarang, idReport, transaction);
+        const updatePengirimBarang = await updatePengirimBarangRepo(ref.pengirimBarang, idReport, transaction);
+        const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
+        const updatePembeliBarang = await updatePembeliBarangRepo(ref.pembeliBarang, idReport, transaction);
+
+        const updatedData = {
+            dokumenPemasukan: updateDokumenPemasukan.id,
+            dokumenTambahan: updateDokumenTambahan.id,
+            dataPelabuhan: updateDataPelabuhan.id,
+            dataKapal: updateDataKapal.id,
+            identitasBarang: updateIdentitasBarang.id,
+            penjualBarang: updatePenjualBarang.id,
+            pengirimBarang: updatePengirimBarang.id,
+            pengusahaPLB: updatePengusahaPLB.id,
+            pembeliBarang: updatePembeliBarang.id
+        }
+
+        if(req.currentRole !== 'Owner'){
+            saveAktifitas({userId: req.currentUser, reportId: idReport, aktifitas: "Update Aktifitas Report"});
+        }
+
+        await transaction.commit();
+
+        return successResponse(res, Http.created, "Berhasil Update Report", updatedData)
     } catch (error) {
-        console.log(error)
+        if(transaction){
+            await transaction.rollback();
+        }
+        return errorResponse(res, error.status, error.message);
     }
 }
 
