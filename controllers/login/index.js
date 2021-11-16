@@ -39,6 +39,7 @@ const bundleLogin = (req, res, next) => {
         // console.log(req.body);
         next()
     } catch (error) {
+        // console.log(error)
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
 }
@@ -82,7 +83,7 @@ const login = async(req, res) => {
             return errorResponse(res, Http.unauthenticated, "Gagal Login, cek username dan password")
         }
     } catch (error) {
-        console.log(error)
+        console.log('asd',error)
         return errorResponse(res, Http.internalServerError, "Login Failed, cek usernam dan password")
     }
 }

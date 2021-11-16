@@ -74,16 +74,20 @@ const createListBarang = async(req, res) => {
 }
 
 const updateDataBarang = async (req, res) => {
+
     let transaction;
-    const{idreport} = req.params;
+    
+    const{idReport} = req.params;
 
     try {
         const {DataToInput: {listDataBarang}} = req.body;
-        await isExist(Report, {where: {id: idreport, userId: req.currentUser}});
+        await isExist(Report, {where: {id: idReport, userId: req.currentUser}});
+
         transaction = await sequelize.transaction();
         let resulsListBarang = [];
 
         await fullDelete(req, null, idReport, transaction)
+
         for(let i = 0; i < listDataBarang.length; i++) {
             if(listDataBarang[i].id || typeof listDataBarang[i].id !== 'undefined'){
                 delete listDataBarang[i].id
@@ -104,7 +108,7 @@ const updateDataBarang = async (req, res) => {
         await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
 
         await transaction.commit();
-        return successResponse(res, Http.created, `Succes Update Item`, dataToReturn);
+        return successResponse(res, Http.created, `Update Success`, dataToReturn);
     } catch (error) {
         console.log(error)
         if(transaction) {
@@ -120,5 +124,5 @@ const updateDataBarang = async (req, res) => {
 
 module.exports = routes => {
     routes.post('/save', authentication, bundle, validationBarang, createListBarang); // Get All
-    routes.post('/updateDataBarang', updateDataBarang)
+    routes.put('/updateDataBarang', authentication, bundle, validationBarang, updateDataBarang)
 }
