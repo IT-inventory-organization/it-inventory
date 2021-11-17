@@ -123,6 +123,6 @@ const updateDataBarang = async (req, res) => {
 
 
 module.exports = routes => {
-    routes.post('/save', authentication, bundle, validationBarang, createListBarang); // Get All
+    routes.post('/save', authentication, bundle, validationBarang, createListBarang); // Get Al
     routes.put('/updateDataBarang', authentication, bundle, validationBarang, updateDataBarang)
 }

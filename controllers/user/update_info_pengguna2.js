@@ -18,9 +18,12 @@ const bundleInfoPengguna = (req, res, next) => {
         req.body = {
             ...Decrypt
         }
-        // console.log(req.body)
+        // console.log(req.body);
+        // return;
         next()
     } catch (error) {
+        // cons
+        console.log(error)
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
 }
@@ -31,11 +34,11 @@ const updateInfoPengguna = async (req, res) => {
         // Cari Data User Telebih dahulu
         const data = await InfoPengguna.findOne({
             where: {
-                id: req.curentUser,
+                id: req.currentUser,
                 isActive:true
             }
         })
-        console.log('asd',data);
+        // console.log(data, 'get');
         // Jika Ada Maka Return Respon Error User Sudah Dibuat 
         if(!data){
             return errorResponse(res, Http.notFound, "Data User Tidak Ada")
@@ -44,14 +47,15 @@ const updateInfoPengguna = async (req, res) => {
         // Jika Tidak Buat User Baru
         const resultUser = await InfoPengguna.update(req.body, {
             where: {
-                id: req.curentUser,
+                id: req.currentUser,
                 isActive:true
             },
             returning:true
         });
+        // console.log(resultUser)
 
 
-        return successResponse(res, Http.created, "Berhasil Mengupdate", resultUser);
+        return successResponse(res, Http.created, "Berhasil Mengupdate");
     } catch (error) {
         console.log(error)
         return errorResponse(res, Http.internalServerError, "Gagal Mengupdate")
@@ -59,5 +63,5 @@ const updateInfoPengguna = async (req, res) => {
 }
 
 module.exports = routes => {
-    routes.post('/', authentication ,bundleInfoPengguna, updateInfoPengguna)
+    routes.put('/', authentication ,bundleInfoPengguna, updateInfoPengguna)
 }
