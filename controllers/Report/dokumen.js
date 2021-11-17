@@ -42,11 +42,11 @@ const { saveIdentitasBarang, updateIdentitasBarangRepo } = require('../../helper
 const { savePenjualBarang, updatePenjualBarangRepo } = require('../../helper/Repository/penjualBarang');
 const { savePengirimBarang, updatePengirimBarangRepo } = require('../../helper/Repository/pengirmBarang');
 const { savePengusahaPLB, updatePengusahaPLBRepo } = require('../../helper/Repository/pengusahaPLB');
-const { saveDataPpjk } = require('../../helper/Repository/dataPpjk');
-const { saveMataUang } = require('../../helper/Repository/mataUang');
-const { saveDataPengangkutan } = require('../../helper/Repository/dataPengangkutan');
-const { saveTempatPenimbunan } = require('../../helper/Repository/tempatPenimbunan');
-const { saveBeratDanVolume } = require('../../helper/Repository/beratDanVolume');
+const { saveDataPpjk, updateDataPpjkRepo } = require('../../helper/Repository/dataPpjk');
+const { saveMataUang, updateMataUangRepo } = require('../../helper/Repository/mataUang');
+const { saveDataPengangkutan, updateDataPengangkutanRepo } = require('../../helper/Repository/dataPengangkutan');
+const { saveTempatPenimbunan, updateTempatPenimbunanRepo } = require('../../helper/Repository/tempatPenimbunan');
+const { saveBeratDanVolume, updateBeratDanVolumeRepo } = require('../../helper/Repository/beratDanVolume');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { savePembeliBarang, updatePembeliBarangRepo } = require('../../helper/Repository/pembeliBarang');
@@ -127,6 +127,12 @@ const updateDokumenPemasukan = async(req,res) => {
         const updatePengirimBarang = await updatePengirimBarangRepo(ref.pengirimBarang, idReport, transaction);
         const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
         const updatePembeliBarang = await updatePembeliBarangRepo(ref.pembeliBarang, idReport, transaction);
+        // const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
+        const updateDataPpjk = await updateDataPpjkRepo(ref.ppjk, idReport, transaction);
+        const updateMataUang = await updateMataUangRepo(ref.mataUang, idReport, transaction);
+        const updateDataPengangkutan = await updateDataPengangkutanRepo(ref.dataPengangkutan, idReport, transaction);
+        const updateBeratDanVolume = await updateBeratDanVolumeRepo(ref.beratDanVolume, idReport, transaction);
+        const updateTempatPenimbunan = await updateTempatPenimbunanRepo(ref.tempatPenimbunan, idReport, transaction);
 
         const updatedData = {
             dokumenPemasukan: updateDokumenPemasukan.id,
@@ -137,7 +143,13 @@ const updateDokumenPemasukan = async(req,res) => {
             penjualBarang: updatePenjualBarang.id,
             pengirimBarang: updatePengirimBarang.id,
             pengusahaPLB: updatePengusahaPLB.id,
-            pembeliBarang: updatePembeliBarang.id
+            pembeliBarang: updatePembeliBarang.id,
+            pengusahaPLB: updatePengusahaPLB.id,
+            ppjk: updateDataPpjk.id,
+            mataUang: updateMataUang.id,
+            updatePengangkutan: updateDataPengangkutan.id,
+            updateBeratDanVolume: updateBeratDanVolume.id,
+            updateTempatPenimbunan: updateTempatPenimbunan.id
         }
 
         if(req.currentRole !== 'Owner'){
@@ -148,6 +160,7 @@ const updateDokumenPemasukan = async(req,res) => {
 
         return successResponse(res, Http.created, "Berhasil Update Report", updatedData)
     } catch (error) {
+        console.log(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -199,6 +212,7 @@ module.exports = routes => {
         formatDataDokumenIdentitasBarang,
         formatDataDokumenPenjualBarang,
         formatDataDokumenPengirimBarang,
+        formatDataDokumenPembeliBarang,
         formatDataDokumenPengusahaPLB,
         formatDataDokumenPpjk,
         formatDataDokumenMataUang,

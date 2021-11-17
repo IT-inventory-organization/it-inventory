@@ -32,10 +32,6 @@ const bundle = (req, res, next) => {
         }
         for (let i = 0; i < Decrypt.listDataBarang.length; i++) {
             Decrypt.listDataBarang[i].reportId = Decrypt.reportId;
-<<<<<<< HEAD
-
-=======
->>>>>>> 6d782c229cd74d123cf78a190c4a867db2cdc978
         }
         req.body.lists = {
             dataBarang: Decrypt.listDataBarang,

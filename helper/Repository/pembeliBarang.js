@@ -23,7 +23,7 @@ const updatePembeliBarangRepo = async(data, reportId, transaction) => {
     try {
         console.log(data)
         const query = {
-            where:{
+            where: {
                 id: data.id,
                 reportId
             }
