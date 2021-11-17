@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const Report = db.define('reports', {
+const Report = db.define('report', {
   jenisPemberitahuan: {
     type: Sequelize.STRING
   },
@@ -20,9 +20,13 @@ const Report = db.define('reports', {
     },
     onUpdate: 'cascade',
     onDelete: 'cascade'
+  },
+  isDelete: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
   }
 }, {
-  tableName: 'reports',
+  tableName: 'report',
   freezeTableName: true,
 })
 

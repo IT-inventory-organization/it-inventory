@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const berat_dan_volume = db.define('berat_dan_volume', {
+const beratDanVolume = db.define('beratDanVolume', {
   beratMuatan: {
     type: Sequelize.DECIMAL
   },
@@ -23,8 +23,8 @@ const berat_dan_volume = db.define('berat_dan_volume', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'berat_dan_volume',
+  tableName: 'beratDanVolume',
   freezeTableName: true,
 })
 
-module.exports = berat_dan_volume;
+module.exports = beratDanVolume;

@@ -1,3 +1,5 @@
+const { NotFoundException, ServerFault } = require("../middlewares/errHandler");
+
 module.exports = {
     /**
      * Check if Data inside Database Is Exists
@@ -6,13 +8,13 @@ module.exports = {
      * @param {{}} query 
      */
     isExist: async (model, query) => {
-        if(typeof query === 'undefined' || Object.keys(query) === 0){
-            throw new Error(`Something's went wrong`);
+        if(Object.keys(query).length === 0){
+            throw new ServerFault('Terjadi Kesalahan Pada Server')
         }
         const existed = await model.findOne(query);
         if(!existed){
-            throw Error(`Data Not Found`);
+            throw new NotFoundException("Data Tidak Ada")
         }
-    }
+    },
     
 }

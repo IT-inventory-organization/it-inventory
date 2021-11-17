@@ -1,6 +1,9 @@
 "use strict";
 const { query } = require("express");
+const InfoPengguna = require("../database/models/info_pengguna");
 const Report = require("../database/models/report");
+const { UnAuthorizedUser, NotFoundException } = require("../middlewares/errHandler");
+const { errorResponse } = require("./Response");
 
 const authorization = async (model, id, req, extraCondition = false) => {
   let result;
@@ -38,7 +41,39 @@ const authorization = async (model, id, req, extraCondition = false) => {
   } catch (error) {
     throw error
   }
+}
+
+const authorizationReport = async (req, res, next) => {
+  try {
+    const {idReport} = req.params;
+    const query = {
+      where: {
+        id: idReport,
+        isDelete: false
+      }
+    };
+  
+    const report = await Report.findOne(query);
+
+    if(!report){
+      throw new NotFoundException("Data Tidak Di Temukan");
+    }
+  
+    const resultReport = report.toJSON();
+    
+    if(resultReport.userId === req.currentUser){
+      next();
+    }else{
+      throw new UnAuthorizedUser("User Tidak Memiliki Akses Di Report ini");
+    }
+  } catch (error) {
+    // console.log(error)
+    return errorResponse(res, error.status, error.message);
+  }
 
 }
 
-module.exports = authorization;
+module.exports = {
+  authorization, 
+  authorizationReport
+};

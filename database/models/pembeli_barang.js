@@ -2,8 +2,8 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const PembeliBarang = db.define('pembeli_barang', {
-  jenis_identitas_pembeli: {
+const PembeliBarang = db.define('pembeliBarang', {
+  jenisIdentitasPembeli: {
     type: Sequelize.STRING
   },
   namaPembeli: {
@@ -26,7 +26,7 @@ const PembeliBarang = db.define('pembeli_barang', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'pembeli_barang',
+  tableName: 'pembeliBarang',
   freezeTableName: true,
 })
 

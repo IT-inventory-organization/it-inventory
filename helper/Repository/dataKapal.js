@@ -1,25 +1,26 @@
-const DataPelabuhan = require("../../database/models/data_pelabuhan")
-const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
+const DataKapal = require("../../database/models/data_kapal");
+const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require("../checkExistingDataFromTable");
 
-const saveDataPelabuhan = async(data, transaction) => {
+const saveDataKapal = async (data, transaction) => {
     try {
-        const result = await DataPelabuhan.create(data, {
+        const result = await DataKapal.create(data, {
             transaction,
             returning: true
         });
+
         return result;
     } catch (error) {
-        if(error.name === 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
+        // console.log(error)
+        if(error.name == 'SequelizeValidationError'){
+            throw new ForeignKeyViolation('TErjadi Kesalahan Pada Server');
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data")
+            throw new ConflictCreateData("Gagal Menyimpan Data");
         }
-
     }
 }
 
-const updateDataPelabuhanRepo = async(data, reportId, transaction) => {
+const updateDataKapalRepo = async(data, reportId, transaction) => {
     try {
         const query = {
             where: {
@@ -27,14 +28,15 @@ const updateDataPelabuhanRepo = async(data, reportId, transaction) => {
                 reportId
             }
         }
-        await isExist(DataPelabuhan, query)
 
-        const result = await DataPelabuhan.update(data, {
+        await isExist(DataKapal,query);
+
+        const result = await DataKapal.update(data, {
             ...query,
             transaction,
             returning: true,
-            plain: true
-        });
+            plain:true
+        })
 
         return result[1].toJSON();
     } catch (error) {
@@ -49,6 +51,6 @@ const updateDataPelabuhanRepo = async(data, reportId, transaction) => {
 }
 
 module.exports = {
-    saveDataPelabuhan,
-    updateDataPelabuhanRepo
+    saveDataKapal,
+    updateDataKapalRepo
 }

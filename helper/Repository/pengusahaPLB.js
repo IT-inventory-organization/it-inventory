@@ -1,25 +1,17 @@
-const DokumenTambahan = require("../../database/models/dokumen_tambahan")
+const PengusahaPLB = require("../../database/models/pengusaha_plb");
+const {isExist} = require('../checkExistingDataFromTable');
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
-const { isExist } = require("../checkExistingDataFromTable");
-const { convertStrignToDateUTC } = require("../convert")
 
-const convert = (data) => {
-    data.tanggalBC10 = convertStrignToDateUTC(data.tanggalBC10);
-    data.tanggalBC11 = convertStrignToDateUTC(data.tanggalBC11);
-    data.tanggalBL = convertStrignToDateUTC(data.tanggalBL);
-}
-
-const saveDataTambahan = async(data, transaction) => {
+const savePengusahaPLB = async(data, transaction) => {
     try {
-        convert(data);
-
-        const result = await DokumenTambahan.create(data, {
+        const result = await PengusahaPLB.create(data, {
             transaction,
             returning: true
-        })
-        return result
+        });
+
+        return result;
     } catch (error) {
-        if(error.name == "SequelizeValidationError"){
+        if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else{
             throw new ConflictCreateData("Gagal Menyimpan Data");
@@ -27,25 +19,23 @@ const saveDataTambahan = async(data, transaction) => {
     }
 }
 
-const updateDataTambahan = async(data, reportId, transaction) => {
+const updatePengusahaPLBRepo = async(data, reportId, transaction) => {
     try {
-        convert(data);
-        
         const query = {
-            where: {
+            where:{
                 id: data.id,
                 reportId
             }
-        };
-        
-        await isExist(DokumenTambahan, query);
+        }
 
-        const result = await DokumenTambahan.update(data, {
+        await isExist(PengusahaPLB, query);
+
+        const result = await PengusahaPLB.update(data, {
             ...query,
             transaction,
             returning: true,
-            plain:true,
-        });
+            plain: true
+        })
 
         return result[1].toJSON();
     } catch (error) {
@@ -61,6 +51,6 @@ const updateDataTambahan = async(data, reportId, transaction) => {
 }
 
 module.exports = {
-    saveDataTambahan,
-    updateDataTambahan
+    savePengusahaPLB,
+    updatePengusahaPLBRepo
 }

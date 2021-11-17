@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const DataPengangkutan = db.define('data_pengangkutan', {
+const DataPengangkutan = db.define('dataPengangkutan', {
   caraAngkut: {
     type: Sequelize.STRING
   },
@@ -26,7 +26,7 @@ const DataPengangkutan = db.define('data_pengangkutan', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'data_pengangkutan',
+  tableName: 'dataPengangkutan',
   freezeTableName: true,
 })
 

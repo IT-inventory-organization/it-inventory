@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const DokumenTambahan = db.define('dokumen_tambahan', {
+const DokumenTambahan = db.define('dokumenTambahan', {
   nomorBC10: {
     allowNull: true,
     type: Sequelize.STRING
@@ -17,15 +17,15 @@ const DokumenTambahan = db.define('dokumen_tambahan', {
   },
   tanggalBC10: {
     allowNull: true,
-    type: Sequelize.STRING
+    type: Sequelize.DATEONLY
   },
   tanggalBC11: {
     allowNull: true,
-    type: Sequelize.STRING
+    type: Sequelize.DATEONLY
   },
   tanggalBL: {
     allowNull: true,
-    type: Sequelize.STRING
+    type: Sequelize.DATEONLY
   },
   reportId: {
     allowNull: false,
@@ -38,7 +38,7 @@ const DokumenTambahan = db.define('dokumen_tambahan', {
     onUpdate: 'cascade'
   },
 }, {
-  tableName: 'dokumen_tambahan',
+  tableName: 'dokumenTambahan',
   freezeTableName: true,
 })
 

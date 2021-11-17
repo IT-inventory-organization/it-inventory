@@ -2,12 +2,12 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const TempatPenimbunan = db.define('tempat_penimbunan', {
+const TempatPenimbunan = db.define('tempatPenimbunan', {
   tempatPenimbunan: {
     type: Sequelize.STRING
   },
   perkiraanTanggalPengeluaran: {
-    type: Sequelize.DATE
+    type: Sequelize.DATEONLY
   },
   isTempatPenimbunan: {
     type: Sequelize.BOOLEAN
@@ -23,7 +23,7 @@ const TempatPenimbunan = db.define('tempat_penimbunan', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'tempat_penimbunan',
+  tableName: 'tempatPenimbunan',
   freezeTableName: true,
 })
 

@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const DataPelabuhan = db.define('data_pelabuhan', {
+const DataPelabuhan = db.define('dataPelabuhan', {
   pelabuhan: {
     type: Sequelize.STRING
   },
@@ -21,7 +21,7 @@ const DataPelabuhan = db.define('data_pelabuhan', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'data_pelabuhan',
+  tableName: 'dataPelabuhan',
   freezeTableName: true,
 })
 

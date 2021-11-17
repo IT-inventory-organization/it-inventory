@@ -2,7 +2,11 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
+<<<<<<< HEAD
 const infoPengguna = db.define('infoPengguna', {
+=======
+const InfoPengguna = db.define('infoPengguna', {
+>>>>>>> 6d782c229cd74d123cf78a190c4a867db2cdc978
   namaPerusahaan: {
     allowNull: false,
     type: Sequelize.STRING

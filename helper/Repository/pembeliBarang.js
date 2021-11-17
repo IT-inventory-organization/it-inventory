@@ -1,43 +1,46 @@
-const DataPelabuhan = require("../../database/models/data_pelabuhan")
-const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
+const PembeliBarang = require("../../database/models/pembeli_barang");
+const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require("../checkExistingDataFromTable");
 
-const saveDataPelabuhan = async(data, transaction) => {
+const savePembeliBarang = async(data, transaction) => {
     try {
-        const result = await DataPelabuhan.create(data, {
+        const result = await PembeliBarang.create(data,{
             transaction,
             returning: true
-        });
-        return result;
+        })
+
+        return result
     } catch (error) {
-        if(error.name === 'SequelizeValidationError'){
+        if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data")
+            throw new ConflictCreateData("Gagal Menyimpan Data");
         }
-
     }
 }
 
-const updateDataPelabuhanRepo = async(data, reportId, transaction) => {
+const updatePembeliBarangRepo = async(data, reportId, transaction) => {
     try {
+        console.log(data)
         const query = {
-            where: {
+            where:{
                 id: data.id,
                 reportId
             }
         }
-        await isExist(DataPelabuhan, query)
 
-        const result = await DataPelabuhan.update(data, {
+        await isExist(PembeliBarang, query);
+
+        const result = await PembeliBarang.update(data, {
             ...query,
             transaction,
             returning: true,
             plain: true
-        });
+        })
 
         return result[1].toJSON();
     } catch (error) {
+        console.log(error)
         if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){
@@ -49,6 +52,6 @@ const updateDataPelabuhanRepo = async(data, reportId, transaction) => {
 }
 
 module.exports = {
-    saveDataPelabuhan,
-    updateDataPelabuhanRepo
+    savePembeliBarang,
+    updatePembeliBarangRepo
 }

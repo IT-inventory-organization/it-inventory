@@ -2,8 +2,8 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const IdentitasBarang = db.define('identitas_barang', {
-  negara_asal: {
+const IdentitasBarang = db.define('identitasBarang', {
+  negaraAsal: {
     allowNull: true,
     type: Sequelize.STRING
   },
@@ -11,7 +11,7 @@ const IdentitasBarang = db.define('identitas_barang', {
     type: Sequelize.STRING
   },
   nilaiBarang: {
-    type: Sequelize.INTEGER
+    type: Sequelize.DECIMAL
   },
   caraPembayaran: {
     type: Sequelize.STRING
@@ -36,7 +36,7 @@ const IdentitasBarang = db.define('identitas_barang', {
     type: Sequelize.INTEGER
   },
 }, {
-  tableName: 'identitas_barang',
+  tableName: 'identitasBarang',
   freezeTableName: true,
 })
 

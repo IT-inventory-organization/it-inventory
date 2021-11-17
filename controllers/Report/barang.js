@@ -10,32 +10,41 @@ const { create } = require('nconf');
 const { internalServerError } = require('../../helper/Httplib');
 
 const validationBarang = [
-    body('lists.dataBarang.*.posTarif').trim().notEmpty().withMessage(`"Pos Tarif Is Required`),
-    body('lists.dataBarang.*.uraian').trim().notEmpty().withMessage(`Uraian is Required`),
-    body('lists.dataBarang.*.nettoBruttoVolume').trim().notEmpty().withMessage(`"Netto, Bruto, Volume" Is Required`),
-    body('lists.dataBarang.*.bm').trim().notEmpty().withMessage(`"BM" Is Required`),
-    body('lists.dataBarang.*.ppn').trim().notEmpty().withMessage('PPN required'),
-    body('lists.dataBarang.*.ppnbm').trim().notEmpty().withMessage('PPNBM required'),
-    body('lists.dataBarang.*.cukai').trim().notEmpty().withMessage('Cukai required'),
+    body('lists.dataBarang.*.kodeBarang').trim().notEmpty().withMessage("Kolom Kode Barang Terjadi Kesalahan"),
+    body('lists.dataBarang.*.namaBarang').trim().notEmpty().withMessage("Kolom Nama Barang Terjasdi Kesalahan"),
+    body('lists.dataBarang.*.satuanKemasan').trim().notEmpty().withMessage("Kolom Satuan Kemasan Terjadi Kesalahan"),
+    body('lists.dataBarang.*.stock').trim().notEmpty().withMessage("Kolom Stock Kosong"),
+    body('lists.dataBarang.*.posTarif').trim().notEmpty().withMessage(`Kolom Pos Tarif Terjadi Kesalahan`),
+    body('lists.dataBarang.*.uraian').trim().notEmpty().withMessage(`Kolom Uraian Terjadi Kesalahan`),
+    body('lists.dataBarang.*.nettoBruttoVolume').trim().notEmpty().withMessage(`Kolom Netto, Bruto, Volume Terjadi Kesalahan`),
+    body('lists.dataBarang.*.bm').trim().notEmpty().withMessage(`Kolom BM Terjadi Kesalahan`),
+    body('lists.dataBarang.*.ppn').trim().notEmpty().withMessage('Kolom PPN Terjadi Kesalahan'),
+    body('lists.dataBarang.*.ppnbm').trim().notEmpty().withMessage('Kolom PPNBM Terjadi Kesalahan'),
+    body('lists.dataBarang.*.cukai').trim().notEmpty().withMessage('Kolom Cukai Terjadi Kesalahan'),
 ]
 
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataBarang);
 
+        if(Decrypt.listDataBarang.length == 0){
+            return errorResponse(res, Http.badRequest, "Item Kosong");
+        }
         for (let i = 0; i < Decrypt.listDataBarang.length; i++) {
             Decrypt.listDataBarang[i].reportId = Decrypt.reportId;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6d782c229cd74d123cf78a190c4a867db2cdc978
         }
         req.body.lists = {
             dataBarang: Decrypt.listDataBarang,
             reportId: Decrypt.reportId
         }
-
-
+ 
         next();    
     } catch (error) {
-        throw errorResponse(res, Http.badRequest, 'Failed To Add Barang');
+        throw errorResponse(res, Http.badRequest, 'Gagal Menyimpan Data Barang');
     }
 }
 
@@ -44,15 +53,16 @@ const bundle = (req, res, next) => {
 const createListBarang = async(req, res) => {
     let trans;
     try {
+        //(/((\[[0-9]{1,}\]))/g)
         const validation = validationResult(req);
         if(!validation.isEmpty()){
-            return errorResponse(res, Http.badRequest, validation.array()[0].msg);
+            const value = validation.array()[0].param.match(/([0-9]{1,})/g);
+            return errorResponse(res, Http.badRequest, `${validation.array()[0].msg} Item No ${+value + 1}`);
         }
-
+        // return;
         trans = await sequelize.transaction();
         
         const {lists} = req.body;
-
 
         const resultBarang = [];
         for (let i = 0; i < lists.dataBarang.length; i++) {
@@ -62,7 +72,7 @@ const createListBarang = async(req, res) => {
         
         await trans.commit();
 
-        return successResponse(res, Http.created, "Success Create List Barang", resultBarang);
+        return successResponse(res, Http.created, "Berhasil Membuat Barang", resultBarang);
     } catch (error) {
         console.log(error)
         if(trans){

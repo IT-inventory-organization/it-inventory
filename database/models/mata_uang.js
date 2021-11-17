@@ -2,7 +2,7 @@
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
-const MataUang = db.define('mata_uang', {
+const MataUang = db.define('mataUang', {
   valuta: {
     type: Sequelize.STRING
   },
@@ -32,7 +32,7 @@ const MataUang = db.define('mata_uang', {
     onDelete: 'cascade'
   },
 }, {
-  tableName: 'mata_uang',
+  tableName: 'mataUang',
   freezeTableName: true,
 })
 
