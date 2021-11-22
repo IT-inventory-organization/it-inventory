@@ -16,7 +16,7 @@ module.exports = {
         allowNull: false,
         type: Sequelize.STRING
       },
-      tanggalPurchaseOerder: {
+      tanggalPurchaseOrder: {
         allowNull: false,
         type: Sequelize.DATE
       },
@@ -37,7 +37,8 @@ module.exports = {
         type: Sequelize.DATE
       },
     }, {
-      freezeTableName: true
+      freezeTableName: true,
+      operatorsAliases: false
     });
   },
   down: async (queryInterface, Sequelize) => {

@@ -237,3 +237,91 @@ module.exports = routes => {
     );
 }
 
+
+
+const getPLB = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null, status = null) => {
+    try {
+        let searchUser = 'AND';
+        let qtSearch = '';
+        let orderQuery = '';
+        let typeQuery = '';
+        let statusQuery = '';
+        const limit = pageSize ? +pageSize : 10
+        const offset = pageNo ? (+pageNo - 1) * pageSize : 0
+
+        switch (sortBy) {
+            case "oldest":
+                orderQuery+=`ORDER BY "RP"."createdAt" ASC`;
+                break;
+            default: 
+                orderQuery+=`ORDER BY "RP"."createdAt" DESC`;
+                break;
+        }
+ 
+        if(req.currentRole !== "Admin" && req.currentRole !== "Owner") { // Jika User
+            searchUser+=`"RP"."userId" = ${req.currentUser}`;
+        }
+
+        if(searchQuery != null){
+            if(req.currentRole !== "Admin" && req.currentRole !== "Owner"){
+                qtSearch+=`AND `;
+            }
+            qtSearch+=`("RP"."typeReport"||' '||"RP"."BCDocumentType" ILIKE '%${searchQuery}%' OR "RP"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss')::text ILIKE '%${searchQuery}%' OR "US"."id"::text ILIKE '%${searchQuery}%' OR TO_CHAR("US"."createdAt", 'dd-mm-yyyy') ILIKE '%${searchQuery}%' OR "IPG"."namaPengirim" ILIKE '%${searchQuery}%' OR ip."namaPPJK" ILIKE '%${searchQuery}%' OR "RP".status::text ILIKE '%${searchQuery}%' OR "RP"."nomorAjuan"::text ILIKE '%${searchQuery}%')`;
+        }
+
+        if(type != null){
+            if((req.currentRole !== 'Admin' && req.currentRole !== 'Owner') || searchQuery != null){
+                typeQuery+=`AND `
+            }
+            typeQuery+=`"RP"."typeReport" = '${type}'`;
+        }
+        if(status != null){
+            if((req.currentRole !== 'Admin' && req.currentRole !== 'Owner') || searchQuery != null || type != null){
+                statusQuery+=`AND `
+            }
+            if(status == 'All'){
+                statusQuery += `"RP".status IS NOT NULL`;  
+            }else if(status == 'Approval'){
+                statusQuery += `"RP".status IS NULL`;
+            }else{
+                statusQuery += `"RP".status = '${status}'`;
+            }
+        }
+
+        if(req.currentRole === "Admin" || req.currentRole === "Owner"){
+            if(searchQuery == null){
+                if(type == null){
+                    if(status == null){
+                        searchUser=' '; // Membuang AND
+                    }
+                }
+            }
+        }
+
+        // const res = await sequelize.query(`SELECT "RP".id as id, "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", "RP"."nomorAjuan" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, ip."namaPPJK" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP"."id" = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+
+        const res = await sequelize.query(
+            `SELECT 
+            "report".jenisPemberitahuan as jenisPemberitahuan, 
+            "report"."typeReport"||' '||"report"."jenisDokumenBC" as "jenis Dokumen", 
+            "report"."id" as "Nomor Dokumen", 
+            TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss') as "Tanngal", "IPG"."namaPengirim" as pengirim, ip."namaPPJK" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP"."id" = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`);
+
+        const resCount = await sequelize.query(`SELECT count(*) FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US".id) LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP".id = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP".id = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} GROUP BY "RP"."createdAt" ${orderQuery}`);
+
+        const data = {
+            data: res[0],
+            data_size: +countTotal(resCount[0]),
+            page_size: +pageSize,
+            page: +pageNo || 1
+        }
+
+        return data;
+    } catch (error) {
+        throw error
+    }
+}
+
+module.exports = {
+    getPLB
+}

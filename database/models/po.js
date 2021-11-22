@@ -26,6 +26,7 @@ const po = db.define('po', {
 }, {
   tableName: 'po',
   freezeTableName: true,
+  operatorsAliases: false
 })
 
 module.exports = po;
