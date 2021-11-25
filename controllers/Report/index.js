@@ -4,7 +4,7 @@ const Http = require('../../helper/Httplib');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const authentication = require('../../middlewares/authentication');
 const { formatReport } = require('../../middlewares/reportMiddleware/reformatReport');
-const { saveReport, getReportPerId } = require('../../helper/Repository/report');
+const { saveReport, getReportPerId, dashboard } = require('../../helper/Repository/report');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { convertDate } = require('../../helper/convert');
@@ -63,11 +63,35 @@ const getReport = async(req, res) => {
     }
 }
 
+const getDashboard = async(req, res) => {
+    try {
+        const report = await dashboard(req);
+
+        // _convertDate(report)
+        console.log(report)
+
+        if(req.currentRole !== "Owner"){
+            saveAktifitas({userId: req.currentUser, reportId: req.params.idReport, aktifitas: `Melihat Report ${req.params.idReport}`})
+        }
+        return successResponse(res, Http.ok, "", report)
+    } catch (error) {
+        console.log(error)
+        return errorResponse(res, error.status, error.message);
+    }
+} 
+
 module.exports = routes => {
     routes.post('/save', authentication, formatReport, validationResponse, tambahReport);
     routes.get('/get/:idReport', 
         authentication, 
         authorizationReport,
-        getReport
+        getReport,
+    );
+
+    routes.get('/getAll/', 
+        authentication, 
+        // authorizationReport,
+        // getReport,
+        getDashboard
     );
 }
