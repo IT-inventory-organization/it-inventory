@@ -59,6 +59,11 @@ const infoPengguna = db.define('infoPengguna', {
     allowNull: true,
     type: Sequelize.STRING
   },
+  roleEnum: {
+    allowNull: false,
+    type: Sequelize.ENUM('SUPER_USER', 'ADMIN', 'BC', 'PLB'),
+    defaultValue: 'ADMIN'
+  }
   // resetLink: {
   //   type: Sequelize.STRING,
   //   default: ''
