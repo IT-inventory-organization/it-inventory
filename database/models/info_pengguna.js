@@ -1,4 +1,5 @@
 'use strict';
+// const { stringAt } = require('pdfkit/js/data');
 const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
@@ -57,7 +58,16 @@ const infoPengguna = db.define('infoPengguna', {
   username: {
     allowNull: true,
     type: Sequelize.STRING
-  }
+  },
+  // resetLink: {
+  //   type: Sequelize.STRING,
+  //   default: ''
+  // },
+  // createdAt: {
+  //   type: Date,
+  //   default: Date.now,
+  //   expires: 3600,// this is the expiry time
+  // },
 }, {
   tableName: 'infoPengguna',
   freezeTableName: true,

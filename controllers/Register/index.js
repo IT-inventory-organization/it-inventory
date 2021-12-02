@@ -2,6 +2,7 @@ const {body, validationResult} = require('express-validator');
 const {passwordFormat, checkPhoneNumber} = require('../../helper/validation');
 const {createHashText } = require('../../helper/bcrypt');
 const InfoPengguna = require('../../database/models/info_pengguna');
+const Token = require('../../database/models/tokenModel')
 const { Op } = require('sequelize');
 const { errorResponse, successResponse} = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
@@ -98,6 +99,22 @@ const register = async (req, res) => {
     }
 }
 
-module.exports = routes => {
-    routes.post('/', bundleRegister, checkInputRegister, register)
+const forgotPassword = async (req, res) => {
+    const {email} = req.body;
+    User.findOne({ email }, (err,user) => {
+        if(err || user) {
+            return res.status(400).json({error: "User With This Email Does Not Exists"})
+        }
+    })
+
+    let token = await Token.findOne({ userId: user._id });
+        if (token) { 
+            await token.deleteOne()
+  };
 }
+
+
+module.exports = routes => {
+    routes.post('/', bundleRegister, checkInputRegister, register, forgotPassword)
+}
+
