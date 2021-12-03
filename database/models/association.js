@@ -16,6 +16,7 @@ const TempatPenimbunan = require("./tempat_penimbunan");
 const Roles = require("./role");
 const InfoPengguna = require("./info_pengguna");
 const PengirimBarang = require("./pengirim_barang");
+const AdjustmentBarang = require("./adjustment_barang");
 
 const setAssociations = function() {
 
@@ -72,6 +73,9 @@ const setAssociations = function() {
    */
   InfoPengguna.hasMany(Report, {foreignKey:'userId'});
   Report.belongsTo(InfoPengguna, {foreignKey: 'userId'})
+
+  AdjustmentBarang.belongsTo(dataBarang);
+  dataBarang.hasMany(AdjustmentBarang);
 };
 
 module.exports = setAssociations;
