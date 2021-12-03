@@ -10,14 +10,14 @@ module.exports = {
      */
      const promises = [
       await queryInterface.addColumn('adjustmentBarang', 'dataBarangId', {
-        type: Sequelize.INTEGER.ZEROFILL.UNSIGNED,
-        allowNull: true,
+        type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
           model: 'dataBarang',
           key: 'id',
         },
         onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onDelete: 'CASCADE',
       })
     ];
     return Promise.all(promises)
