@@ -17,6 +17,8 @@ const Roles = require("./role");
 const InfoPengguna = require("./info_pengguna");
 const PengirimBarang = require("./pengirim_barang");
 const AdjustmentBarang = require("./adjustment_barang");
+const ProduksiBarang = require("./produksi_barang");
+const ProduksiBarangDetail = require("./produksi_barang_detail");
 
 const setAssociations = function() {
 
@@ -76,6 +78,10 @@ const setAssociations = function() {
 
   AdjustmentBarang.belongsTo(dataBarang);
   dataBarang.hasMany(AdjustmentBarang);
+
+  ProduksiBarang.hasMany(ProduksiBarangDetail, { as: 'details' });
+  ProduksiBarangDetail.belongsTo(ProduksiBarang, { foreignKey: 'produksiBarangId' });
+  ProduksiBarangDetail.belongsTo(dataBarang, { foreignKey: 'dataBarangId' });
 };
 
 module.exports = setAssociations;
