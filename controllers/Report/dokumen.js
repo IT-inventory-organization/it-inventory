@@ -1,8 +1,9 @@
 const { errorResponse, successResponse } = require('../../helper/Response')
 const Http = require('../../helper/Httplib');
 const { 
-    formatDataDokumenMasukan, 
-    formatDataDokumenTambahan, 
+    formatDataDokumenMasukan,
+    formatDataDokumenKeluaran,
+    formatDataDokumenTambahan,
     formatDataDokumenPelabuhan,
     formatDataDokumenKapal,
     formatDataDokumenIdentitasBarang,
@@ -17,22 +18,25 @@ const {
     formatDataDokumenPembeliBarang
 } = require('../../middlewares/dataDokumenMiddleware/reformatDataDokumen');
 const { 
-    vDataPengajuan, 
-    vDataTambahan, 
-    vDataPelabuhan, 
+    vDataPengajuan,
+    vDataPengajuanPengeluaran,
+    vDataTambahan,
+    vDataPelabuhan,
     vDataKapal,
     vIdentitasBarang,
     vPenjualBarang,
     vPengirimBarang,
     vPengusahaPLB,
+    vPembeliBarang,
     vPpjk,
     vMataUang,
     vDataPengangkutan,
     vBeratDanVolume,
     vTempatPenimbunan
 } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
+const { matchedData } = require('express-validator');
 const { validationResponse } = require('../../middlewares/validationResponse');
-const { saveDataPengajuan, updateDataPengajuan } = require('../../helper/Repository/dataPengajuan');
+const { saveDataPengajuan, saveDataPengajuanPengeluaran, updateDataPengajuan, updateDataPengajuanPengeluaran } = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
 const { saveDataTambahan, updateDataTambahan } = require('../../helper/Repository/dataTambahan');
@@ -50,6 +54,7 @@ const { saveBeratDanVolume, updateBeratDanVolumeRepo } = require('../../helper/R
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { savePembeliBarang, updatePembeliBarangRepo } = require('../../helper/Repository/pembeliBarang');
+const DokumenPengeluaran = require('../../database/models/dokumen_pengeluaran');
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
@@ -168,6 +173,185 @@ const updateDokumenPemasukan = async(req,res) => {
     }
 }
 
+
+const getDokumenPengeluaran = async(req, res) => {
+    try {
+        let query = {};
+        const dokumenPengeluaran = await DokumenPengeluaran.findAll({
+            where: query
+        });
+
+        return successResponse(res, Http.ok, "Success", dokumenPengeluaran, false);
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "Something went wrong");
+    }
+}
+
+const formatSavePengeluaran = [
+    formatDataDokumenKeluaran,
+    formatDataDokumenTambahan,
+    formatDataDokumenPelabuhan,
+    formatDataDokumenKapal,
+    formatDataDokumenIdentitasBarang,
+    formatDataDokumenPenjualBarang,
+    formatDataDokumenPengirimBarang,
+    formatDataDokumenPembeliBarang,
+    formatDataDokumenPengusahaPLB,
+    formatDataDokumenPpjk,
+    formatDataDokumenMataUang,
+    formatDataDokumenDataPengangkutan,
+    formatDataDokumenBeratDanVolume,
+    // formatDataDokumenTempatPenimbunan,
+];
+
+let validateSavePengeluaran = [
+    vDataPengajuanPengeluaran,
+    vDataTambahan,
+    vDataPelabuhan,
+    vDataKapal,
+    vIdentitasBarang,
+    vPenjualBarang,
+    vPengirimBarang,
+    vPengusahaPLB,
+    vPembeliBarang,
+    vPpjk,
+    vMataUang,
+    vDataPengangkutan,
+    vBeratDanVolume
+];
+
+const saveDokumenPengeluaran = async(req, res) => {
+    let transaction;
+    try {
+        const { ref } = matchedData(req);
+
+        transaction = await sequelize.transaction();
+
+        const resultDataPengeluaran = await saveDataPengajuanPengeluaran(ref.dokumenPengeluaran, transaction);
+        const resultDataTambahan = await saveDataTambahan(ref.dokumenTambahan, transaction);
+        const resultDataPelabuhan = await saveDataPelabuhan(ref.dataPelabuhan, transaction);
+        const resultDataKapal = await saveDataKapal(ref.dataKapal, transaction);
+        const resultIdentitasBarang = await saveIdentitasBarang(ref.identitasBarang, transaction);
+        const resultPenjualBarang = await savePenjualBarang(ref.penjualBarang, transaction);
+        const resultPengirimBarang = await savePengirimBarang(ref.pengirimBarang, transaction);
+        const resultPembeliBarang = await savePembeliBarang(ref.pembeliBarang, transaction);
+        const resultPengusahaPLB = await savePengusahaPLB(ref.pengusahaPLB, transaction);
+        const resultPpjk = await saveDataPpjk(ref.ppjk, transaction);
+        const resultMataUang = await saveMataUang(ref.mataUang, transaction);
+        const resultDataPengangkutan = await saveDataPengangkutan(ref.dataPengangkutan, transaction);
+        const reusltBeratDanVolume = await saveBeratDanVolume(ref.beratDanVolume, transaction);
+
+        const data = {
+            dataPengajuan: resultDataPengeluaran.id,
+            dataTambahan: resultDataTambahan.id,
+            dataPelabuhan: resultDataPelabuhan.id,
+            dataKapal: resultDataKapal.id,
+            identitasBarang: resultIdentitasBarang.id,
+            penjualBarang: resultPenjualBarang.id,
+            pengirimBarang: resultPengirimBarang.id,
+            pengusahaPLB: resultPengusahaPLB.id,
+            pembeliBarang: resultPembeliBarang.id,
+            ppjk: resultPpjk.id,
+            mataUang: resultMataUang.id,
+            dataPengangkutan: resultDataPengangkutan.id,
+            beratDanVolume: reusltBeratDanVolume.id
+        }
+        
+        if (req.currentRole !== 'Owner') {
+            saveAktifitas({
+                userId: req.currentUser,
+                reportId: ref.dokumenPengeluaran.reportId,
+                aktifitas: "Membuat Dokumen PLB Baru (Pengeluaran)"
+            });
+        }
+        await transaction.commit();
+        return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen Pengeluaran", data, false);
+    } catch (error) {
+        console.error(error)
+        if(transaction){
+            await transaction.rollback();
+        }
+        return errorResponse(res, error.status, error.message);
+
+    }
+}
+
+let validateUpdatePengeluaran = [
+    vDataPengajuanPengeluaran,
+    vDataTambahan,
+    vDataPelabuhan,
+    vDataKapal,
+    vIdentitasBarang,
+    vPenjualBarang,
+    vPengirimBarang,
+    vPengusahaPLB,
+    vPembeliBarang,
+    vPpjk,
+    vMataUang,
+    vDataPengangkutan,
+    vBeratDanVolume
+];
+
+const updateDokumenPengeluaran = async(req, res) => {
+    const { idReport } = req.params;
+    let transaction;
+    try {
+        const { ref } = matchedData(req);
+        transaction = await sequelize.transaction();
+
+        const updateDokumenPengeluaran = await updateDataPengajuanPengeluaran(ref.dokumenPengeluaran, idReport, transaction)
+        const updateDokumenTambahan = await updateDataTambahan(ref.dokumenTambahan, idReport, transaction);
+        const updateDataPelabuhan = await updateDataPelabuhanRepo(ref.dataPelabuhan, idReport, transaction);
+        const updateDataKapal = await updateDataKapalRepo(ref.dataKapal, idReport, transaction);
+        const updateIdentitasBarang = await updateIdentitasBarangRepo(ref.identitasBarang, idReport, transaction);
+        const updatePenjualBarang = await updatePenjualBarangRepo(ref.penjualBarang, idReport, transaction);
+        const updatePengirimBarang = await updatePengirimBarangRepo(ref.pengirimBarang, idReport, transaction);
+        const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
+        const updatePembeliBarang = await updatePembeliBarangRepo(ref.pembeliBarang, idReport, transaction);
+        // const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
+        const updateDataPpjk = await updateDataPpjkRepo(ref.ppjk, idReport, transaction);
+        const updateMataUang = await updateMataUangRepo(ref.mataUang, idReport, transaction);
+        const updateDataPengangkutan = await updateDataPengangkutanRepo(ref.dataPengangkutan, idReport, transaction);
+        const updateBeratDanVolume = await updateBeratDanVolumeRepo(ref.beratDanVolume, idReport, transaction);
+        const updatedData = {
+            dokumenPengeluaran: updateDokumenPengeluaran.id,
+            dokumenTambahan: updateDokumenTambahan.id,
+            dataPelabuhan: updateDataPelabuhan.id,
+            dataKapal: updateDataKapal.id,
+            identitasBarang: updateIdentitasBarang.id,
+            penjualBarang: updatePenjualBarang.id,
+            pengirimBarang: updatePengirimBarang.id,
+            pengusahaPLB: updatePengusahaPLB.id,
+            pembeliBarang: updatePembeliBarang.id,
+            pengusahaPLB: updatePengusahaPLB.id,
+            ppjk: updateDataPpjk.id,
+            mataUang: updateMataUang.id,
+            updatePengangkutan: updateDataPengangkutan.id,
+            updateBeratDanVolume: updateBeratDanVolume.id
+        }
+
+        if (req.currentRole !== 'Owner'){
+            saveAktifitas({
+                userId: req.currentUser,
+                reportId: idReport,
+                aktifitas: "Update Aktifitas Report (Pengeluaran)"
+            });
+        }
+
+        await transaction.commit();
+
+        return successResponse(res, Http.created, "Berhasil Update Report Pengeluaran", updatedData, false);
+    } catch (error) {
+        console.error(error)
+        if(transaction){
+            await transaction.rollback();
+        }
+        return errorResponse(res, error.status, error.message);
+
+    }
+}
+
 module.exports = routes => {
     routes.post('/save/pemasukan',
         authentication,
@@ -234,6 +418,25 @@ module.exports = routes => {
         vTempatPenimbunan,
         validationResponse, 
         updateDokumenPemasukan
+    );
+
+    routes.get('/list/pengeluaran',
+        authentication,
+        getDokumenPengeluaran
+    );
+
+    routes.post('/save/pengeluaran',
+        authentication,
+        ...validateSavePengeluaran,
+        validationResponse,
+        saveDokumenPengeluaran
+    );
+
+    routes.post('/update/pengeluaran/:idReport',
+        authentication,
+        ...validateUpdatePengeluaran,
+        validationResponse,
+        updateDokumenPengeluaran
     );
 }
 
@@ -322,6 +525,6 @@ const getPLB = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = 
     }
 }
 
-module.exports = {
-    getPLB
-}
+// module.exports = {
+//     getPLB
+// }

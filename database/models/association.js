@@ -1,5 +1,6 @@
 const Report = require("./report");
 const DokumenPemasukan = require("./dokumen_pemasukan");
+const DokumenPengeluaran = require("./dokumen_pengeluaran");
 const DokumenTambahan = require("./dokumen_tambahan");
 const DataPelabuhan = require("./data_pelabuhan");
 const IdentitasBarang = require("./identitas_barang");
@@ -28,6 +29,7 @@ const setAssociations = function() {
    */
 
   Report.hasOne(DokumenPemasukan, {foreignKey: 'reportId'});
+  Report.hasOne(DokumenPengeluaran, {foreignKey: 'reportId'});
   Report.hasOne(DokumenTambahan, {foreignKey: 'reportId'});
   Report.hasOne(DataPelabuhan, {foreignKey: 'reportId'});
   Report.hasOne(DataKapal, {foreignKey: 'reportId'});
@@ -46,6 +48,8 @@ const setAssociations = function() {
 
 
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
+  DokumenPengeluaran.belongsTo(Report, {foreignKey: 'reportId'});
+  DokumenPengeluaran.belongsTo(DokumenPemasukan, { foreignKey: 'dokumenPemasukanId' });
   DokumenTambahan.belongsTo(Report, {foreignKey: 'reportId'});
   DataPelabuhan.belongsTo(Report, {foreignKey: 'reportId'});
   DataKapal.belongsTo(Report, {foreignKey: 'reportId'});

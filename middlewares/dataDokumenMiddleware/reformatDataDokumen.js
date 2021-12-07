@@ -22,6 +22,25 @@ const formatDataDokumenMasukan = (req, res, next) => {
     }
 }
 
+const formatDataDokumenKeluaran = (req, res, next) => {
+    try {
+        const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
+
+        req.body.ref = {
+            ...req.body.ref,
+            dokumenPengeluaran:{
+                ...Decrypt.dokumenPengeluaran,
+                reportId: Decrypt.reportId
+            }
+        }
+        // console.log(req.body.ref)
+        next();
+    } catch (error) {
+        
+        return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
+    }
+}
+
 const formatDataDokumenTambahan =  (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
