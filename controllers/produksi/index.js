@@ -73,6 +73,25 @@ const create = async(req, res) => {
         transaction = await sequelize.transaction();
 
         const produksi = await ProduksiBarang.create(body, { transaction, include: ['details'] });
+        const updateHasil = await DataBarang.update({
+            stock: sequelize.literal(`stock + ${produksi.quantity}`)
+        }, {
+            where: {
+                id: produksi.dataBarangId
+            }
+        });
+
+        if (Array.isArray(produksi.details)) {
+            produksi.details.forEach(async function(detail) {
+                const updateBarangBaku = await DataBarang.update({
+                    stock: sequelize.literal(`stock - ${detail.quantity}`)
+                }, {
+                    where: {
+                        id: detail.dataBarangId
+                    }
+                });
+            });
+        }
 
         if (transaction) await transaction.commit();
         return successResponse(res, Http.ok, "Success", produksi, false);
