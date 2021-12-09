@@ -22,6 +22,16 @@ const po = db.define('po', {
   remarks: {
     allowNull: true,
     type: Sequelize.STRING
+  },
+  reportId: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'report',
+      key: 'id',
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'NO ACTION',
   }
 }, {
   tableName: 'po',

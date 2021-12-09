@@ -20,6 +20,7 @@ const PengirimBarang = require("./pengirim_barang");
 const AdjustmentBarang = require("./adjustment_barang");
 const ProduksiBarang = require("./produksi_barang");
 const ProduksiBarangDetail = require("./produksi_barang_detail");
+const PO = require("./po");
 
 const setAssociations = function() {
 
@@ -45,6 +46,7 @@ const setAssociations = function() {
   Report.hasOne(PenjualBarang, {foreignKey: 'reportId'});
   Report.hasOne(TempatPenimbunan, {foreignKey: 'reportId'});
   Report.hasMany(dataBarang, {foreignKey: 'reportId'});
+  Report.hasMany(PO, {foreignKey: 'reportId'});
 
 
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
@@ -65,6 +67,7 @@ const setAssociations = function() {
   PenjualBarang.belongsTo(Report, {foreignKey: 'reportId'});
   TempatPenimbunan.belongsTo(Report, {foreignKey: 'reportId'});
   dataBarang.belongsTo(Report, {foreignKey: 'reportId'});
+  PO.belongsTo(Report, {foreignKey: 'reportId'});
 
   /**
    * * Roles Relation With User

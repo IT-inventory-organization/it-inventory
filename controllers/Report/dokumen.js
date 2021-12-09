@@ -34,7 +34,7 @@ const {
     vBeratDanVolume,
     vTempatPenimbunan
 } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
-const { matchedData } = require('express-validator');
+const { body, validationResult, matchedData } = require('express-validator');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const {
     saveDataPengajuan,
@@ -62,6 +62,7 @@ const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { savePembeliBarang, updatePembeliBarangRepo, getPembeliBarang } = require('../../helper/Repository/pembeliBarang');
 const { getDataBarang } = require('../../helper/Repository/dataBarang');
+const { updateDataPO } = require('../../helper/Repository/dataPO');
 const DokumenPengeluaran = require('../../database/models/dokumen_pengeluaran');
 
 const saveDokumenPemasukan = async(req, res) => {
@@ -413,6 +414,42 @@ const detailDokumenPengeluaran = async(req, res) => {
     }
 }
 
+const updatePO = async(req, res) => {
+    const { reportId } = req.params;
+    let transaction;
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return errorResponse(res, Http.internalServerError, "Validation error", errors.array());
+        }
+        const { po } = matchedData(req);
+        transaction = await sequelize.transaction();
+        const query = {
+            where: { id: { in: po } }
+        }
+        const update = await updateDataPO({ reportId: reportId }, query, transaction);
+        const data = {
+            dataPO: update
+        }
+
+        if (req.currentRole !== 'Owner') {
+            saveAktifitas({
+                userId: req.currentUser,
+                reportId: reportId,
+                aktifitas: "Update Aktifitas Report (Pilih PO)"
+            });
+        }
+
+        await transaction.commit();
+
+        return successResponse(res, Http.created, "Berhasil Update Report PO", data, false);
+    } catch (error) {
+        console.log(error);
+        if (transaction) await transaction.rollback();
+        return errorResponse(res, error.status, error.message);
+    }
+}
+
 module.exports = routes => {
     routes.post('/save/pemasukan',
         authentication,
@@ -508,6 +545,16 @@ module.exports = routes => {
     routes.get('/preview/pengeluaran/:reportId',
         authentication,
         detailDokumenPengeluaran
+    );
+
+    routes.post('/update/po/:reportId',
+        authentication,
+        body('po')
+            .notEmpty().withMessage('Tidak boleh kosong')
+            .isArray().withMessage('Harus berupa array'),
+        body('po.*')
+            .isNumeric().withMessage('Isi dengan angka'),
+        updatePO
     );
 }
 
