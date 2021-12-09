@@ -2,6 +2,11 @@ const IdentitasBarang = require("../../database/models/identitas_barang")
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require("../checkExistingDataFromTable");
 
+const getIdentitasBarang = async (reportId) => {
+    const data = await IdentitasBarang.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveIdentitasBarang = async(data, transaction) => {
     try {
         const result = await IdentitasBarang.create(data, {
@@ -51,5 +56,6 @@ const updateIdentitasBarangRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     saveIdentitasBarang,
-    updateIdentitasBarangRepo
+    updateIdentitasBarangRepo,
+    getIdentitasBarang
 }

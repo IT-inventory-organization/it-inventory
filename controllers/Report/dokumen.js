@@ -36,24 +36,32 @@ const {
 } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
 const { matchedData } = require('express-validator');
 const { validationResponse } = require('../../middlewares/validationResponse');
-const { saveDataPengajuan, saveDataPengajuanPengeluaran, updateDataPengajuan, updateDataPengajuanPengeluaran } = require('../../helper/Repository/dataPengajuan');
+const {
+    saveDataPengajuan,
+    saveDataPengajuanPengeluaran,
+    updateDataPengajuan,
+    updateDataPengajuanPengeluaran,
+    getDataPengajuan,
+    getDataPengajuanPengeluaran
+} = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
-const { saveDataTambahan, updateDataTambahan } = require('../../helper/Repository/dataTambahan');
-const { saveDataPelabuhan, updateDataPelabuhanRepo } = require('../../helper/Repository/dataPelabuhan');
-const { saveDataKapal, updateDataKapalRepo } = require('../../helper/Repository/dataKapal');
-const { saveIdentitasBarang, updateIdentitasBarangRepo } = require('../../helper/Repository/identitasBarang');
-const { savePenjualBarang, updatePenjualBarangRepo } = require('../../helper/Repository/penjualBarang');
-const { savePengirimBarang, updatePengirimBarangRepo } = require('../../helper/Repository/pengirmBarang');
-const { savePengusahaPLB, updatePengusahaPLBRepo } = require('../../helper/Repository/pengusahaPLB');
-const { saveDataPpjk, updateDataPpjkRepo } = require('../../helper/Repository/dataPpjk');
-const { saveMataUang, updateMataUangRepo } = require('../../helper/Repository/mataUang');
-const { saveDataPengangkutan, updateDataPengangkutanRepo } = require('../../helper/Repository/dataPengangkutan');
-const { saveTempatPenimbunan, updateTempatPenimbunanRepo } = require('../../helper/Repository/tempatPenimbunan');
-const { saveBeratDanVolume, updateBeratDanVolumeRepo } = require('../../helper/Repository/beratDanVolume');
+const { saveDataTambahan, updateDataTambahan, getDataTambahan } = require('../../helper/Repository/dataTambahan');
+const { saveDataPelabuhan, updateDataPelabuhanRepo, getDataPelabuhan } = require('../../helper/Repository/dataPelabuhan');
+const { saveDataKapal, updateDataKapalRepo, getDataKapal } = require('../../helper/Repository/dataKapal');
+const { saveIdentitasBarang, updateIdentitasBarangRepo, getIdentitasBarang } = require('../../helper/Repository/identitasBarang');
+const { savePenjualBarang, updatePenjualBarangRepo, getPenjualBarang } = require('../../helper/Repository/penjualBarang');
+const { savePengirimBarang, updatePengirimBarangRepo, getPengirimBarang } = require('../../helper/Repository/pengirmBarang');
+const { savePengusahaPLB, updatePengusahaPLBRepo, getPengusahaPLB } = require('../../helper/Repository/pengusahaPLB');
+const { saveDataPpjk, updateDataPpjkRepo, getDataPpjk } = require('../../helper/Repository/dataPpjk');
+const { saveMataUang, updateMataUangRepo, getMataUang } = require('../../helper/Repository/mataUang');
+const { saveDataPengangkutan, updateDataPengangkutanRepo, getDataPengangkutan } = require('../../helper/Repository/dataPengangkutan');
+const { saveTempatPenimbunan, updateTempatPenimbunanRepo, getTempatPenimbunan } = require('../../helper/Repository/tempatPenimbunan');
+const { saveBeratDanVolume, updateBeratDanVolumeRepo, getBeratDanVolume } = require('../../helper/Repository/beratDanVolume');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
-const { savePembeliBarang, updatePembeliBarangRepo } = require('../../helper/Repository/pembeliBarang');
+const { savePembeliBarang, updatePembeliBarangRepo, getPembeliBarang } = require('../../helper/Repository/pembeliBarang');
+const { getDataBarang } = require('../../helper/Repository/dataBarang');
 const DokumenPengeluaran = require('../../database/models/dokumen_pengeluaran');
 
 const saveDokumenPemasukan = async(req, res) => {
@@ -352,6 +360,59 @@ const updateDokumenPengeluaran = async(req, res) => {
     }
 }
 
+const detailDokumenPemasukan = async(req, res) => {
+    try {
+        const { reportId } = req.params;
+        const data = {
+            dataPengajuan: await getDataPengajuan(reportId),
+            dataTambahan: await getDataTambahan(reportId),
+            dataPelabuhan: await getDataPelabuhan(reportId),
+            dataKapal: await getDataKapal(reportId),
+            identitasBarang: await getIdentitasBarang(reportId),
+            penjualBarang: await getPenjualBarang(reportId),
+            pengirimBarang: await getPengirimBarang(reportId),
+            pengusahaPLB: await getPengusahaPLB(reportId),
+            pembeliBarang: await getPembeliBarang(reportId),
+            ppjk: await getDataPpjk(reportId),
+            mataUang: await getMataUang(reportId),
+            dataPengangkutan: await getDataPengangkutan(reportId),
+            beratDanVolume: await getBeratDanVolume(reportId),
+            tempatPenimbunan: await getTempatPenimbunan(reportId),
+            dataBarang: await getDataBarang(reportId)
+        };
+
+        return successResponse(res, Http.created, "Sukses", data, false);
+    } catch (error) {
+        return errorResponse(res, error.status, error.message);
+    }
+}
+
+const detailDokumenPengeluaran = async(req, res) => {
+    try {
+        const { reportId } = req.params;
+        const data = {
+            dataPengajuan: await getDataPengajuanPengeluaran(reportId),
+            dataTambahan: await getDataTambahan(reportId),
+            dataPelabuhan: await getDataPelabuhan(reportId),
+            dataKapal: await getDataKapal(reportId),
+            identitasBarang: await getIdentitasBarang(reportId),
+            penjualBarang: await getPenjualBarang(reportId),
+            pengirimBarang: await getPengirimBarang(reportId),
+            pengusahaPLB: await getPengusahaPLB(reportId),
+            pembeliBarang: await getPembeliBarang(reportId),
+            ppjk: await getDataPpjk(reportId),
+            mataUang: await getMataUang(reportId),
+            dataPengangkutan: await getDataPengangkutan(reportId),
+            beratDanVolume: await getBeratDanVolume(reportId),
+            dataBarang: await getDataBarang(reportId)
+        };
+
+        return successResponse(res, Http.created, "Sukses", data, false);
+    } catch (error) {
+        return errorResponse(res, error.status, error.message);
+    }
+}
+
 module.exports = routes => {
     routes.post('/save/pemasukan',
         authentication,
@@ -437,6 +498,16 @@ module.exports = routes => {
         ...validateUpdatePengeluaran,
         validationResponse,
         updateDokumenPengeluaran
+    );
+
+    routes.get('/preview/pemasukan/:reportId',
+        authentication,
+        detailDokumenPemasukan
+    );
+
+    routes.get('/preview/pengeluaran/:reportId',
+        authentication,
+        detailDokumenPengeluaran
     );
 }
 

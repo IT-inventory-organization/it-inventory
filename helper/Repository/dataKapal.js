@@ -2,6 +2,11 @@ const DataKapal = require("../../database/models/data_kapal");
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require("../checkExistingDataFromTable");
 
+const getDataKapal = async (reportId) => {
+    const data = await DataKapal.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveDataKapal = async (data, transaction) => {
     try {
         const result = await DataKapal.create(data, {
@@ -52,5 +57,6 @@ const updateDataKapalRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     saveDataKapal,
-    updateDataKapalRepo
+    updateDataKapalRepo,
+    getDataKapal
 }

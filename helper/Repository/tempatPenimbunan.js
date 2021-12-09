@@ -7,6 +7,11 @@ const convert = (data) => {
     data.perkiraanTanggalPengeluaran = convertStrignToDateUTC(data.perkiraanTanggalPengeluaran)
 }
 
+const getTempatPenimbunan = async (reportId) => {
+    const data = await TempatPenimbunan.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveTempatPenimbunan = async(data, transaction) => {
     try {
         convert(data);
@@ -58,5 +63,6 @@ const updateTempatPenimbunanRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     saveTempatPenimbunan,
-    updateTempatPenimbunanRepo
+    updateTempatPenimbunanRepo,
+    getTempatPenimbunan
 }

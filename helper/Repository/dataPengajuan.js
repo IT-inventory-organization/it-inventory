@@ -3,6 +3,19 @@ const DokumenPengeluaran = require("../../database/models/dokumen_pengeluaran");
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require("../checkExistingDataFromTable");
 
+const getDataPengajuan = async (reportId) => {
+    const data = await DokumenPemasukan.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
+const getDataPengajuanPengeluaran = async (reportId) => {
+    const data = await DokumenPengeluaran.findOne({
+        where: { reportId: reportId },
+        include: [DokumenPemasukan]
+    });
+    return data;
+}
+
 const saveDataPengajuan = async (data, transaction) => {
     try {
         
@@ -103,5 +116,7 @@ module.exports = {
     saveDataPengajuan,
     saveDataPengajuanPengeluaran,
     updateDataPengajuan,
-    updateDataPengajuanPengeluaran
+    updateDataPengajuanPengeluaran,
+    getDataPengajuan,
+    getDataPengajuanPengeluaran
 }

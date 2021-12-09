@@ -2,6 +2,11 @@ const DataPelabuhan = require("../../database/models/data_pelabuhan")
 const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
 const { isExist } = require("../checkExistingDataFromTable");
 
+const getDataPelabuhan = async (reportId) => {
+    const data = await DataPelabuhan.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveDataPelabuhan = async(data, transaction) => {
     try {
         const result = await DataPelabuhan.create(data, {
@@ -50,5 +55,6 @@ const updateDataPelabuhanRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     saveDataPelabuhan,
-    updateDataPelabuhanRepo
+    updateDataPelabuhanRepo,
+    getDataPelabuhan
 }

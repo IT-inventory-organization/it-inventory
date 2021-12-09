@@ -9,6 +9,11 @@ const convert = (data) => {
     data.tanggalBL = convertStrignToDateUTC(data.tanggalBL);
 }
 
+const getDataTambahan = async (reportId) => {
+    const data = await DokumenTambahan.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveDataTambahan = async(data, transaction) => {
     try {
         convert(data);
@@ -61,6 +66,7 @@ const updateDataTambahan = async(data, reportId, transaction) => {
 }
 
 module.exports = {
+    getDataTambahan,
     saveDataTambahan,
     updateDataTambahan
 }
