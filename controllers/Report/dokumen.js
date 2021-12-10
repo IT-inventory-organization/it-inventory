@@ -1,5 +1,6 @@
 const { errorResponse, successResponse } = require('../../helper/Response')
 const Http = require('../../helper/Httplib');
+let jsonxml = require('jsontoxml');
 const { 
     formatDataDokumenMasukan,
     formatDataDokumenKeluaran,
@@ -382,6 +383,12 @@ const detailDokumenPemasukan = async(req, res) => {
             dataBarang: await getDataBarang(reportId)
         };
 
+        if (req.accepts('xml')) {
+            res.type('application/xml');
+            const xmlData = jsonxml(JSON.parse(JSON.stringify(data)), true);
+            return res.status(200).send(xmlData);
+        }
+
         return successResponse(res, Http.created, "Sukses", data, false);
     } catch (error) {
         return errorResponse(res, error.status, error.message);
@@ -407,6 +414,12 @@ const detailDokumenPengeluaran = async(req, res) => {
             beratDanVolume: await getBeratDanVolume(reportId),
             dataBarang: await getDataBarang(reportId)
         };
+
+        if (req.accepts('xml')) {
+            res.type('application/xml');
+            const xmlData = jsonxml(JSON.parse(JSON.stringify(data)), true);
+            return res.status(200).send(xmlData);
+        }
 
         return successResponse(res, Http.created, "Sukses", data, false);
     } catch (error) {
