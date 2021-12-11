@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js",
-    "migrate": "sequelize db:migrate",
-    "migrate-undo-all": "sequelize db:migrate:undo:all",
-    "migrate-undo-file": "sequelize db:migrate:undo"
+    "dev": "npx nodemon app.js",
+    "migrate": "npx sequelize db:migrate",
+    "migrate-undo-all": "npx sequelize db:migrate:undo:all",
+    "migrate-undo-file": "npx sequelize db:migrate:undo"
   },
   "repository": {
     "type": "git",
@@ -38,7 +38,9 @@
     "jsonwebtoken": "^8.5.1",
     "nconf": "^0.11.3",
     "nodemailer": "^6.7.2",
+    "pdfjs-dist": "^2.3.200",
     "pg": "^8.7.1",
-    "sequelize": "^6.9.0"
+    "sequelize": "^6.9.0",
+    "sequelize-cli": "^6.3.0"
   }
 }

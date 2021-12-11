@@ -33,6 +33,7 @@ const getUserData = async(email) => {
 
 const bundleLogin = (req, res, next) => {
     try {
+        console.log(req.body)
         const Decrypt = Encryption.AESDecrypt(req.body.dataLogin);
         req.body = {
             ...Decrypt
@@ -40,7 +41,7 @@ const bundleLogin = (req, res, next) => {
         // console.log(req.body);
         next()
     } catch (error) {
-        // console.log(error)
+        console.log(error)
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
 }

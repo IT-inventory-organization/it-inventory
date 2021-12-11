@@ -34,6 +34,7 @@ const validationBarangPO = [
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataPO);
+        console.log(Decrypt);
         // console.log(convertStrignToDateUTC(Decrypt.po.tanggalPurchaseOrder))
         // Decrypt.po.tanggalPurchaseOrder = convertStrignToDateUTC(Decrypt.po.tanggalPurchaseOrder);
         
@@ -41,7 +42,7 @@ const bundle = (req, res, next) => {
             dataPO: Decrypt.po,
             // reportId: Decrypt.reportId
         }
-        console.log(req.body.lists)
+        // console.log(req.body.lists)
         next();    
     } catch (error) {
         console.log(error);
@@ -50,6 +51,7 @@ const bundle = (req, res, next) => {
 }
 
 const bundleDataBarangPO = (req, res, next) => {
+    // console.log(req.body);
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataPO);
 
