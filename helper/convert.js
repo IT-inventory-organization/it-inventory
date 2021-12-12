@@ -21,11 +21,11 @@ const convertStrignToDateUTC = (dateString) => {
 }
 
 const convertDate = (date) => {
-    // if(!date){
-    //     return null;
-    // }
-    // const ISO = new Date(`${date}`);
-    // return `${addZero(ISO.getDate())}-${addZero(ISO.getMonth()+1)}-${ISO.getFullYear()}`;
+    if(!date){
+        return null;
+    }
+    const ISO = new Date(`${date}`);
+    return `${addZero(ISO.getDate())}-${addZero(ISO.getMonth()+1)}-${ISO.getFullYear()}`;
     return date
 }
 
