@@ -1,5 +1,5 @@
 const checkFormat = (value) => {
-    const regex = new RegExp(/^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\d{4}$/)
+    const regex = new RegExp(/^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/)
     
     // Jika Tanggal Tidak Diisi
     if(value.length == 0){
