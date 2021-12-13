@@ -4,10 +4,9 @@ const { errorResponse } = require('../../helper/Response');
 
 
 const formatDataDokumenMasukan = (req, res, next) => {
-    // console.log(req.body)
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
-        // console.log(Decrypt)
+
         req.body.ref = {
             ...req.body.ref,
             dokumenPemasukan:{
@@ -15,10 +14,10 @@ const formatDataDokumenMasukan = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-        console.log('masukan')
+        // console.log(req.body.ref)
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenMasukan")
+        
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
@@ -35,8 +34,6 @@ const formatDataDokumenKeluaran = (req, res, next) => {
             }
         }
         // console.log(req.body.ref)
-        console.log(error,"error formatDataDokumenKeluaran")
-
         next();
     } catch (error) {
         
@@ -45,9 +42,6 @@ const formatDataDokumenKeluaran = (req, res, next) => {
 }
 
 const formatDataDokumenTambahan =  (req, res, next) => {
-    console.log("formatDataDokumenTambahan")
-
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -62,15 +56,11 @@ const formatDataDokumenTambahan =  (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenTambahan")
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 } 
 
 const formatDataDokumenPelabuhan = (req, res, next) => {
-    console.log("formatDataDokumenPelabuhan")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -84,15 +74,12 @@ const formatDataDokumenPelabuhan = (req, res, next) => {
 
         next()
     } catch (error) {
-        console.log(error,"error formatDataDokumenPelabuhan")
         
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")
     }
 }
 
 const formatDataDokumenKapal = (req, res, next) => {
-    console.log("formatDataDokumenKapal")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -107,15 +94,12 @@ const formatDataDokumenKapal = (req, res, next) => {
         // console.log(req.body);
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenKapal")
         
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan data");
     }
 }
 
 const formatDataDokumenIdentitasBarang = (req, res, next) => {
-    console.log("formatDataDokumenIdentitasBarang")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
         
@@ -130,15 +114,11 @@ const formatDataDokumenIdentitasBarang = (req, res, next) => {
         // console.log(req.body)
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenIdentitasBarang")
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
 
 const formatDataDokumenPenjualBarang = (req, res, next) => {
-    console.log("formatDataDokumenPenjualBarang")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -152,15 +132,12 @@ const formatDataDokumenPenjualBarang = (req, res, next) => {
 
         next()
     } catch (error) {
-        console.log(error,"error formatDataDokumenPenjualBarang")
         
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")
     }
 } 
 
 const formatDataDokumenPengirimBarang = (req, res, next) => {
-    console.log("formatDataDokumenPengirimBarang")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -175,15 +152,11 @@ const formatDataDokumenPengirimBarang = (req, res, next) => {
         // console.log(req.body);
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenPengirimBarang")
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
 
 const formatDataDokumenPengusahaPLB = (req, res, next) => {
-    console.log("formatDataDokumenPengusahaPLB")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -198,15 +171,12 @@ const formatDataDokumenPengusahaPLB = (req, res, next) => {
         // console.log(req.body);
         next()
     } catch (error) {
-        console.log(error,"error formatDataDokumenPengusahaPLB")
         
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
 
 const formatDataDokumenPembeliBarang = (req, res, next) => {
-    console.log("formatDataDokumenPembeliBarang")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -220,15 +190,11 @@ const formatDataDokumenPembeliBarang = (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenPembeliBarang")
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
 
 const formatDataDokumenPpjk = (req, res, next) => {
-    console.log("formatDataDokumenPpjk")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -248,8 +214,6 @@ const formatDataDokumenPpjk = (req, res, next) => {
 }
 
 const formatDataDokumenMataUang = (req, res, next) => {
-    console.log("formatDataDokumenMataUang")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -262,17 +226,13 @@ const formatDataDokumenMataUang = (req, res, next) => {
         }
 
         // console.log(req.body);
-        
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenMataUang")
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")
     }
 }
 
 const formatDataDokumenDataPengangkutan = (req, res, next) => {
-    console.log("formatDataDokumenDataPengangkutan")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -286,15 +246,11 @@ const formatDataDokumenDataPengangkutan = (req, res, next) => {
         // console.log(req.body)
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenDataPengangkutan")
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
 
 const formatDataDokumenBeratDanVolume = (req, res, next) => {
-    console.log("formatDataDokumenBeratDanVolume")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -309,15 +265,11 @@ const formatDataDokumenBeratDanVolume = (req, res, next) => {
         // console.log(req.body.ref);
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenBeratDanVolume")
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
 
 const formatDataDokumenTempatPenimbunan = (req, res, next) => {
-    console.log("formatDataDokumenTempatPenimbunan")
-
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
         req.body.ref = {
@@ -330,8 +282,6 @@ const formatDataDokumenTempatPenimbunan = (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log(error,"error formatDataDokumenTempatPenimbunan")
-
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")
     }
 }

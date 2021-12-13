@@ -16,7 +16,7 @@ const getDataTambahan = async (reportId) => {
 
 const saveDataTambahan = async(data, transaction) => {
     try {
-        // convert(data);
+        convert(data);
 
         const result = await DokumenTambahan.create(data, {
             transaction,
@@ -34,7 +34,7 @@ const saveDataTambahan = async(data, transaction) => {
 
 const updateDataTambahan = async(data, reportId, transaction) => {
     try {
-        // convert(data);
+        convert(data);
         
         const query = {
             where: {

@@ -25,7 +25,6 @@ const saveDataPengajuan = async (data, transaction) => {
         });
         return result;
     } catch (error) {
-        console.log(error)
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else{

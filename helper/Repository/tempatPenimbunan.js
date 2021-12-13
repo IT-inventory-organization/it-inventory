@@ -14,7 +14,7 @@ const getTempatPenimbunan = async (reportId) => {
 
 const saveTempatPenimbunan = async(data, transaction) => {
     try {
-        // convert(data);
+        convert(data);
         const result = await TempatPenimbunan.create(data, {
             transaction,
             returning: true
