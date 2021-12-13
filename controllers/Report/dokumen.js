@@ -73,7 +73,7 @@ const saveDokumenPemasukan = async(req, res) => {
     // return;
     try {
         const {ref} = req.body;
-        // console.log(ref);return;
+        // console.log(ref,"REF");
 
         transaction = await sequelize.transaction();
         // let resultSaved = [];
@@ -119,7 +119,7 @@ const saveDokumenPemasukan = async(req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
     } catch (error) {
-        console.log(error)
+        console.log(error,"<<<<<<<<<<<<")
         if(transaction){
             await transaction.rollback();
         }
@@ -497,6 +497,7 @@ const updatePO = async(req, res) => {
         return errorResponse(res, error.status, error.message);
     }
 }
+
 
 module.exports = routes => {
     routes.post('/save/pemasukan',
