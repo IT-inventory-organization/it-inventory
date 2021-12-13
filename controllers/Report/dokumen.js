@@ -65,13 +65,15 @@ const { savePembeliBarang, updatePembeliBarangRepo, getPembeliBarang } = require
 const { getDataBarang } = require('../../helper/Repository/dataBarang');
 const { updateDataPO } = require('../../helper/Repository/dataPO');
 const DokumenPengeluaran = require('../../database/models/dokumen_pengeluaran');
+const DokumenPemasukan = require('../../database/models/dokumen_pemasukan');
+const Report = require('../../database/models/report');
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
     // return;
     try {
         const {ref} = req.body;
-        console.log(ref,"REF");
+        // console.log(ref,"REF");
 
         transaction = await sequelize.transaction();
         // let resultSaved = [];
@@ -188,10 +190,43 @@ const getDokumenPengeluaran = async(req, res) => {
     try {
         let query = {};
         const dokumenPengeluaran = await DokumenPengeluaran.findAll({
-            where: query
+            attributes: ['id','reportId',
+                'nomorDokumenPemasukan','tanggalDokumenPemasukan'],
+            include: [
+                {
+                    model:Report,
+                    where: {
+                        userId: req.currentUser
+                    },
+                    attributes: []
+                }
+            ]
         });
 
         return successResponse(res, Http.ok, "Success", dokumenPengeluaran, false);
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "Something went wrong");
+    }
+}
+const getDokumenPemasukan = async(req, res) => {
+    try {
+        let query = {};
+        const dokumenpemasukan = await DokumenPemasukan.findAll({
+            attributes: ['id','reportId',
+                'nomorDokumenPemasukan','tanggalDokumenPemasukan'],
+            include: [
+                {
+                    model:Report,
+                    where: {
+                        userId: req.currentUser
+                    },
+                    attributes: []
+                }
+            ]
+        });
+
+        return successResponse(res, Http.ok, "Success", dokumenpemasukan, false);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "Something went wrong");
@@ -535,6 +570,10 @@ module.exports = routes => {
     routes.get('/list/pengeluaran',
         authentication,
         getDokumenPengeluaran
+    );
+    routes.get('/list/pemasukan',
+        authentication,
+        getDokumenPemasukan
     );
 
     routes.post('/save/pengeluaran',
