@@ -12,8 +12,16 @@ const setAssociations = require('./database/models/association.js');
 setAssociations();
 
 const port = config.get('PORT');
-
-app.use(cors());
+app.options('*', (req, res) => {
+  res.writeHead(200, '', {
+      'Access-Control-Allow-Headers':'*',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'OPTIONS',
+  }).end();
+});
+app.use(cors({
+  origin:  ['http://localhost:8080', '*']
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true

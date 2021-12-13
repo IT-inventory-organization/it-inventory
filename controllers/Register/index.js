@@ -33,14 +33,13 @@ const checkInputRegister = [
  * @returns 
  */
 const bundleRegister = (req, res, next) => {
-    console.log(req.body.dataRegister)
-
+    // console.log(req.body.dataRegister)
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataRegister);
         req.body = {
             ...Decrypt
         }
-        console.log(req.body)
+        // console.log(req.body)
         next()
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
@@ -117,6 +116,6 @@ const forgotPassword = async (req, res) => {
 
 
 module.exports = routes => {
-    routes.post('/',  checkInputRegister, register, forgotPassword)
+    routes.post('/',  bundleRegister,checkInputRegister, register, forgotPassword)
 }
 

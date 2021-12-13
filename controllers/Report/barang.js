@@ -25,6 +25,7 @@ const validationBarang = [
 
 const bundle = (req, res, next) => {
     try {
+        console.log(req.body, "BODY")
         const Decrypt = Crypt.AESDecrypt(req.body.dataBarang);
 
         if(Decrypt.listDataBarang.length == 0){
@@ -40,6 +41,7 @@ const bundle = (req, res, next) => {
  
         next();    
     } catch (error) {
+        console.log(error)
         throw errorResponse(res, Http.badRequest, 'Gagal Menyimpan Data Barang');
     }
 }

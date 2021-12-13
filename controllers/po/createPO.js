@@ -34,7 +34,7 @@ const validationBarangPO = [
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataPO);
-        console.log(Decrypt);
+        // console.log(Decrypt);
         // console.log(convertStrignToDateUTC(Decrypt.po.tanggalPurchaseOrder))
         // Decrypt.po.tanggalPurchaseOrder = convertStrignToDateUTC(Decrypt.po.tanggalPurchaseOrder);
         

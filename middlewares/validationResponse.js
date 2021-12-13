@@ -10,7 +10,6 @@ const {errorResponse} = require('../helper/Response');
  */
  const validationResponse = (req, res, next) => {
     const validation = validationResult(req);
-    
     if(!validation.isEmpty()){
         return errorResponse(res, Http.badRequest, validation.array()[0].msg)
     }

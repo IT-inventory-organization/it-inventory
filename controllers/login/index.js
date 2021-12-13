@@ -33,7 +33,6 @@ const getUserData = async(email) => {
 
 const bundleLogin = (req, res, next) => {
     try {
-        console.log(req.body)
         const Decrypt = Encryption.AESDecrypt(req.body.dataLogin);
         req.body = {
             ...Decrypt
