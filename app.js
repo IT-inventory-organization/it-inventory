@@ -4,6 +4,7 @@ const express = require('express');
 const enrouten = require('express-enrouten');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const route = require('./routes/route')
 
 const app = express();
 const config = require('./config.js');
@@ -29,6 +30,13 @@ app.use(async (err, req, res, next) => {
   const data = err.error;
   return res.status(500).json({ message, data });
 });
+
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));app.use("/api_v1",route(express));
+// app.listen(3000, () => {
+//     console.log('Success running 3000');
+// });
+
 
 app.listen(port, () => {
   console.log(`App listening on port ${port}`);

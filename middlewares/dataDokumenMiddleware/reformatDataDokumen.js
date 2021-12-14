@@ -22,6 +22,24 @@ const formatDataDokumenMasukan = (req, res, next) => {
     }
 }
 
+const formatDataDokumenPengeluaran = (req, res, next) => {
+    try {
+        const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
+
+        req.body.ref = {
+            ...req.body.ref,
+            dokumenPengeluaran: {
+                ...Decrypt.formatDokumenPengeluaran,
+                reportId: Decrypt.reportId
+            }
+        } 
+        next();
+    }catch (error) {
+        
+        return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
+    }
+}
+
 const formatDataDokumenTambahan =  (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
@@ -269,6 +287,7 @@ const formatDataDokumenTempatPenimbunan = (req, res, next) => {
 
 module.exports = {
     formatDataDokumenMasukan,
+    formatDataDokumenPengeluaran,
     formatDataDokumenTambahan,
     formatDataDokumenPelabuhan,
     formatDataDokumenKapal,
