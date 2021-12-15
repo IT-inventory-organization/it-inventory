@@ -33,6 +33,7 @@ const checkInputRegister = [
  * @returns 
  */
 const bundleRegister = (req, res, next) => {
+    
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataRegister);
         req.body = {
