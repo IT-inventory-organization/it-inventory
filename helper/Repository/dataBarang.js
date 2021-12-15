@@ -1,5 +1,11 @@
 const dataBarang = require('../../database/models/data_barang');
 const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
+
+const getDataBarang = async (reportId) => {
+    const data = await dataBarang.findAll({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveDataBarang = async(data, transaction) => {
     try {
         const res = await dataBarang.create(data, {
@@ -15,5 +21,6 @@ const saveDataBarang = async(data, transaction) => {
     }
 }
 module.exports = {
-    saveDataBarang
+    saveDataBarang,
+    getDataBarang
 }
