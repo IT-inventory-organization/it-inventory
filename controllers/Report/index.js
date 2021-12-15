@@ -4,7 +4,7 @@ const Http = require('../../helper/Httplib');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const authentication = require('../../middlewares/authentication');
 const { formatReport } = require('../../middlewares/reportMiddleware/reformatReport');
-const { saveReport, getReportPerId, dashboard } = require('../../helper/Repository/report');
+const { saveReport, getReportPerId, dashboard,getReportByUser } = require('../../helper/Repository/report');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { convertDate } = require('../../helper/convert');
@@ -62,13 +62,29 @@ const getReport = async(req, res) => {
         return errorResponse(res, error.status, error.message);
     }
 }
+const getReportAll = async(req, res) => {
+    try {
+        const report = await getReportByUser(req);
+        
+        // _convertDate(report)
+    
+        if(req.currentRole !== "Owner"){
+            saveAktifitas({userId: req.currentUser, reportId: 11, aktifitas: `Melihat semua report`})
+        }
+
+        return successResponse(res, Http.ok, "", report)
+    } catch (error) {
+        // console.log(error)
+        return errorResponse(res, error.status, error.message);
+    }
+}
 
 const getDashboard = async(req, res) => {
     try {
         const report = await dashboard(req);
 
         // _convertDate(report)
-        console.log(report)
+        // console.log(report)
 
         if(req.currentRole !== "Owner"){
             saveAktifitas({userId: req.currentUser, reportId: req.params.idReport, aktifitas: `Melihat Report ${req.params.idReport}`})
@@ -87,8 +103,13 @@ module.exports = routes => {
         authorizationReport,
         getReport,
     );
-
-    routes.get('/getAll/', 
+    
+    routes.get('/getAll',
+    authentication, 
+    // authorizationReport,
+    getReportAll
+    )
+    routes.get('/dashboard', 
         authentication, 
         // authorizationReport,
         // getReport,

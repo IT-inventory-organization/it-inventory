@@ -26,7 +26,6 @@ const convertDate = (date) => {
     }
     const ISO = new Date(`${date}`);
     return `${addZero(ISO.getDate())}-${addZero(ISO.getMonth()+1)}-${ISO.getFullYear()}`;
-    return date
 }
 
 const addZero = (val) => {

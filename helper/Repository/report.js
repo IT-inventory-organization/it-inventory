@@ -4,6 +4,7 @@ const DataKapal = require("../../database/models/data_kapal");
 const DataPelabuhan = require("../../database/models/data_pelabuhan");
 const DataPengangkutan = require("../../database/models/data_pengangkutan");
 const DokumenPemasukan = require("../../database/models/dokumen_pemasukan");
+const DokumenPengeluaran = require("../../database/models/dokumen_pengeluaran");
 const DokumenTambahan = require("../../database/models/dokumen_tambahan");
 const IdentitasBarang = require("../../database/models/identitas_barang");
 const MataUang = require("../../database/models/mata_uang");
@@ -15,7 +16,9 @@ const PPJK = require("../../database/models/ppjk");
 const Report = require("../../database/models/report");
 const TempatPenimbunan = require("../../database/models/tempat_penimbunan");
 const { ServerFault, NotFoundException } = require("../../middlewares/errHandler");
+const Sequelize = require('sequelize');
 
+const Op = Sequelize.Op;
 const saveReport = async(data) => {
     try {
         const result = await Report.create(data,{
@@ -34,6 +37,65 @@ const saveReport = async(data) => {
  * * Data Barang Belum
  *  
  */
+const getReportByUser= async(req) => {
+
+    try {
+        const query = {
+            where: {
+                userId: req.currentUser,
+                isDelete: false
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'isDelete']
+            },
+            include: [
+                {
+                    model: DokumenPemasukan,
+                    attributes: {
+                        exclude: ['updatedAt', 'createdAt',]
+                    }
+                },
+                {
+                    model: DataKapal,
+                    attributes: {
+                        exclude: ['updatedAt', 'createdAt']
+                    },
+                    where:{
+                        'namaKapal':{
+                            [Op.ne]: null
+                          }
+                    }
+                },
+                {
+                    model: DokumenPengeluaran,
+                    attributes: {
+                        exclude: ['updatedAt', 'createdAt',]
+                    }
+                },
+                {
+                    model: dataBarang,
+                    attributes: {
+                        exclude: ['updatedAt', 'createdAt']
+                    }
+                }
+            ]
+        }
+        const resultReportPerId = await Report.findAll(query);
+        if(!resultReportPerId){
+            throw new NotFoundException("Data Tidak Ditemukan");
+        }
+        console.log(resultReportPerId)
+        return resultReportPerId;
+    } catch (error) {
+        // console.log('Repository Trigger', error)
+        if(error.name == "ReferenceError"){
+            throw new ServerFault("Terjadi Kesalahan Pada Server")
+        }else{
+            throw error
+        }
+        
+    }
+}
 const getReportPerId = async(id) => {
     try {
         const query = {
@@ -166,7 +228,12 @@ const dashboard = async(req) => {
                     model: DataKapal,
                     attributes:  [
                             'voyageKapal', 'namaKapal', 'benderaKapal',
-                            'updatedAt', 'createdAt']
+                            'updatedAt', 'createdAt'],
+                    where:{
+                        'namaKapal':{
+                            [Op.ne]: null
+                            }
+                    }
                     
                 }
             ]
@@ -235,5 +302,6 @@ const getPO = async(req) => {
 module.exports = {
     saveReport,
     getReportPerId,
-    dashboard
+    dashboard,
+    getReportByUser
 }
