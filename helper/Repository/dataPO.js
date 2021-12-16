@@ -15,7 +15,7 @@ const saveDataPO = async(data, transaction) => {
         })
         return res;
     } catch (error) {
-        console.log(error)
+
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server')
         }else{
@@ -37,7 +37,7 @@ const updateDataPO = async(data, query, transaction) => {
         // return result[1].toJSON();
         return result[1];
     } catch (error) {
-        console.log(error)
+
         if (error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         } else if (error.name == "ServerFault" || error.name == 'NotFoundException'){
@@ -79,7 +79,7 @@ const getAllPurchaseOrder = async (req, idUser) => {
                 }
             },
             plain: false,
-            // logging: console.log,
+
             attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
         }
         const result = dataPO.findAll(query); 

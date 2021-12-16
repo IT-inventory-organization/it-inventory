@@ -63,7 +63,6 @@ const createListDataBarangPO = async(req, res) => {
 
         return successResponse(res, Http.created, "Berhasil Membuat Data Barang PO", resultDataBarangPO);
     } catch (error) {
-        console.log(error)
         if(trans){
             await trans.rollback()
         }

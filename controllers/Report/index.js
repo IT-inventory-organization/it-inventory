@@ -12,7 +12,7 @@ const { convertDate } = require('../../helper/convert');
 const tambahReport = async (req, res) => {
     try {
         const {ref} = req.body;
-        // console.log('controller trigger',ref);return;
+
         const resultReport = await saveReport(ref);
 
         if(!resultReport){
@@ -58,7 +58,7 @@ const getReport = async(req, res) => {
 
         return successResponse(res, Http.ok, "", report)
     } catch (error) {
-        // console.log(error)
+
         return errorResponse(res, error.status, error.message);
     }
 }
@@ -68,14 +68,14 @@ const getDashboard = async(req, res) => {
         const report = await dashboard(req);
 
         // _convertDate(report)
-        console.log(report)
+
 
         if(req.currentRole !== "Owner"){
             saveAktifitas({userId: req.currentUser, reportId: req.params.idReport, aktifitas: `Melihat Report ${req.params.idReport}`})
         }
         return successResponse(res, Http.ok, "", report)
     } catch (error) {
-        console.log(error)
+
         return errorResponse(res, error.status, error.message);
     }
 } 

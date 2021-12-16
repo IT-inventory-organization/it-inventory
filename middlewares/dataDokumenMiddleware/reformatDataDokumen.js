@@ -14,7 +14,7 @@ const formatDataDokumenMasukan = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-        // console.log(req.body.ref)
+
         next();
     } catch (error) {
         
@@ -33,7 +33,7 @@ const formatDataDokumenKeluaran = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-        // console.log(req.body.ref)
+
         next();
     } catch (error) {
         
@@ -45,7 +45,7 @@ const formatDataDokumenTambahan =  (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
-        // convert(Decrypt);
+ 
         req.body.ref = {
             ...req.body.ref,
             dokumenTambahan:{
@@ -91,7 +91,7 @@ const formatDataDokumenKapal = (req, res, next) => {
             }
         }
 
-        // console.log(req.body);
+
         next();
     } catch (error) {
         
@@ -111,7 +111,6 @@ const formatDataDokumenIdentitasBarang = (req, res, next) => {
             }
         }
 
-        // console.log(req.body)
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
@@ -149,7 +148,6 @@ const formatDataDokumenPengirimBarang = (req, res, next) => {
             }
         }
 
-        // console.log(req.body);
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
@@ -168,7 +166,7 @@ const formatDataDokumenPengusahaPLB = (req, res, next) => {
             }
         }
 
-        // console.log(req.body);
+
         next()
     } catch (error) {
         
@@ -205,10 +203,10 @@ const formatDataDokumenPpjk = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-        // console.log(req.body);
+
         next();
     } catch (error) {
-        console.log('Middleware Format PPJK', error);
+
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
@@ -225,7 +223,7 @@ const formatDataDokumenMataUang = (req, res, next) => {
             }
         }
 
-        // console.log(req.body);
+
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")
@@ -243,7 +241,7 @@ const formatDataDokumenDataPengangkutan = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-        // console.log(req.body)
+
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
@@ -262,7 +260,7 @@ const formatDataDokumenBeratDanVolume = (req, res, next) => {
             }
         }
 
-        // console.log(req.body.ref);
+
         next();
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");

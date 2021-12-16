@@ -26,7 +26,7 @@ const savePembeliBarang = async(data, transaction) => {
 
 const updatePembeliBarangRepo = async(data, reportId, transaction) => {
     try {
-        console.log(data)
+
         const query = {
             where: {
                 id: data.id,
@@ -45,7 +45,7 @@ const updatePembeliBarangRepo = async(data, reportId, transaction) => {
 
         return result[1].toJSON();
     } catch (error) {
-        console.log(error)
+
         if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){

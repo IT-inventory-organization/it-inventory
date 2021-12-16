@@ -54,7 +54,7 @@
 //     await transaction.commit();
 //     return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
 // } catch (error) {
-//     console.log(error)
+
 //     if(transaction){
 //         await transaction.rollback();
 //     }

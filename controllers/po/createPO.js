@@ -39,7 +39,7 @@ const bundle = (req, res, next) => {
         
         next();    
     } catch (error) {
-        console.log(error);
+
         throw errorResponse(res, Http.badRequest, 'Gagal Menyimpan Data PO');
     }
 }

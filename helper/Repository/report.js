@@ -25,7 +25,7 @@ const saveReport = async(data) => {
         
         return result;
     } catch (error) {
-        console.log('Repository trigger',error)
+
         return false
     }
 }
@@ -143,7 +143,7 @@ const getReportPerId = async(id) => {
         }
         return resultReportPerId.toJSON();
     } catch (error) {
-        // console.log('Repository Trigger', error)
+
         if(error.name == "ReferenceError"){
             throw new ServerFault("Terjadi Kesalahan Pada Server")
         }else{
@@ -177,7 +177,7 @@ const dashboard = async(req) => {
         }
         return resultDashboard;
     } catch (error){
-        console.log(error)
+
         if(error.name == "ReferenceError"){
             throw new ServerFault("Terjadi Kesalahan Pada Server")
         }else{
@@ -210,7 +210,7 @@ const getPO = async(req) => {
         }
         return resultDashboard;
     } catch (error){
-        console.log(error)
+
         if(error.name == "ReferenceError"){
             throw new ServerFault("Terjadi Kesalahan Pada Server")
         }else{

@@ -16,7 +16,7 @@ const authentication = async (req, res, next) =>{
     const decode = await verifyToken(token);
     const {user_id: id} = decode;
     const user = await InfoPengguna.findOne({where: {id}, include:[Role]});
-    // console.log(user.toJSON())
+
     if (user){
       req.currentUser = user.id;
       req.currentRole = user.role.name
@@ -25,7 +25,7 @@ const authentication = async (req, res, next) =>{
       return errorResponse(res, httpStatus.badRequest, "Please login first");
     }
   } catch (err) {
-    console.log(err)
+
     return errorResponse(res, httpStatus.badRequest, "Please login first");
   }
 }

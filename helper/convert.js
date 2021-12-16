@@ -1,5 +1,5 @@
 const convertStrignToDateUTC = (dateString) => {
-    // console.log('trigget')
+
     // if(dateString.length == 0){
     //     return null
     // }
@@ -14,7 +14,7 @@ const convertStrignToDateUTC = (dateString) => {
     // const arrDate = dateString.split('-');
 
     // const date = new Date(arrDate[2], +(arrDate[1] - 1), arrDate[0]).toUTCString();
-    // // console.log(dateString)
+
     // return date;
 
     return dateString

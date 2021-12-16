@@ -10,7 +10,7 @@ const keyPromise = CryptoJS.enc.Utf8.parse(config.get("KEY_ENCRYPT"));
 module.exports = {
   AESDecrypt: (data) => {
     data = CryptoJS.enc.Base64.parse(data);
-    // console.log(data)
+
     const decrypt = CryptoJS.AES.decrypt(
       {
         ciphertext: data,
