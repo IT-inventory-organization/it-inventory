@@ -32,6 +32,11 @@ const po = db.define('po', {
     },
     onUpdate: 'CASCADE',
     onDelete: 'NO ACTION',
+  },
+  isDelete: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
   }
 }, {
   tableName: 'po',

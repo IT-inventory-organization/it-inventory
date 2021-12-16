@@ -127,9 +127,30 @@ const viewOnePo = async(req, idUser, idPO) => {
     }
 }
 
+const deletePurchaseOrderPerId = async(req, idUser, idPO) => {
+    try {
+        await isExist(dataPO, {
+            where: {
+                id: idPO
+            }
+        });
+
+        await dataPO.update({
+            isDelete: true
+        },{
+            where: {
+                id: idPO
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     saveDataPO,
     updateDataPO,
     getAllPurchaseOrder,
-    viewOnePo
+    viewOnePo,
+    deletePurchaseOrderPerId
 }

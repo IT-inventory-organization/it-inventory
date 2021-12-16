@@ -92,7 +92,7 @@ const createListPO = async(req, res) => {
 
         await trans.commit();
 
-        return successResponse(res, Http.created, "Berhasil Membuat PO");
+        return successResponse(res, Http.created, "Berhasil Membuat PO", true);
     } catch (error) {
      
         if(trans){
