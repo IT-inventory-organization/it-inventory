@@ -57,7 +57,7 @@ const bcf3315 = db.define('bcf3315', {
         allowNull: false
     },
     tanggalPerkiraan: {
-        typr: Sequelize.DATEONLY,
+        type: Sequelize.DATEONLY,
         allowNull: false
     },
     namaPengangkutKeLuar: {

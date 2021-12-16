@@ -696,11 +696,6 @@ const getPLB = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = 
     }
 }
 
-<<<<<<< HEAD
-module.exports = {
-    getPLB
-}
-
 // const getAllPO = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null, status = null) => {
 //     try {
 //         let searchUser = 'AND';
@@ -733,8 +728,7 @@ module.exports = {
 
 //     }
 // }
-=======
+
 // module.exports = {
 //     getPLB
 // }
->>>>>>> d37eeb43983f90a527411d5965ee82c490b1f41f
