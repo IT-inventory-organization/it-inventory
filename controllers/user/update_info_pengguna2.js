@@ -1,8 +1,5 @@
 const {body, validationResult} = require('express-validator');
-// const {passwordFormat, checkPhoneNumber} = require('../../helper/validation');
-const {createHashText } = require('../../helper/bcrypt');
 const InfoPengguna = require('../../database/models/info_pengguna');
-const { Op } = require('sequelize');
 const { errorResponse, successResponse} = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const Encrypt = require('../../helper/encription');

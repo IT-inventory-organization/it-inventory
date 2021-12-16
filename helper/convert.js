@@ -1,5 +1,4 @@
 const convertStrignToDateUTC = (dateString) => {
-    console.log('trigget')
     if(dateString.length == 0){
         return null
     }

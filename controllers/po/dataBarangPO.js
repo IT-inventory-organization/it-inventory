@@ -7,6 +7,7 @@ const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
 // const { saveDataPO } = require('../../helper/Repository/dataPO');
 const { create } = require('nconf');
+const { saveDataBarangPO } = require('../../helper/Repository/dataBarangPO');
 // const { internalServerError } = require('../../helper/Httplib');
 
 const validationBarangPO = [
@@ -55,8 +56,8 @@ const createListDataBarangPO = async(req, res) => {
 
         const resultDataBarangPO = [];
       
-        const result = await saveDataPO(lists.dataPO, trans);   
-
+        const result = await saveDataBarangPO(lists.dataPO, trans);
+    
         
         await trans.commit();
 
