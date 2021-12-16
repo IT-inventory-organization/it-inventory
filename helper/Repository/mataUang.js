@@ -2,6 +2,11 @@ const MataUang = require("../../database/models/mata_uang");
 const { ForeignKeyViolation, ConflictCreateData, NotFoundException } = require("../../middlewares/errHandler");
 const { isExist } = require('../checkExistingDataFromTable')
 
+const getMataUang = async (reportId) => {
+    const data = await MataUang.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveMataUang = async(data, transaction) => {
     try {
         const result = await MataUang.create(data, {
@@ -53,5 +58,6 @@ const updateMataUangRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     saveMataUang,
-    updateMataUangRepo
+    updateMataUangRepo,
+    getMataUang
 }

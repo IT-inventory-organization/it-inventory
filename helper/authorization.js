@@ -67,7 +67,7 @@ const authorizationReport = async (req, res, next) => {
       throw new UnAuthorizedUser("User Tidak Memiliki Akses Di Report ini");
     }
   } catch (error) {
-    // console.log(error)
+    console.log(error)
     return errorResponse(res, error.status, error.message);
   }
 

@@ -7,6 +7,7 @@
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app.js",
+    "local": "npx nodemon app.js",
     "migrate": "sequelize db:migrate",
     "migrate-undo-all": "sequelize db:migrate:undo:all",
     "migrate-undo-file": "sequelize db:migrate:undo"
@@ -27,13 +28,17 @@
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "document-number-formatter": "^1.0.33",
+    "dotenv": "^10.0.0",
     "easyinvoice": "^1.0.148",
     "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
     "express-enrouten": "^1.3.0",
     "express-validator": "^6.12.1",
+    "handlebars": "^4.7.7",
+    "jsontoxml": "^1.0.1",
     "jsonwebtoken": "^8.5.1",
     "nconf": "^0.11.3",
-    "pdfkit": "^0.13.0",
+    "nodemailer": "^6.7.2",
     "pg": "^8.7.1",
     "sequelize": "^6.9.0"
   }

@@ -153,7 +153,87 @@ const getReportPerId = async(id) => {
     }
 }
 
+const dashboard = async(req) => {
+    try {
+        const query = {
+            where: {
+                userId: req.currentUser,
+                isDelete: false
+            },
+            attributes: ['jenisDokumenBC'],
+            include: [
+                {
+                    model: DataKapal,
+                    attributes:  [
+                            'voyageKapal', 'namaKapal', 'benderaKapal',
+                            'updatedAt', 'createdAt']
+                    
+                }
+            ]
+        }
+        const resultDashboard = await Report.findAll(query);
+        if(!resultDashboard){
+            throw new NotFoundException("Data Tidak Ditemukan");
+        }
+        return resultDashboard;
+    } catch (error){
+        console.log(error)
+        if(error.name == "ReferenceError"){
+            throw new ServerFault("Terjadi Kesalahan Pada Server")
+        }else{
+            throw error
+        }
+    }
+}
+
+const getPO = async(req) => {
+    try {
+        const query = {
+            where: {
+                userId: req.currentUser,
+                isDelete: false
+            },
+            attributes: ['jenisDokumenBC'],
+            include: [
+                {
+                    model: DataKapal,
+                    attributes:  [
+                            'voyageKapal', 'namaKapal', 'benderaKapal',
+                            'updatedAt', 'createdAt']
+                    
+                }
+            ]
+        }
+        const resultDashboard = await Report.findAll(query);
+        if(!resultDashboard){
+            throw new NotFoundException("Data Tidak Ditemukan");
+        }
+        return resultDashboard;
+    } catch (error){
+        console.log(error)
+        if(error.name == "ReferenceError"){
+            throw new ServerFault("Terjadi Kesalahan Pada Server")
+        }else{
+            throw error
+        }
+    }
+}
+
+/**
+ * {
+ *  include:[
+ *     {
+ *          model: dataKapal,
+ *          attributes: ['voyageKapal', 'namaKapal'],
+ *     },
+ *     {
+ *      }
+ * 
+ *  ]
+ * }
+ */
 module.exports = {
     saveReport,
-    getReportPerId
+    getReportPerId,
+    dashboard
 }

@@ -2,6 +2,10 @@ const beratDanVolume = require("../../database/models/berat_dan_volume");
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require('../checkExistingDataFromTable');
 
+const getBeratDanVolume = async (reportId) => {
+    const data = await beratDanVolume.findOne({ where: { reportId: reportId } });
+    return data;
+}
 
 const saveBeratDanVolume = async(data, transaction) => {
     try {
@@ -55,5 +59,6 @@ const updateBeratDanVolumeRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     saveBeratDanVolume,
-    updateBeratDanVolumeRepo
+    updateBeratDanVolumeRepo,
+    getBeratDanVolume
 }

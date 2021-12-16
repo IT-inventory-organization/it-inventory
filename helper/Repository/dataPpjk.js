@@ -2,6 +2,11 @@ const ppjk = require("../../database/models/ppjk")
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler")
 const { isExist } = require('../checkExistingDataFromTable');
 
+const getDataPpjk = async (reportId) => {
+    const data = await ppjk.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveDataPpjk = async(data, transaction) => {
     try {
         const result = await ppjk.create(data, {
@@ -53,5 +58,6 @@ const updateDataPpjkRepo = async(data,  reportId, transaction) => {
 
 module.exports = {
     saveDataPpjk,
-    updateDataPpjkRepo
+    updateDataPpjkRepo,
+    getDataPpjk
 }

@@ -7,27 +7,13 @@ const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
 const { saveDataPO } = require('../../helper/Repository/dataPO');
 const { saveDataBarangPO } = require('../../helper/Repository/dataBarangPO');
+const { saveDataInvoicePO} = require('../../helper/Repository/dataInvoicePO');
 const { create } = require('nconf');
 const {createDataBarangPO} = require('./dataBarangPO'); 
 const { validationResponse } = require('../../middlewares/validationResponse');
 const { convertStrignToDateUTC } = require('../../helper/convert');
 const { checkFormat } = require('../../helper/checkDateFormat');
 // const { internalServerError } = require('../../helper/Httplib');
-
-
-// var easyinvoice = require('easyinvoice');
-// var fs = require('fs');
-// var data = {};
-// easyinvoice.createInvoice(data, function (result) {
-//     /*  
-//         5.  The 'result' variable will contain our invoice as a base64 encoded PDF
-//             Now let's save our invoice to our local filesystem so we can have a look!
-//             We will be using the 'fs' library we imported above for this.
-//     */
-//     fs.writeFileSync("invoice.pdf", pdf, 'base64');
-// });
-
-
 
 const validationPO = [
     body('lists.dataPO.kapalPemilik').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Pemilik"),
@@ -107,7 +93,13 @@ const createListPO = async(req, res) => {
             await saveDataBarangPO(lists.listDataBarangPO[i], trans);
         }
 
-        
+        const data = {
+            poId: json.id,
+            nomorPO:'asd',
+        }
+
+        const generateInvoice = await saveDataInvoicePO(data, trans)
+
         await trans.commit();
 
         return successResponse(res, Http.created, "Berhasil Membuat PO", resultPO);
