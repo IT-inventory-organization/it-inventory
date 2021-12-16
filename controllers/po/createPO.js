@@ -60,7 +60,7 @@ const bundleDataBarangPO = (req, res, next) => {
             ...req.body.lists,
             listDataBarangPO: Decrypt.listDataBarangPO,
         }
- 
+        
         next();    
     } catch (error) {
         throw errorResponse(res, Http.badRequest, 'Gagal Menyimpan Data Barang');
@@ -95,7 +95,7 @@ const createListPO = async(req, res) => {
 
         const data = {
             poId: json.id,
-            nomorPO:'asd',
+            nomorPO:'PO-',
         }
 
         const generateInvoice = await saveDataInvoicePO(data, trans)
@@ -112,14 +112,6 @@ const createListPO = async(req, res) => {
     }
     
 }
-
-
-createInvoice = async (req, res) => {
-    let trans;
-
-}
-
-
 
 module.exports = routes => {
     routes.post('/createPO', 
