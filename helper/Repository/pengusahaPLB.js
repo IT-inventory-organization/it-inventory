@@ -2,6 +2,11 @@ const PengusahaPLB = require("../../database/models/pengusaha_plb");
 const {isExist} = require('../checkExistingDataFromTable');
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 
+const getPengusahaPLB = async (reportId) => {
+    const data = await PengusahaPLB.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const savePengusahaPLB = async(data, transaction) => {
     try {
         const result = await PengusahaPLB.create(data, {
@@ -52,5 +57,6 @@ const updatePengusahaPLBRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     savePengusahaPLB,
-    updatePengusahaPLBRepo
+    updatePengusahaPLBRepo,
+    getPengusahaPLB
 }

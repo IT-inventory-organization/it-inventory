@@ -18,9 +18,20 @@ const adjustmentBarang = db.define('adjustmentBarang', {
   remarks: {
     type: Sequelize.STRING
   },
+  dataBarangId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'dataBarang',
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
+  }
+
 }, {
   tableName: 'adjustmentBarang',
   freezeTableName: true,
-})
+});
 
 module.exports = adjustmentBarang;

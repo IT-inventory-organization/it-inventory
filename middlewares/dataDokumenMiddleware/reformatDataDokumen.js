@@ -22,12 +22,17 @@ const formatDataDokumenMasukan = (req, res, next) => {
     }
 }
 
+<<<<<<< HEAD
 const formatDataDokumenPengeluaran = (req, res, next) => {
+=======
+const formatDataDokumenKeluaran = (req, res, next) => {
+>>>>>>> d37eeb43983f90a527411d5965ee82c490b1f41f
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
         req.body.ref = {
             ...req.body.ref,
+<<<<<<< HEAD
             dokumenPengeluaran: {
                 ...Decrypt.formatDokumenPengeluaran,
                 reportId: Decrypt.reportId
@@ -35,6 +40,16 @@ const formatDataDokumenPengeluaran = (req, res, next) => {
         } 
         next();
     }catch (error) {
+=======
+            dokumenPengeluaran:{
+                ...Decrypt.dokumenPengeluaran,
+                reportId: Decrypt.reportId
+            }
+        }
+        // console.log(req.body.ref)
+        next();
+    } catch (error) {
+>>>>>>> d37eeb43983f90a527411d5965ee82c490b1f41f
         
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }

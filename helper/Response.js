@@ -10,15 +10,15 @@ const errorResponse = (res, status, message, data) => {
 /**
  * TODO: Create Encrypt Data 
  */
-const successResponse = async (res, status, message, data) => {
+const successResponse = async (res, status, message, data, doEncrypt = true) => {
   let EncyptData = null; 
-  if(data != null){
+  if(data != null && doEncrypt){
     EncyptData = await Encryption.AESEncrypt(data);
   }
   return res.status(status).json({
     success: true, 
     message, 
-    data: EncyptData
+    data: doEncrypt ? EncyptData : data
   })
 }
 

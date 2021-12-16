@@ -9,6 +9,11 @@ const convert = (data) => {
     data.tanggalBL = convertStrignToDateUTC(data.tanggalBL);
 }
 
+const getDataTambahan = async (reportId) => {
+    const data = await DokumenTambahan.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const saveDataTambahan = async(data, transaction) => {
     try {
         convert(data);
@@ -19,6 +24,8 @@ const saveDataTambahan = async(data, transaction) => {
         })
         return result
     } catch (error) {
+        console.log(error,"saveDataTambahan")
+
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else{
@@ -61,6 +68,7 @@ const updateDataTambahan = async(data, reportId, transaction) => {
 }
 
 module.exports = {
+    getDataTambahan,
     saveDataTambahan,
     updateDataTambahan
 }

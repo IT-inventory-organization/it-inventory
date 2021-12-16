@@ -48,7 +48,7 @@ const dataBarang = db.define('dataBarang', {
   },
 }, {
   tableName: 'dataBarang',
-  freezeTableName: true,
+  freezeTableName: true
 })
 
 module.exports = dataBarang;

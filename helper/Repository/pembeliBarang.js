@@ -2,6 +2,11 @@ const PembeliBarang = require("../../database/models/pembeli_barang");
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require("../checkExistingDataFromTable");
 
+const getPembeliBarang = async (reportId) => {
+    const data = await PembeliBarang.findOne({ where: { reportId: reportId } });
+    return data;
+}
+
 const savePembeliBarang = async(data, transaction) => {
     try {
         const result = await PembeliBarang.create(data,{
@@ -53,5 +58,6 @@ const updatePembeliBarangRepo = async(data, reportId, transaction) => {
 
 module.exports = {
     savePembeliBarang,
-    updatePembeliBarangRepo
+    updatePembeliBarangRepo,
+    getPembeliBarang
 }
