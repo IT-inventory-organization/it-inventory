@@ -2,46 +2,41 @@ const {body, validationResult} = require('express-validator');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
-const { createDataPO, dataPO} = require('../../helper/bundleDataPO');
 const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
 const { saveDataPO } = require('../../helper/Repository/dataPO');
 const { saveDataBarangPO } = require('../../helper/Repository/dataBarangPO');
-const { saveDataInvoicePO} = require('../../helper/Repository/dataInvoicePO');
-const { create } = require('nconf');
-const {createDataBarangPO} = require('./dataBarangPO'); 
 const { validationResponse } = require('../../middlewares/validationResponse');
-const { convertStrignToDateUTC } = require('../../helper/convert');
+const { convertForInputDateOnly } = require('../../helper/convert');
 const { checkFormat } = require('../../helper/checkDateFormat');
 // const { internalServerError } = require('../../helper/Httplib');
 
 const validationPO = [
-    body('lists.dataPO.kapalPemilik').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Pemilik"),
-    body('lists.dataPO.kapalPembeli').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Pembeli"),
-    body('lists.dataPO.tanggalPurchaseOrder').trim().custom(checkFormat),
-    body('lists.dataPO.jumlahTotal').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah Total"),
-    body('lists.dataPO.remarks').trim().notEmpty().withMessage(`Terjadi Kesalahan Pada Kolom Remarks`)
+    body('lists.dataPO.PurchaseOrder.kapalPenjual').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Penjual"),
+    body('lists.dataPO.PurchaseOrder.nomorPO').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Nomor Purchase Order"),
+    body('lists.dataPO.PurchaseOrder.tanggalPurchaseOrder').trim().custom(checkFormat),
+    body('lists.dataPO.PurchaseOrder.reportId').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Report Id"),
+    body('lists.dataPO.PurchaseOrder.jumlahTotal').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah Total"),
+    body('lists.dataPO.PurchaseOrder.remarks').trim().notEmpty().withMessage(`Terjadi Kesalahan Pada Kolom Remarks`)
 ]
 
 const validationBarangPO = [
-    body('lists.dataBarangPO.*.kodeBarang').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kode Barang"),
-    body('lists.dataBarangPO.*.itemDeskripsi').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Item Deskripsi"),
-    body('lists.dataBarangPO.*.qunatity').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Quntity"),
-    body('lists.dataBarangPO.*.hargaSatuan').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Harga Satuam"),
-    body('lists.dataBarangPO.*.jumlah').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah"),
+    body('lists.dataPO.ListPurchaseOrderItem.*.kodeBarang').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kode Barang"),
+    body('lists.dataPO.ListPurchaseOrderItem.*.itemDeskripsi').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Item Deskripsi"),
+    body('lists.dataPO.ListPurchaseOrderItem.*.quantity').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Quantity"),
+    body('lists.dataPO.ListPurchaseOrderItem.*.hargaSatuan').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Harga Satuam"),
+    body('lists.dataPO.ListPurchaseOrderItem.*.jumlah').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah"),
 ]
 
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataPO);
-        // console.log(convertStrignToDateUTC(Decrypt.po.tanggalPurchaseOrder))
-        // Decrypt.po.tanggalPurchaseOrder = convertStrignToDateUTC(Decrypt.po.tanggalPurchaseOrder);
-        
+
         req.body.lists = {
-            dataPO: Decrypt.po,
+            dataPO: Decrypt,
             // reportId: Decrypt.reportId
         }
-        console.log(req.body.lists)
+        
         next();    
     } catch (error) {
         console.log(error);
@@ -53,7 +48,7 @@ const bundleDataBarangPO = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataPO);
 
-        if(Decrypt.listDataBarangPO.length == 0){
+        if(Decrypt.ListPurchaseOrderItem.length == 0){
             return errorResponse(res, Http.badRequest, "Item Kosong");
         }
         req.body.lists = {
@@ -81,28 +76,23 @@ const createListPO = async(req, res) => {
         trans = await sequelize.transaction();
         
         const {lists} = req.body;
-
-        const resultPO = [];
-      
-        const result = await saveDataPO(lists.dataPO, trans);
+        
+        lists.dataPO.PurchaseOrder.nomorPO = `PO-${lists.dataPO.PurchaseOrder.nomorPO}`;
+        lists.dataPO.PurchaseOrder.tanggalPurchaseOrder = convertForInputDateOnly(lists.dataPO.PurchaseOrder.tanggalPurchaseOrder);
+        
+        const result = await saveDataPO(lists.dataPO.PurchaseOrder, trans);
 
         const json = result.toJSON();
-
-        for(let i = 0; i < lists.listDataBarangPO.length; i++){
-            lists.listDataBarangPO[i].poId = json.id;
-            await saveDataBarangPO(lists.listDataBarangPO[i], trans);
+        
+        for(let i = 0; i < lists.dataPO.ListPurchaseOrderItem.length; i++){
+            lists.dataPO.ListPurchaseOrderItem[i].poId = json.id;
+            
+            await saveDataBarangPO(lists.dataPO.ListPurchaseOrderItem[i], trans);
         }
-
-        const data = {
-            poId: json.id,
-            nomorPO:'PO-',
-        }
-
-        const generateInvoice = await saveDataInvoicePO(data, trans)
 
         await trans.commit();
 
-        return successResponse(res, Http.created, "Berhasil Membuat PO", resultPO);
+        return successResponse(res, Http.created, "Berhasil Membuat PO");
     } catch (error) {
      
         if(trans){
@@ -114,10 +104,9 @@ const createListPO = async(req, res) => {
 }
 
 module.exports = routes => {
-    routes.post('/createPO', 
+    routes.post('/', 
         authentication, 
-        bundle,
-        bundleDataBarangPO, 
+        bundle, 
         validationPO,
         validationBarangPO,
         validationResponse,

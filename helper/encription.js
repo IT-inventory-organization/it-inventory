@@ -1,5 +1,5 @@
 const CryptoJS = require('crypto-js');
-const config = require("../config")
+const config = require("../config");
 const configSecurity = {
   mode: CryptoJS.mode.ECB,
   padding: CryptoJS.pad.Pkcs7

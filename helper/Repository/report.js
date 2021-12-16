@@ -219,21 +219,59 @@ const getPO = async(req) => {
     }
 }
 
-/**
- * {
- *  include:[
- *     {
- *          model: dataKapal,
- *          attributes: ['voyageKapal', 'namaKapal'],
- *     },
- *     {
- *      }
- * 
- *  ]
- * }
- */
+const getKapalPenjual = async(req, idUser) => {
+    try {
+
+        const query = {
+            include: [
+                {
+                    model: TempatPenimbunan,
+                    required: true,
+                    where: {
+                        isTempatPenimbunan: true
+                    },
+                    attributes: ['isTempatPenimbunan']
+                },
+                {
+                    model: DataKapal,
+                    required: true,
+                    attributes: ['voyageKapal', 'namaKapal', 'id']
+                }
+            ],
+            where: {
+                userId: idUser
+            },
+            attributes: ['id'],
+            plain:true
+        }
+
+        const result = await Report.findAll(query);
+        if(!result){
+            throw NotFoundException('Data Tidak Ditemukan')
+        }
+
+        return result;
+
+    } catch (error) {
+        if(error.name == "ReferenceError"){
+            throw ServerFault("Terjadi Kesalahan Pada Server")
+        }else{
+            throw error;
+        }
+    }
+}
+
+const fetchBarangAfterChooseKapalPenjual = async (req, idKapalPenjual) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+}
 module.exports = {
     saveReport,
     getReportPerId,
-    dashboard
+    dashboard,
+    getKapalPenjual,
+    fetchBarangAfterChooseKapalPenjual
 }

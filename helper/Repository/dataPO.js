@@ -1,4 +1,9 @@
+const { file } = require('nconf');
+const { Op } = require('sequelize');
+const barangPO = require('../../database/models/barang_po');
+const DataKapal = require('../../database/models/data_kapal');
 const dataPO = require('../../database/models/po');
+const Report = require('../../database/models/report');
 const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
 const { isExist } = require("../checkExistingDataFromTable");
 
@@ -43,7 +48,88 @@ const updateDataPO = async(data, query, transaction) => {
     }
 }
 
+const getAllPurchaseOrder = async (req, idUser) => {
+    try {
+        const query = {
+            include: [
+                {
+                    model: barangPO,
+                    required: true,
+                    attributes: []
+                },
+                {
+                    model: Report,
+                    required: true,
+                    attributes: [],
+                    include: [
+                        {
+                            model: DataKapal,
+                            required: true,
+                            attributes: []
+                        }
+                    ],
+                    where: {
+                        userId: idUser
+                    }
+                },
+            ],
+            where: {
+                reportId: {
+                    [Op.not]: null 
+                }
+            },
+            plain: false,
+            // logging: console.log,
+            attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
+        }
+        const result = dataPO.findAll(query); 
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+const viewOnePo = async(req, idUser, idPO) => {
+    try {
+        const query = {
+            include: [
+                {
+                    model: barangPO,
+                    required: true,
+                    attributes: {
+                        exclude: ['id', 'createdAt', 'updatedAt', 'idBarang']
+                    }
+                },
+                {
+                    model: Report,
+                    required: true,
+                    attributes: [],
+                    where: {
+                        userId: idUser
+                    }
+                }
+            ],
+            where: {
+                id: idPO
+            },
+            attributes: {
+                exclude: ['id', 'createdAt', 'updatedAt', 'reportId']
+            },
+            plain:true
+        }
+
+        const result = await dataPO.findOne(query);
+
+        return result
+    } catch (error) {
+        throw error
+    }
+}
+
 module.exports = {
     saveDataPO,
-    updateDataPO
+    updateDataPO,
+    getAllPurchaseOrder,
+    viewOnePo
 }

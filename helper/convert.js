@@ -37,8 +37,14 @@ const addZero = (val) => {
     return val
 }
 
+const convertForInputDateOnly = date => {
+    const data = date.split('-');
+    return `${parseInt(data[2])}-${parseInt(data[1])}-${parseInt(data[0])+1}`;
+}
+
 
 module.exports = {
     convertStrignToDateUTC,
-    convertDate
+    convertDate,
+    convertForInputDateOnly
 }

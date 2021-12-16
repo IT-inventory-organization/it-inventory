@@ -3,11 +3,11 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const po = db.define('po', {
-  kapalPemilik: {
+  kapalPenjual: {
     allowNull: false,
     type: Sequelize.STRING
   },
-  kapalPembeli: {
+  nomorPO: {
     allowNull: false,
     type: Sequelize.STRING
   },
