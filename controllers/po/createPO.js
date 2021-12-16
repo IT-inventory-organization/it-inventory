@@ -13,11 +13,14 @@ const {createDataBarangPO} = require('./dataBarangPO');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const { convertStrignToDateUTC } = require('../../helper/convert');
 const { checkFormat } = require('../../helper/checkDateFormat');
+const { AESDecrypt } = require('../../helper/encription');
+const InvoicePO = require('../../database/models/invoice_po');
 // const { internalServerError } = require('../../helper/Httplib');
 
 const validationPO = [
-    body('lists.dataPO.kapalPemilik').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Pemilik"),
-    body('lists.dataPO.kapalPembeli').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Pembeli"),
+    // body('lists.dataPO.kapalPemilik').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Pemilik"),
+    // body('lists.dataPO.kapalPembeli').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Pembeli"),
+    body('lists.dataPO.kapalPenjual').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Penjual"),
     body('lists.dataPO.tanggalPurchaseOrder').trim().custom(checkFormat),
     body('lists.dataPO.jumlahTotal').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah Total"),
     body('lists.dataPO.remarks').trim().notEmpty().withMessage(`Terjadi Kesalahan Pada Kolom Remarks`)
@@ -26,7 +29,7 @@ const validationPO = [
 const validationBarangPO = [
     body('lists.dataBarangPO.*.kodeBarang').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kode Barang"),
     body('lists.dataBarangPO.*.itemDeskripsi').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Item Deskripsi"),
-    body('lists.dataBarangPO.*.qunatity').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Quntity"),
+    body('lists.dataBarangPO.*.quantity').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Quntity"),
     body('lists.dataBarangPO.*.hargaSatuan').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Harga Satuam"),
     body('lists.dataBarangPO.*.jumlah').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah"),
 ]
@@ -60,7 +63,6 @@ const bundleDataBarangPO = (req, res, next) => {
             ...req.body.lists,
             listDataBarangPO: Decrypt.listDataBarangPO,
         }
- 
         next();    
     } catch (error) {
         throw errorResponse(res, Http.badRequest, 'Gagal Menyimpan Data Barang');
@@ -93,12 +95,31 @@ const createListPO = async(req, res) => {
             await saveDataBarangPO(lists.listDataBarangPO[i], trans);
         }
 
-        const data = {
-            poId: json.id,
-            nomorPO:'asd',
+        //format nomorPO
+        //PO-tanggal-nomorPesanan
+        //Example
+        //PO-12102021-000004
+        //akan tereset jika berganti tanggal PO-13102021-0000001
+
+        var today = new Date();
+        var dd = String(today.getDate()).padStart(2, '0');
+        var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+        var yyyy = today.getFullYear();
+        today = mm + dd + yyyy;
+
+        var nomorPesanan = [];
+
+        for(let i = 0; i < nomorPesanan.length; i++){
+            nomorPesanan[i].nomorPO = json.id;
+            await saveDataInvoicePO(nomorPesanan[i], trans);
         }
 
-        const generateInvoice = await saveDataInvoicePO(data, trans)
+        const data = {
+            poId: json.id,
+            nomorPO: ``,
+        }
+
+
 
         await trans.commit();
 
@@ -112,14 +133,6 @@ const createListPO = async(req, res) => {
     }
     
 }
-
-
-createInvoice = async (req, res) => {
-    let trans;
-
-}
-
-
 
 module.exports = routes => {
     routes.post('/createPO', 
