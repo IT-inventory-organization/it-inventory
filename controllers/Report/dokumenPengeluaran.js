@@ -64,6 +64,18 @@ const saveDokumenPengeluaran = async(req, res) => {
         transaction = await sequelize.transaction();
         // let resultSaved = [];
 
+//     if(req.currentRole !== 'Owner'){
+//         saveAktifitas({userId: req.currentUser, reportId: ref.dokumenPengeluaran.reportId, aktifitas: "Membuat Dokumen Pngeluaran"});
+//     }
+//     await transaction.commit();
+//     return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
+// } catch (error) {
+
+//     if(transaction){
+//         await transaction.rollback();
+//     }
+//     return errorResponse(res, error.status, error.message);
+
         const resultDataPengeluaran = await saveDataPengajuan(ref.dokumenPengeluaran, transaction)
         const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);
         const resultDataTambahan = await saveDataTambahan(ref.dokumenTambahan, transaction);
@@ -111,6 +123,7 @@ const saveDokumenPengeluaran = async(req, res) => {
             await transaction.rollback();
         }
         return errorResponse(res, error.status, error.message);
+
 
     }
 }

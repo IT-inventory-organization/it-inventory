@@ -30,10 +30,22 @@ function UnAuthorizedUser(message){
   this.status = httpStatus.unauthorized;
 }
 
+function returnError(error, message){
+  switch (error.name) {
+    case 'ReferenceError':
+      throw new ServerFault(message);
+    case 'SequelizeValidationError':
+      throw new ForeignKeyViolation(message)
+    default:
+      break;
+  }
+}
+
 module.exports = {
   ForeignKeyViolation,
   ConflictCreateData,
   NotFoundException,
   ServerFault,
-  UnAuthorizedUser
+  UnAuthorizedUser,
+  returnError
 }

@@ -21,6 +21,12 @@ const barangPO = db.define('barangPO', {
   hargaSatuan: {
     type: Sequelize.STRING
   },
+  satuanKemasan: {
+    type: Sequelize.STRING
+  },
+  jumlah: {
+    type: Sequelize.STRING
+  }
 }, {
   tableName: 'barangPO',
   freezeTableName: true,

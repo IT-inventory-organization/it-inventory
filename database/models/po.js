@@ -3,20 +3,12 @@ const Sequelize = require('sequelize');
 const db = require('../../configs/database');
 
 const po = db.define('po', {
-  // kapalPemilik: {
-  //   allowNull: false,
-  //   type: Sequelize.STRING
-  // },
-  // kapalPembeli: {
-  //   allowNull: false,
-  //   type: Sequelize.STRING
-  // },
-  nomorPO: {
+  kapalPenjual: {
     allowNull: false,
     type: Sequelize.STRING
   },
-  kapalPenjual: {
-    allownull: false,
+  nomorPO: {
+    allowNull: false,
     type: Sequelize.STRING
   },
   tanggalPurchaseOrder: {
@@ -40,6 +32,11 @@ const po = db.define('po', {
     },
     onUpdate: 'CASCADE',
     onDelete: 'NO ACTION',
+  },
+  isDelete: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
   }
 }, {
   tableName: 'po',

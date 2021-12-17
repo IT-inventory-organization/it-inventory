@@ -24,7 +24,7 @@ const saveDataTambahan = async(data, transaction) => {
         })
         return result
     } catch (error) {
-        console.log(error,"saveDataTambahan")
+
 
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
@@ -56,7 +56,7 @@ const updateDataTambahan = async(data, reportId, transaction) => {
 
         return result[1].toJSON();
     } catch (error) {
-        console.log(error)
+
         if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){
