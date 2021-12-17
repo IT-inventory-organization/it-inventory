@@ -10,8 +10,8 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    const promise = [
-      await queryInterface.addColumn('bcf3315', 'tanggal', {
+    const promises = [
+      await queryInterface.addColumn('bcf3315', 'status', {
         type: Sequelize.DATE
       })
     ]
@@ -26,7 +26,7 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     const promises = [
-      await queryInterface.removeColumn('bcf3315', 'tanggal')
+      await queryInterface.removeColumn('bcf3315', 'status')
     ]
     return Promise.all(promises)
   }

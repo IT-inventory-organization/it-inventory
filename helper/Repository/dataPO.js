@@ -48,43 +48,52 @@ const updateDataPO = async(data, query, transaction) => {
     }
 }
 
-const getAllPurchaseOrder = async (req, idUser) => {
+const getAllPurchaseOrder = async (req, idUser, list = false) => {
     try {
-        const query = {
-            include: [
-                {
-                    model: barangPO,
-                    required: true,
-                    attributes: []
-                },
-                {
-                    model: Report,
-                    required: true,
-                    attributes: [],
-                    include: [
-                        {
-                            model: DataKapal,
-                            required: true,
-                            attributes: []
+        if(list){
+            const query = {
+                include: [
+                    
+                ]
+            }
+            const result = await dataPO.findAll()
+        }else{
+            const query = {
+                include: [
+                    {
+                        model: barangPO,
+                        required: true,
+                        attributes: []
+                    },
+                    {
+                        model: Report,
+                        required: true,
+                        attributes: [],
+                        include: [
+                            {
+                                model: DataKapal,
+                                required: true,
+                                attributes: []
+                            }
+                        ],
+                        where: {
+                            userId: idUser
                         }
-                    ],
-                    where: {
-                        userId: idUser
+                    },
+                ],
+                where: {
+                    reportId: {
+                        [Op.not]: null 
                     }
                 },
-            ],
-            where: {
-                reportId: {
-                    [Op.not]: null 
-                }
-            },
-            plain: false,
+                plain: false,
 
-            attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
-        }
-        const result = dataPO.findAll(query); 
+                attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
+            }
+            const result = dataPO.findAll(query); 
 
-        return result;
+            return result
+        };
     } catch (error) {
         throw error;
     }
@@ -111,7 +120,10 @@ const viewOnePo = async(req, idUser, idPO) => {
                 }
             ],
             where: {
-                id: idPO
+                id: idPO,
+                isDelete: {
+                    [Op.ne]: null
+                }
             },
             attributes: {
                 exclude: ['id', 'createdAt', 'updatedAt', 'reportId']
@@ -125,6 +137,17 @@ const viewOnePo = async(req, idUser, idPO) => {
     } catch (error) {
         throw error
     }
+}
+
+const checkPurchaseOrderExistance = async (nomorPo) => {
+    return await dataPO.findOne({
+        where: {
+            nomorPo: nomorPo,
+            isDelete: {
+                [Op.ne]: null
+            }
+        } 
+    })
 }
 
 const deletePurchaseOrderPerId = async(req, idUser, idPO) => {
@@ -152,5 +175,6 @@ module.exports = {
     updateDataPO,
     getAllPurchaseOrder,
     viewOnePo,
-    deletePurchaseOrderPerId
+    deletePurchaseOrderPerId,
+    checkPurchaseOrderExistance
 }
