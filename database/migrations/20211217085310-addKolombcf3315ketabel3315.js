@@ -1,7 +1,5 @@
 'use strict';
 
-// const { promises } = require("nodemailer/lib/xoauth2");
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     /**
@@ -12,7 +10,7 @@ module.exports = {
      */
     const promises = [
       await queryInterface.addColumn('bcf3315', 'nomorbcf3314', {
-        type: Sequelize.DATE
+        type: Sequelize.STRING
       })
     ]
     return Promise.all(promises)
