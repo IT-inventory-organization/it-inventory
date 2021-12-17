@@ -80,7 +80,10 @@ const setAssociations = function() {
   PO.hasOne(bcf3315, {foreignKey: 'poId'});
   bcf3315.belongsTo(PO, {foreignKey: 'id'});
 
-  
+  // Relation Barang Purchase Order With Data Barang
+  barangPO.hasOne(dataBarang, {foreignKey: 'id'});
+  dataBarang.belongsTo(barangPO, {foreignKey: 'idBarang'});
+
   /**
    * * Roles Relation With User
    * * Success

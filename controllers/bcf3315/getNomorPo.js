@@ -4,7 +4,7 @@ const authentication = require('../../middlewares/authentication');
 
 const httpStatus = require('../../helper/Httplib');
 const { fetchBarangAfterChoosingKapalPenjual } = require('../../helper/Repository/dataBarang');
-const { getAllPurchaseOrderForBCF3315 } = require('../../helper/Repository/dataPO');
+const { getAllPurchaseOrderForBCF3315, getBarangForBCF3315AfterChoosingNumberPurchaseOrder } = require('../../helper/Repository/dataPO');
 
 const getNomorPurchaseOrderBasedUserInfo = async (req, res) => {
     try {
@@ -12,7 +12,7 @@ const getNomorPurchaseOrderBasedUserInfo = async (req, res) => {
 
         const result = await getAllPurchaseOrderForBCF3315(res, isUser, true);
     
-        return successResponse(res, httpStatus.ok, "", result, true);
+        return successResponse(res, httpStatus.ok, "", result, false);
     } catch (error) {
         console.log(error);
         return errorResponse(res, error.status, "Gagal Mengambil Kapal Penjual");
@@ -21,11 +21,12 @@ const getNomorPurchaseOrderBasedUserInfo = async (req, res) => {
 
 const getBarangPurchaseOrderBasedNomorPurchaseOrderThatBeenChoosed = async (req, res) => {
     try {
+        // console.log(req.params);
         const {id} = req.params;
+        
+        const result = await getBarangForBCF3315AfterChoosingNumberPurchaseOrder(req, req.currentUser, id);
 
-        const result = await fetchBarangAfterChoosingKapalPenjual(req, id);
-
-        return successResponse(res, httpStatus.ok, "", result, true);
+        return successResponse(res, httpStatus.ok, "", result, false);
     } catch (error) {
         return errorResponse(res, error.status, error.message, "");
     }

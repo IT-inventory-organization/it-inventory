@@ -2,6 +2,7 @@ const { file } = require('nconf');
 const { Op } = require('sequelize');
 const barangPO = require('../../database/models/barang_po');
 const bcf3315 = require('../../database/models/bcf3315');
+const dataBarang = require('../../database/models/data_barang');
 const DataKapal = require('../../database/models/data_kapal');
 const dataPO = require('../../database/models/po');
 const Report = require('../../database/models/report');
@@ -113,6 +114,7 @@ const getAllPurchaseOrderForBCF3315 = async (req, idUser) => {
                     [Op.ne]: null
                 }
             },
+            attributes: ['nomorPO', 'id'],
             plain:false,
         }
 
@@ -131,10 +133,44 @@ const getAllPurchaseOrderForBCF3315 = async (req, idUser) => {
     }
 }
 
-const getBarangForBCF3315AfterChoosingNumberPurchaseOrder = async(req, idUser, nomorPO) => {
+const getBarangForBCF3315AfterChoosingNumberPurchaseOrder = async(req, idUser, idPO) => {
     try {
-        
+        const query = {
+            include: [
+                {
+                    model: dataBarang,
+                    attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenis']],
+                    required: true
+                },
+                {
+                    model: dataPO,
+                    attributes: [],
+                    include: [
+                        {
+                            model: Report,
+                            where: {
+                                userId: idUser
+                            },
+                            attributes: [],
+                            required: true
+                        }
+                    ],
+                    // required: true
+                }
+            ],
+            logging: console.log,
+            attributes: [['satuanKemasan', 'satuan',], ['jumlah', 'perkiraanJumlah']],
+            plain: false,
+            where: {
+                poId: idPO
+            }
+        }; 
+
+        const result = await barangPO.findAll(query);
+
+        return result;
     } catch (error) {
+        console.log(error)
         throw error;
     }
 }
