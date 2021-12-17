@@ -20,7 +20,28 @@ const saveDataBarang = async(data, transaction) => {
         }
     }
 }
+
+const fetchBarangAfterChoosingKapalPenjual = async (req, idReport) => {
+    try {
+        const query = {
+            where: {
+                reportId: idReport
+            },
+            attributes:['id', 'kodeBarang']
+        }
+
+        const fetched = await dataBarang.findAll(query);
+        if(!fetched){
+            throw NotFoundException('Data Barang Pada Kapal Tidak Di Temukan');
+        }
+
+        return fetched;
+    } catch (error) {
+        returnError(error, "Gagal Memproses Data Kapal Penjual");
+    }
+}
 module.exports = {
     saveDataBarang,
-    getDataBarang
+    getDataBarang,
+    fetchBarangAfterChoosingKapalPenjual
 }

@@ -12,6 +12,7 @@ module.exports = {
             throw new ServerFault('Terjadi Kesalahan Pada Server')
         }
         const existed = await model.findOne(query);
+        // console.log(existed.toJSON())
         if(!existed){
             throw new NotFoundException("Data Tidak Ada")
         }

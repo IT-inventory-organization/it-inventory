@@ -70,7 +70,7 @@ const createListBarang = async(req, res) => {
 
         return successResponse(res, Http.created, "Berhasil Membuat Barang", resultBarang);
     } catch (error) {
-        console.log(error)
+
         if(trans){
             await trans.rollback()
         }
@@ -116,7 +116,7 @@ const updateDataBarang = async (req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, `Update Success`, dataToReturn);
     } catch (error) {
-        console.log(error)
+
         if(transaction) {
             await transaction.rollback();
         }
