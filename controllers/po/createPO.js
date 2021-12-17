@@ -9,9 +9,12 @@ const { saveDataBarangPO } = require('../../helper/Repository/dataBarangPO');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const { convertForInputDateOnly } = require('../../helper/convert');
 const { checkFormat } = require('../../helper/checkDateFormat');
-// const { internalServerError } = require('../../helper/Httplib');
+const { AESDecrypt } = require('../../helper/encription');
+const InvoicePO = require('../../database/models/invoice_po');
+
 
 const validationPO = [
+
     body('lists.dataPO.PurchaseOrder.kapalPenjual').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Penjual"),
     body('lists.dataPO.PurchaseOrder.nomorPO').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Nomor Purchase Order"),
     body('lists.dataPO.PurchaseOrder.tanggalPurchaseOrder').trim().custom(checkFormat),
@@ -27,6 +30,7 @@ const validationBarangPO = [
     body('lists.dataPO.ListPurchaseOrderItem.*.hargaSatuan').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Harga Satuam"),
     body('lists.dataPO.ListPurchaseOrderItem.*.jumlah').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah"),
 ]
+
 
 const bundle = (req, res, next) => {
     try {
@@ -55,7 +59,7 @@ const bundleDataBarangPO = (req, res, next) => {
             ...req.body.lists,
             listDataBarangPO: Decrypt.listDataBarangPO,
         }
-        
+
         next();    
     } catch (error) {
         throw errorResponse(res, Http.badRequest, 'Gagal Menyimpan Data Barang');
@@ -83,6 +87,7 @@ const createListPO = async(req, res) => {
         const result = await saveDataPO(lists.dataPO.PurchaseOrder, trans);
 
         const json = result.toJSON();
+
         
         for(let i = 0; i < lists.dataPO.ListPurchaseOrderItem.length; i++){
             lists.dataPO.ListPurchaseOrderItem[i].poId = json.id;
@@ -110,5 +115,5 @@ module.exports = routes => {
         validationPO,
         validationBarangPO,
         validationResponse,
-        createListPO); // Get Al
+        createListPO); 
 }

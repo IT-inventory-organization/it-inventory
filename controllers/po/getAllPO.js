@@ -1,3 +1,4 @@
+
 const { errorResponse, successResponse } = require('../../helper/Response');
 const authentication = require('../../middlewares/authentication');
 
@@ -16,6 +17,7 @@ const getAllPO = async(req, res) => {
     } 
 }
 
+
 module.exports = routes => {
-    routes.get('/', authentication ,getAllPO)
+    routes.get('/', authentication, getAllPO); // Get Al
 }
