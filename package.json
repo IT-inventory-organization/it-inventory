@@ -41,5 +41,8 @@
     "nodemailer": "^6.7.2",
     "pg": "^8.7.1",
     "sequelize": "^6.9.0"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.3.0"
   }
 }
