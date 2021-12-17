@@ -47,21 +47,6 @@ const {
 } = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
-<<<<<<< HEAD
-const { saveDataTambahan, updateDataTambahan } = require('../../helper/Repository/dataTambahan');
-const { saveDataPelabuhan, updateDataPelabuhanRepo } = require('../../helper/Repository/dataPelabuhan');
-const { saveDataKapal, updateDataKapalRepo } = require('../../helper/Repository/dataKapal');
-const { saveIdentitasBarang, updateIdentitasBarangRepo } = require('../../helper/Repository/identitasBarang');
-
-const { savePenjualBarang, updatePenjualBarangRepo } = require('../../helper/Repository/penjualBarang');
-const { savePengirimBarang, updatePengirimBarangRepo } = require('../../helper/Repository/pengirmBarang');
-const { savePengusahaPLB, updatePengusahaPLBRepo } = require('../../helper/Repository/pengusahaPLB');
-const { saveDataPpjk, updateDataPpjkRepo } = require('../../helper/Repository/dataPpjk');
-const { saveMataUang, updateMataUangRepo } = require('../../helper/Repository/mataUang');
-const { saveDataPengangkutan, updateDataPengangkutanRepo } = require('../../helper/Repository/dataPengangkutan');
-const { saveTempatPenimbunan, updateTempatPenimbunanRepo } = require('../../helper/Repository/tempatPenimbunan');
-const { saveBeratDanVolume, updateBeratDanVolumeRepo } = require('../../helper/Repository/beratDanVolume');
-=======
 const { saveDataTambahan, updateDataTambahan, getDataTambahan } = require('../../helper/Repository/dataTambahan');
 const { saveDataPelabuhan, updateDataPelabuhanRepo, getDataPelabuhan } = require('../../helper/Repository/dataPelabuhan');
 const { saveDataKapal, updateDataKapalRepo, getDataKapal } = require('../../helper/Repository/dataKapal');
@@ -74,7 +59,6 @@ const { saveMataUang, updateMataUangRepo, getMataUang } = require('../../helper/
 const { saveDataPengangkutan, updateDataPengangkutanRepo, getDataPengangkutan } = require('../../helper/Repository/dataPengangkutan');
 const { saveTempatPenimbunan, updateTempatPenimbunanRepo, getTempatPenimbunan } = require('../../helper/Repository/tempatPenimbunan');
 const { saveBeratDanVolume, updateBeratDanVolumeRepo, getBeratDanVolume } = require('../../helper/Repository/beratDanVolume');
->>>>>>> d37eeb43983f90a527411d5965ee82c490b1f41f
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { savePembeliBarang, updatePembeliBarangRepo, getPembeliBarang } = require('../../helper/Repository/pembeliBarang');
@@ -712,45 +696,6 @@ const getPLB = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = 
     }
 }
 
-<<<<<<< HEAD
-module.exports = {
-    getPLB
-}
-
-// const getAllPO = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null, status = null) => {
-//     try {
-//         let searchUser = 'AND';
-//         let qtSearch = '';
-//         let orderQuery = '';
-//         let typeQuery = '';
-//         let statusQuery = '';
-//         const limit = pageSize  ? +pageSize : 10
-//         const offset = pageNo ? (+pageNo - 1) * pageSize : 0
-
-//         switch (sortBy){
-//             case 'oldest':
-//                 orderQuery+=`ORDER BY "RP"."createdAt ASC`;
-//                 break;
-//             default:
-//                 orderQuery+=`ORDER BY "RP"."createdAt DESC`;
-//                 break;
-//         }
-
-//         if(req.currentRole !== "Admin" && req.currentRole !== "Owner") {
-//             searchUser+=`"RP"."userId" = ${req.currentUser}`;
-//         }
-
-//         if(searchQuery != null){
-//             if(req.currentRole !== "Admin" && req.currentRole !== "Owner"){
-//                 qtSearch+=`AND `;
-//             }
-//             qtSearch+=`("RP".")`
-//         }
-
-//     }
-// }
-=======
 // module.exports = {
 //     getPLB
 // }
->>>>>>> d37eeb43983f90a527411d5965ee82c490b1f41f

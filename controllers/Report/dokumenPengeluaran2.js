@@ -1,7 +1,7 @@
 const { errorResponse, successResponse } = require('../../helper/Response')
 const Http = require('../../helper/Httplib');
 const { 
-    formatDataDokumenPengeluaran,
+    // formatDataDokumenPengeluaran,
     formatDataDokumenMasukan, 
     formatDataDokumenTambahan, 
     formatDataDokumenPelabuhan,
@@ -173,7 +173,7 @@ const updateDokumenPemasukan = async(req,res) => {
 module.exports = routes => {
     routes.post('/save/pengeluaran',
         authentication,
-        formatDataDokumenPengeluaran,
+        // formatDataDokumenPengeluaran,
         formatDataDokumenMasukan,
         formatDataDokumenTambahan,
         formatDataDokumenPelabuhan,

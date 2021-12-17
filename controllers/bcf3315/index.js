@@ -8,19 +8,19 @@ const { successResponse } = require('../../helper/Response');
 
 const list = async(req, res) => {
     try {
-		const data = await Form3315.findAll({
-			attributes: ["nama", "nomorPO", "tanggal", "nomorFormBcf3315"]
+		const form3315 = await Form3315.findAll({
+			attributes: ["nama", "tanggal", "nomorFormBcf3315"],
+			include: {
+				model: po,
+				attributes: ["nomorPO"],
+				as: 'nomorPO'
+			}
 		});
-		return res.json({
-			status: "ok",
-			data: data
-		})
-    }catch(error){
-		res.status(500).json({
-			status:'error',
-			data: error
-		})
-	}
+		return successResponse(res, Http.ok, "Success", form3315, false);
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+    }
 }
 
 
@@ -104,9 +104,44 @@ const create = async(req, res) => {
 			return errorResponse(res, Http.internalServerError, "validation error", errors.array());
 		}
 		const body = matchedData(req);
+
 		transaction = await sequelize.transaction();
 
-		const data = await Form3315.create(body, { transaction });
+		const form3315 = await Form3315.create(body, {transaction, include: ['nomorPO']});
+
+		// const getDataBarang = async(req, res) => {
+		// 	try {
+		// 		const dataBarang = await 
+		// 	}
+		// }
+
+		// const list = async(req, res) => {
+		// 	try {
+		// 		const form3315 = await Form3315.findAll({
+		// 			attributes: ["nama", "tanggal", "nomorFormBcf3315"],
+		// 			include: {
+		// 				model: po,
+		// 				attributes: ["nomorPO"],
+		// 				as: 'nomorPO'
+		// 			}
+		// 		});
+		// 		return successResponse(res, Http.ok, "Success", form3315, false);
+		// 	} catch (error) {
+		// 		console.error(error);
+		// 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+		// 	}
+		// }
+
+		// const produksi = await ProduksiBarang.create(body, { transaction, include: ['details'] });
+        // const updateHasil = await DataBarang.update({
+        //     stock: sequelize.literal(`stock + ${produksi.quantity}`)
+        // }, {
+        //     where: {
+        //         id: produksi.dataBarangId
+        //     }
+        // });
+
+
 		
 		if(transaction) await transaction.commit();
 		return successResponse(res, Http.ok, "Succes", data, false);
