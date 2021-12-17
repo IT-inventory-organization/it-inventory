@@ -1,6 +1,7 @@
 const { file } = require('nconf');
 const { Op } = require('sequelize');
 const barangPO = require('../../database/models/barang_po');
+const bcf3315 = require('../../database/models/bcf3315');
 const DataKapal = require('../../database/models/data_kapal');
 const dataPO = require('../../database/models/po');
 const Report = require('../../database/models/report');
@@ -48,16 +49,8 @@ const updateDataPO = async(data, query, transaction) => {
     }
 }
 
-const getAllPurchaseOrder = async (req, idUser, list = false) => {
+const getAllPurchaseOrder= async (req, idUser) => {
     try {
-        if(list){
-            const query = {
-                include: [
-                    
-                ]
-            }
-            const result = await dataPO.findAll()
-        }else{
             const query = {
                 include: [
                     {
@@ -93,7 +86,54 @@ const getAllPurchaseOrder = async (req, idUser, list = false) => {
             const result = dataPO.findAll(query); 
 
             return result
-        };
+   
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getAllPurchaseOrderForBCF3315 = async (req, idUser) => {
+    try {
+        const query = {
+            include: [
+                {
+                    model: bcf3315,
+                    attributes: ['id'],
+                },
+                {
+                    model: Report,
+                    attributes: [],
+                    where: {
+                        userId: idUser
+                    }
+                }
+            ],
+            where: {
+                nomorPO: {
+                    [Op.ne]: null
+                }
+            },
+            plain:false,
+        }
+
+        const result = await dataPO.findAll(query);
+        for (let i = 0; i < result.length; i++) {
+            const element = result[i].toJSON();
+            if(element.bcf3315){
+                delete result[i];
+            }
+            
+        }
+        // console.log(result);
+        return result
+    } catch (error) {
+        throw error;
+    }
+}
+
+const getBarangForBCF3315AfterChoosingNumberPurchaseOrder = async(req, idUser, nomorPO) => {
+    try {
+        
     } catch (error) {
         throw error;
     }
@@ -142,10 +182,8 @@ const viewOnePo = async(req, idUser, idPO) => {
 const checkPurchaseOrderExistance = async (nomorPo) => {
     return await dataPO.findOne({
         where: {
-            nomorPo: nomorPo,
-            isDelete: {
-                [Op.ne]: null
-            }
+            nomorPO: nomorPo,
+            isDelete: false
         } 
     })
 }
@@ -176,5 +214,7 @@ module.exports = {
     getAllPurchaseOrder,
     viewOnePo,
     deletePurchaseOrderPerId,
-    checkPurchaseOrderExistance
+    checkPurchaseOrderExistance,
+    getAllPurchaseOrderForBCF3315,
+    getBarangForBCF3315AfterChoosingNumberPurchaseOrder
 }

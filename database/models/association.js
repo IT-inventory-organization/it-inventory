@@ -22,6 +22,7 @@ const ProduksiBarang = require("./produksi_barang");
 const ProduksiBarangDetail = require("./produksi_barang_detail");
 const PO = require("./po");
 const barangPO = require("./barang_po");
+const bcf3315 = require("./bcf3315");
 
 const setAssociations = function() {
 
@@ -75,6 +76,11 @@ const setAssociations = function() {
   PO.belongsTo(Report, {foreignKey: 'reportId'});
   barangPO.belongsTo(PO, {foreignKey: 'id'})
 
+  // BCF Relation With Purchase Order
+  PO.hasOne(bcf3315, {foreignKey: 'poId'});
+  bcf3315.belongsTo(PO, {foreignKey: 'id'});
+
+  
   /**
    * * Roles Relation With User
    * * Success

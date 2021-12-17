@@ -17,7 +17,7 @@ const validationPO = [
 
     body('lists.dataPO.PurchaseOrder.kapalPenjual').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Penjual"),
     body('lists.dataPO.PurchaseOrder.nomorPO').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Nomor Purchase Order").custom(value => {
-        return checkPurchaseOrderExistance(value)
+        return checkPurchaseOrderExistance(`PO-${value}`)
         .then((d) => {
             if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
         });
@@ -40,7 +40,7 @@ const validationBarangPO = [
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataPO);
-
+        console.log(Decrypt);
         req.body.lists = {
             dataPO: Decrypt,
             // reportId: Decrypt.reportId
