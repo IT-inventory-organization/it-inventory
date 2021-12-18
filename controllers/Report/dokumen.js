@@ -3,7 +3,7 @@ const Http = require('../../helper/Httplib');
 let jsonxml = require('jsontoxml');
 const { 
     formatDataDokumenMasukan,
-    formatDataDokumenKeluaran,
+    formatDataDokumenPengeluaran,
     formatDataDokumenTambahan,
     formatDataDokumenPelabuhan,
     formatDataDokumenKapal,
@@ -234,7 +234,7 @@ const getDokumenPemasukan = async(req, res) => {
 }
 
 const formatSavePengeluaran = [
-    formatDataDokumenKeluaran,
+    formatDataDokumenPengeluaran,
     formatDataDokumenTambahan,
     formatDataDokumenPelabuhan,
     formatDataDokumenKapal,

@@ -1,7 +1,5 @@
 'use strict';
 
-// const { promises } = require("nodemailer/lib/xoauth2");
-
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     /**
@@ -11,9 +9,8 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     const promises = [
-      await queryInterface.addColumn('bcf3315', 'status', {
       await queryInterface.addColumn('bcf3315', 'nomorbcf3314', {
-        type: Sequelize.DATE
+        type: Sequelize.STRING
       })
     ]
     return Promise.all(promises)
@@ -27,7 +24,6 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     const promises = [
-      await queryInterface.removeColumn('bcf3315', 'status')
       await queryInterface.removeColumn('bcf3315', 'nomorbcf3314')
     ]
     return Promise.all(promises)
