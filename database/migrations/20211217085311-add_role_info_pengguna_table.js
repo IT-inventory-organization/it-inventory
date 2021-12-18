@@ -8,12 +8,13 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    // const promises = [
-    //   await queryInterface.addColumn('bcf3315', 'nomorbcf3314', {
-    //     type: Sequelize.STRING
-    //   })
-    // ]
-    // return Promise.all(promises)
+     const promises = [
+      await queryInterface.addColumn('infoPengguna', 'roleEnum', {
+        type: Sequelize.ENUM('SUPER_USER', 'ADMIN', 'BC', 'PLB'),
+        defaultValue: 'ADMIN'
+      })
+    ];
+    return Promise.all(promises)
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -23,9 +24,9 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    const promises = [
-      await queryInterface.removeColumn('bcf3315', 'nomorbcf3314')
-    ]
+     const promises = [
+      await queryInterface.removeColumn('infoPengguna', 'roleEnum')
+    ];
     return Promise.all(promises)
   }
 };

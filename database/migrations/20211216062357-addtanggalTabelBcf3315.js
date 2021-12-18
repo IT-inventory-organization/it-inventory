@@ -10,12 +10,12 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    const promises = [
-      await queryInterface.addColumn('bcf3315', 'nomorbcf3314', {
-        type: Sequelize.DATE
-      })
-    ]
-    return Promise.all(promises)
+    // const promises = [
+    //   await queryInterface.addColumn('bcf3315', 'nomorbcf3314', {
+    //     type: Sequelize.DATE
+    //   })
+    // ]
+    // return Promise.all(promises)
   },
 
   down: async (queryInterface, Sequelize) => {
