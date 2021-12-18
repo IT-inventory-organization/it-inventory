@@ -22,7 +22,7 @@ const formatDataDokumenMasukan = (req, res, next) => {
     }
 }
 
-const formatDataDokumenPengeluaran = (req, res, next) => {
+const formatDataDokumenKeluaran = (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -33,7 +33,6 @@ const formatDataDokumenPengeluaran = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-
         next();
     } catch (error) {
         
@@ -286,7 +285,7 @@ const formatDataDokumenTempatPenimbunan = (req, res, next) => {
 
 module.exports = {
     formatDataDokumenMasukan,
-    formatDataDokumenPengeluaran,
+    formatDataDokumenKeluaran,
     formatDataDokumenTambahan,
     formatDataDokumenPelabuhan,
     formatDataDokumenKapal,
