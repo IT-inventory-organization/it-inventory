@@ -1,6 +1,5 @@
 'use strict';
 
-// const { promises } = require("nodemailer/lib/xoauth2");
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
