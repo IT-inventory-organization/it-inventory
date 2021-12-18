@@ -36,10 +36,8 @@ const updateDataPO = async(data, query, transaction) => {
             // plain: true
         })
 
-        // return result[1].toJSON();
         return result[1];
     } catch (error) {
-
         if (error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         } else if (error.name == "ServerFault" || error.name == 'NotFoundException'){
@@ -125,7 +123,6 @@ const getAllPurchaseOrderForBCF3315 = async (req, idUser) => {
             }
             
         }
-        // console.log(result);
         return result
     } catch (error) {
         throw error;

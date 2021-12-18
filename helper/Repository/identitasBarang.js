@@ -16,7 +16,6 @@ const saveIdentitasBarang = async(data, transaction) => {
 
         return result
     } catch (error) {
-
         
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");

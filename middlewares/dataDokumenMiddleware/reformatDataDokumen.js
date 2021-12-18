@@ -33,7 +33,6 @@ const formatDataDokumenKeluaran = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-
         next();
     } catch (error) {
         
