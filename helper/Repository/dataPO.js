@@ -1,4 +1,3 @@
-const { file } = require('nconf');
 const { Op } = require('sequelize');
 const barangPO = require('../../database/models/barang_po');
 const bcf3315 = require('../../database/models/bcf3315');
@@ -11,13 +10,11 @@ const { isExist } = require("../checkExistingDataFromTable");
 
 const saveDataPO = async(data, transaction) => {
     try {
-        const res = await dataPO.create(data, {
+        return await dataPO.create(data, {
             transaction,
             returning: true
-        })
-        return res;
+        });
     } catch (error) {
-
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server')
         }else{
@@ -86,6 +83,7 @@ const getAllPurchaseOrder= async (req, idUser) => {
             return dataPO.findAll(query); 
    
     } catch (error) {
+        console.log(error)
         throw error;
     }
 }
@@ -125,6 +123,7 @@ const getAllPurchaseOrderForBCF3315 = async (req, idUser) => {
         }
         return result
     } catch (error) {
+        console.log(error);
         throw error;
     }
 }
@@ -205,6 +204,7 @@ const viewOnePo = async(req, idUser, idPO) => {
         
         return await dataPO.findOne(query);
     } catch (error) {
+        console.log(error)
         throw error
     }
 }
