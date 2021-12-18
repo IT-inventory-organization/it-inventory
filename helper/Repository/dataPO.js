@@ -84,9 +84,8 @@ const getAllPurchaseOrder= async (req, idUser) => {
 
                 attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
             }
-            const result = dataPO.findAll(query); 
-
-            return result
+            
+            return dataPO.findAll(query); 
    
     } catch (error) {
         throw error;
@@ -138,37 +137,36 @@ const getBarangForBCF3315AfterChoosingNumberPurchaseOrder = async(req, idUser, i
         const query = {
             include: [
                 {
-                    model: dataBarang,
-                    attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenis']],
-                    required: true
+                    model: barangPO,
+                    attributes: [['satuanKemasan', 'satuan',], ['jumlah', 'perkiraanJumlah']],
+                    required: true,
+                    where: {
+                        poId: idPO
+                    }
                 },
                 {
-                    model: dataPO,
+                    model: Report,
                     attributes: [],
+                    required: true,
+                    where: {
+                        userId: idUser
+                    },
                     include: [
                         {
-                            model: Report,
-                            where: {
-                                userId: idUser
-                            },
-                            attributes: [],
-                            required: true
+                            model: dataPO,
+                            required: true,
+                            attributes:[]
                         }
-                    ],
-                    // required: true
+                    ]
                 }
             ],
             logging: console.log,
-            attributes: [['satuanKemasan', 'satuan',], ['jumlah', 'perkiraanJumlah']],
-            plain: false,
-            where: {
-                poId: idPO
-            }
+            attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenis']],
+            // raw: true
         }; 
 
-        const result = await barangPO.findAll(query);
-
-        return result;
+        
+        return await dataBarang.findAll(query);
     } catch (error) {
         console.log(error)
         throw error;
@@ -207,16 +205,15 @@ const viewOnePo = async(req, idUser, idPO) => {
             plain:true
         }
 
-        const result = await dataPO.findOne(query);
-
-        return result
+        
+        return await dataPO.findOne(query);
     } catch (error) {
         throw error
     }
 }
 
 const checkPurchaseOrderExistance = async (nomorPo) => {
-    return await dataPO.findOne({
+    return dataPO.findOne({
         where: {
             nomorPO: nomorPo,
             isDelete: false
