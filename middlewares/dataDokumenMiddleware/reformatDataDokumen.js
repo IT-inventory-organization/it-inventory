@@ -22,7 +22,11 @@ const formatDataDokumenMasukan = (req, res, next) => {
     }
 }
 
+<<<<<<< HEAD
 const formatDataDokumenPengeluaran = (req, res, next) => {
+=======
+const formatDataDokumenKeluaran = (req, res, next) => {
+>>>>>>> 352c5c4597c62d05a2a532fe0a22749db9fedfc6
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -286,7 +290,7 @@ const formatDataDokumenTempatPenimbunan = (req, res, next) => {
 
 module.exports = {
     formatDataDokumenMasukan,
-    formatDataDokumenPengeluaran,
+    formatDataDokumenKeluaran,
     formatDataDokumenTambahan,
     formatDataDokumenPelabuhan,
     formatDataDokumenKapal,
