@@ -24,10 +24,6 @@ const PO = require("./po");
 const barangPO = require("./barang_po");
 const BCF3315 = require("./bcf3315");
 const Approval = require("./approval");
-<<<<<<< HEAD
-=======
-
->>>>>>> 352c5c4597c62d05a2a532fe0a22749db9fedfc6
 
 const setAssociations = function() {
 
