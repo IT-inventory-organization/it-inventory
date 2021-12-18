@@ -1,10 +1,11 @@
 const { body, validationResult, matchedData } = require('express-validator');
-const { errorResponse, succesResponse } = require('../../helper/bcrypt');
+const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const Form3315 = require('../../database/models/bcf3315');
 const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
-const { successResponse } = require('../../helper/Response');
+// const { successResponse } = require('../../helper/Response');
+const dataBarang = require('../../database/models/data_barang');
 
 const list = async(req, res) => {
     try {
@@ -27,12 +28,12 @@ const list = async(req, res) => {
 const onCreateValidation = [
 	body('nomorPO')
 		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
-		.custom(value => {
-			return Form3315.findOne({ where: {nomorPo: value} })
-			.then((d) => {
-				if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
-			});
-		})
+		// .custom(value => {
+		// 	return Form3315.findOne({ where: {nomorPo: value} })
+		// 	.then((d) => {
+		// 		if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
+		// 	});
+		// })
 		.trim(),
 	body('tanggal')
 		.notEmpty().withMessage('kolom tanggal kosong, perlu di isi')
@@ -67,7 +68,7 @@ const onCreateValidation = [
 		.notEmpty().withMessage('kolom nama exportir / pengusaha plb / pplb kosong, perlu di isi')
 		.trim()
 		,
-	body('lokasi PLB')
+	body('lokasiPLB')
 		.notEmpty().withMessage('kolom lokasi plb penimbunan kosong, perlu di isi')
 		.trim()
 		,
@@ -107,52 +108,16 @@ const create = async(req, res) => {
 
 		transaction = await sequelize.transaction();
 
-		const form3315 = await Form3315.create(body, {transaction, include: ['nomorPO']});
-
-		// const getDataBarang = async(req, res) => {
-		// 	try {
-		// 		const dataBarang = await 
-		// 	}
-		// }
-
-		// const list = async(req, res) => {
-		// 	try {
-		// 		const form3315 = await Form3315.findAll({
-		// 			attributes: ["nama", "tanggal", "nomorFormBcf3315"],
-		// 			include: {
-		// 				model: po,
-		// 				attributes: ["nomorPO"],
-		// 				as: 'nomorPO'
-		// 			}
-		// 		});
-		// 		return successResponse(res, Http.ok, "Success", form3315, false);
-		// 	} catch (error) {
-		// 		console.error(error);
-		// 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
-		// 	}
-		// }
-
-		// const produksi = await ProduksiBarang.create(body, { transaction, include: ['details'] });
-        // const updateHasil = await DataBarang.update({
-        //     stock: sequelize.literal(`stock + ${produksi.quantity}`)
-        // }, {
-        //     where: {
-        //         id: produksi.dataBarangId
-        //     }
-        // });
-
-
-		
-		if(transaction) await transaction.commit();
-		return successResponse(res, Http.ok, "Succes", data, false);
-	}catch(error){
-		console.error(error);
-		if(transaction) await transaction.rollback();
-		return errorResponse(res, Http.internalServerError, 'terjadi kesalahan')
-	}
+		transaction.commit();
+		return successResponse(res, Http.ok, "Succes", false);
+	} catch (error) {
+        console.error(error);
+        if (transaction) await transaction.rollback();
+        return errorResponse(res, Http.internalServerError, "Something went wrong");
+    }
 }
 
 module.exports = routes => {
-	routes.get('/', authentication, list),
+	// routes.get('/', authentication, list),
 	routes.post('/create', authentication, onCreateValidation, create)
 }

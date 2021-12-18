@@ -23,6 +23,7 @@ const ProduksiBarangDetail = require("./produksi_barang_detail");
 const PO = require("./po");
 const barangPO = require("./barang_po");
 const BCF3315 = require("./bcf3315");
+const Approval = require("./approval");
 
 const setAssociations = function() {
 
@@ -104,6 +105,9 @@ const setAssociations = function() {
   ProduksiBarang.hasMany(ProduksiBarangDetail, { as: 'details' });
   ProduksiBarangDetail.belongsTo(ProduksiBarang, { foreignKey: 'produksiBarangId' });
   ProduksiBarangDetail.belongsTo(dataBarang, { foreignKey: 'dataBarangId' });
+
+  BCF3315.hasMany(Approval, { foreignKey: 'bcfId' });
+  Approval.belongsTo(BCF3315, { foreignKey: 'bcfId' });
 };
 
 module.exports = setAssociations;
