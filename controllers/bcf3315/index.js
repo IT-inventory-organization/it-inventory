@@ -151,7 +151,7 @@ const create = async(req, res) => {
         if (transaction) await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Something went wrong");
     }
-
+}
 
 module.exports = routes => {
 	// routes.get('/', authentication, list),

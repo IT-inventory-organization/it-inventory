@@ -695,7 +695,6 @@ const getPLB = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = 
     }
 }
 
-<<<<<<< HEAD
 // const getAllPO = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null, status = null) => {
 //     try {
 //         let searchUser = 'AND';
@@ -727,10 +726,6 @@ const getPLB = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = 
 //         }
 
 //     }
-=======
-// module.exports = {
-//     getPLB
->>>>>>> 81a3e6b4f6171f2c00e0a30555be0d6810ea9909
 // }
 
 // module.exports = {

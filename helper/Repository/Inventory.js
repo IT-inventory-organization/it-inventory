@@ -27,7 +27,7 @@ const getAllInventory = async (req, idUser) => {
                 },
                 {
                     model: dataBarang,
-                    attributes: ['kodeBarang', 'namaBarang', ['uraian', 'itemDeskripsi'], 'satuanKemasan', ['stock', 'quantity']],
+                    attributes: ['id','kodeBarang', 'namaBarang', ['uraian', 'itemDeskripsi'], 'satuanKemasan', ['stock', 'quantity']],
                     required: true
                 }
             ],
@@ -39,9 +39,7 @@ const getAllInventory = async (req, idUser) => {
             // logging: console.log
         }
 
-        const result = await Report.findAll(query);
-
-        return result;
+        return await Report.findAll(query);
     } catch (error) {
         throw error;
     }
