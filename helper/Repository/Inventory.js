@@ -34,7 +34,7 @@ const getAllInventory = async (req, idUser) => {
             where: {
                 userId: idUser
             },
-            attributes: [['jenisPemberitahuan', 'jenisDokumen']],
+            attributes: [['jenisPemberitahuan', 'jenisDokumen'],['id','reportId']],
             plain: false,
             // logging: console.log
         }
