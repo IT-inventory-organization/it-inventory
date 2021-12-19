@@ -24,7 +24,8 @@ const listPLB = async(limit, offset, query = {}) => {
         const query = {
             where: {
                 isDelete: false,
-                ...query
+                // ...query
+                // BUG: ERROR HERE
             },
             attributes: {
                 exclude: ['updatedAt', 'isDelete']
@@ -52,6 +53,7 @@ const listPLB = async(limit, offset, query = {}) => {
         // if (!data) throw new NotFoundException("Data Tidak Ditemukan");
         return data;
     } catch (error) {
+        console.log(error)
         if (error.name == "ReferenceError") {
             throw new ServerFault("Terjadi Kesalahan Pada Server")
         } else {

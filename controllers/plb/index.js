@@ -21,6 +21,7 @@ const findUserById = async(id) => {
 
 const list = async(req, res) => {
     try {
+        
         const { limit, offset } = req.query;
         const authUser = await findUserById(req.currentUser);
         // Todo: Check user role and add query
