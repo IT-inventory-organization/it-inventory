@@ -49,6 +49,7 @@ const setAssociations = function() {
   Report.hasOne(PenjualBarang, {foreignKey: 'reportId'});
   Report.hasOne(TempatPenimbunan, {foreignKey: 'reportId'});
   Report.hasMany(dataBarang, {foreignKey: 'reportId'});
+  Report.hasMany(PO, {foreignKey: 'reportId'});
 
   // Purchase Order
   Report.hasMany(PO, {foreignKey: 'reportId'});
@@ -72,11 +73,20 @@ const setAssociations = function() {
   PenjualBarang.belongsTo(Report, {foreignKey: 'reportId'});
   TempatPenimbunan.belongsTo(Report, {foreignKey: 'reportId'});
   dataBarang.belongsTo(Report, {foreignKey: 'reportId'});
+  PO.belongsTo(Report, {foreignKey: 'reportId'});
 
   // Purchase Order
   PO.belongsTo(Report, {foreignKey: 'reportId'});
   barangPO.belongsTo(PO, {foreignKey: 'id'})
 
+  // BCF Relation With Purchase Order
+  PO.hasOne(BCF3315, {foreignKey: 'poId'});
+  BCF3315.belongsTo(PO, {foreignKey: 'id'});
+
+  // Relation Barang Purchase Order With Data Barang
+  dataBarang.hasMany(barangPO, {foreignKey: 'idBarang'});
+  barangPO.belongsTo(dataBarang, {foreignKey: 'id'});
+ 
   /**
    * * Roles Relation With User
    * * Success

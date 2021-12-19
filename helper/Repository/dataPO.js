@@ -1,6 +1,7 @@
-const { file } = require('nconf');
 const { Op } = require('sequelize');
 const barangPO = require('../../database/models/barang_po');
+const bcf3315 = require('../../database/models/bcf3315');
+const dataBarang = require('../../database/models/data_barang');
 const DataKapal = require('../../database/models/data_kapal');
 const dataPO = require('../../database/models/po');
 const Report = require('../../database/models/report');
@@ -9,13 +10,11 @@ const { isExist } = require("../checkExistingDataFromTable");
 
 const saveDataPO = async(data, transaction) => {
     try {
-        const res = await dataPO.create(data, {
+        return await dataPO.create(data, {
             transaction,
             returning: true
-        })
-        return res;
+        });
     } catch (error) {
-
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server')
         }else{
@@ -34,10 +33,8 @@ const updateDataPO = async(data, query, transaction) => {
             // plain: true
         })
 
-        // return result[1].toJSON();
         return result[1];
     } catch (error) {
-
         if (error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         } else if (error.name == "ServerFault" || error.name == 'NotFoundException'){
@@ -48,44 +45,126 @@ const updateDataPO = async(data, query, transaction) => {
     }
 }
 
-const getAllPurchaseOrder = async (req, idUser) => {
+const getAllPurchaseOrder= async (req, idUser) => {
+    try {
+            const query = {
+                include: [
+                    {
+                        model: barangPO,
+                        required: true,
+                        attributes: []
+                    },
+                    {
+                        model: Report,
+                        required: true,
+                        attributes: [],
+                        include: [
+                            {
+                                model: DataKapal,
+                                required: true,
+                                attributes: []
+                            }
+                        ],
+                        where: {
+                            userId: idUser
+                        }
+                    },
+                ],
+                where: {
+                    reportId: {
+                        [Op.not]: null 
+                    }
+                },
+                plain: false,
+
+                attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
+            }
+            
+            return dataPO.findAll(query); 
+   
+    } catch (error) {
+        console.log(error)
+        throw error;
+    }
+}
+
+const getAllPurchaseOrderForBCF3315 = async (req, idUser) => {
+    try {
+        const query = {
+            include: [
+                {
+                    model: bcf3315,
+                    attributes: ['id'],
+                },
+                {
+                    model: Report,
+                    attributes: [],
+                    where: {
+                        userId: idUser
+                    }
+                }
+            ],
+            where: {
+                nomorPO: {
+                    [Op.ne]: null
+                }
+            },
+            attributes: ['nomorPO', 'id'],
+            plain:false,
+        }
+
+        const result = await dataPO.findAll(query);
+        for (let i = 0; i < result.length; i++) {
+            const element = result[i].toJSON();
+            if(element.bcf3315){
+                delete result[i];
+            }
+            
+        }
+        return result
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+const getBarangForBCF3315AfterChoosingNumberPurchaseOrder = async(req, idUser, idPO) => {
     try {
         const query = {
             include: [
                 {
                     model: barangPO,
+                    attributes: [['satuanKemasan', 'satuan',], ['jumlah', 'perkiraanJumlah']],
                     required: true,
-                    attributes: []
+                    where: {
+                        poId: idPO
+                    }
                 },
                 {
                     model: Report,
-                    required: true,
                     attributes: [],
-                    include: [
-                        {
-                            model: DataKapal,
-                            required: true,
-                            attributes: []
-                        }
-                    ],
+                    required: true,
                     where: {
                         userId: idUser
-                    }
-                },
-            ],
-            where: {
-                reportId: {
-                    [Op.not]: null 
+                    },
+                    include: [
+                        {
+                            model: dataPO,
+                            required: true,
+                            attributes:[]
+                        }
+                    ]
                 }
-            },
-            plain: false,
+            ],
+            logging: console.log,
+            attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenis']],
+            // raw: true
+        }; 
 
-            attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
-        }
-        const result = dataPO.findAll(query); 
-
-        return result;
+        
+        return await dataBarang.findAll(query);
     } catch (error) {
+        console.log(error)
         throw error;
     }
 }
@@ -111,7 +190,10 @@ const viewOnePo = async(req, idUser, idPO) => {
                 }
             ],
             where: {
-                id: idPO
+                id: idPO,
+                isDelete: {
+                    [Op.ne]: null
+                }
             },
             attributes: {
                 exclude: ['id', 'createdAt', 'updatedAt', 'reportId']
@@ -119,12 +201,21 @@ const viewOnePo = async(req, idUser, idPO) => {
             plain:true
         }
 
-        const result = await dataPO.findOne(query);
-
-        return result
+        
+        return await dataPO.findOne(query);
     } catch (error) {
+        console.log(error)
         throw error
     }
+}
+
+const checkPurchaseOrderExistance = async (nomorPo) => {
+    return dataPO.findOne({
+        where: {
+            nomorPO: nomorPo,
+            isDelete: false
+        } 
+    })
 }
 
 const deletePurchaseOrderPerId = async(req, idUser, idPO) => {
@@ -152,5 +243,8 @@ module.exports = {
     updateDataPO,
     getAllPurchaseOrder,
     viewOnePo,
-    deletePurchaseOrderPerId
+    deletePurchaseOrderPerId,
+    checkPurchaseOrderExistance,
+    getAllPurchaseOrderForBCF3315,
+    getBarangForBCF3315AfterChoosingNumberPurchaseOrder
 }

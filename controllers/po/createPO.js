@@ -4,7 +4,7 @@ const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
 const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
-const { saveDataPO } = require('../../helper/Repository/dataPO');
+const { saveDataPO, checkPurchaseOrderExistance } = require('../../helper/Repository/dataPO');
 const { saveDataBarangPO } = require('../../helper/Repository/dataBarangPO');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const { convertForInputDateOnly } = require('../../helper/convert');
@@ -16,7 +16,12 @@ const InvoicePO = require('../../database/models/invoice_po');
 const validationPO = [
 
     body('lists.dataPO.PurchaseOrder.kapalPenjual').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kapal Penjual"),
-    body('lists.dataPO.PurchaseOrder.nomorPO').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Nomor Purchase Order"),
+    body('lists.dataPO.PurchaseOrder.nomorPO').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Nomor Purchase Order").custom(value => {
+        return checkPurchaseOrderExistance(`PO-${value}`)
+        .then((d) => {
+            if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
+        });
+    }),
     body('lists.dataPO.PurchaseOrder.tanggalPurchaseOrder').trim().custom(checkFormat),
     body('lists.dataPO.PurchaseOrder.reportId').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Report Id"),
     body('lists.dataPO.PurchaseOrder.jumlahTotal').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Jumlah Total"),
@@ -35,7 +40,7 @@ const validationBarangPO = [
 const bundle = (req, res, next) => {
     try {
         const Decrypt = Crypt.AESDecrypt(req.body.dataPO);
-
+        console.log(Decrypt);
         req.body.lists = {
             dataPO: Decrypt,
             // reportId: Decrypt.reportId

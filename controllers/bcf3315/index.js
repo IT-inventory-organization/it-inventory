@@ -100,16 +100,52 @@ const onCreateValidation = [
 const create = async(req, res) => {
 	let transaction;
 	try {
-		const errors = validationResult(req);
-		if(!errors.isEmpty()){
-			return errorResponse(res, Http.internalServerError, "validation error", errors.array());
-		}
-		const body = matchedData(req);
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+          return errorResponse(res, Http.internalServerError, "validation error", errors.array());
+        }
+        const body = matchedData(req);
 
-		transaction = await sequelize.transaction();
+        transaction = await sequelize.transaction();
 
-		transaction.commit();
-		return successResponse(res, Http.ok, "Succes", false);
+
+        const form3315 = await Form3315.create(body, {transaction, include: ['nomorPO']});
+
+		// const getDataBarang = async(req, res) => {
+		// 	try {
+		// 		const dataBarang = await 
+		// 	}
+		// }
+
+		// const list = async(req, res) => {
+		// 	try {
+		// 		const form3315 = await Form3315.findAll({
+		// 			attributes: ["nama", "tanggal", "nomorFormBcf3315"],
+		// 			include: {
+		// 				model: po,
+		// 				attributes: ["nomorPO"],
+		// 				as: 'nomorPO'
+		// 			}
+		// 		});
+		// 		return successResponse(res, Http.ok, "Success", form3315, false);
+		// 	} catch (error) {
+		// 		console.error(error);
+		// 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+		// 	}
+		// }
+
+		// const produksi = await ProduksiBarang.create(body, { transaction, include: ['details'] });
+        // const updateHasil = await DataBarang.update({
+        //     stock: sequelize.literal(`stock + ${produksi.quantity}`)
+        // }, {
+        //     where: {
+        //         id: produksi.dataBarangId
+        //     }
+        // });
+
+
+        await transaction.commit();
+        return successResponse(res, Http.ok, "Succes", form3315);
 	} catch (error) {
         console.error(error);
         if (transaction) await transaction.rollback();
