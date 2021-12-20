@@ -37,7 +37,7 @@ const status = async(req, res) => {
 		}
 		
 		const menunggu = await Form3315.findAll(query)
-		return successResponse(res, Http.ok, "Success", menunggu, false);
+		return successResponse(res, Http.ok, "Success", status, false);
 	}catch(error){
 		console.error(error);
 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
