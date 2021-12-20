@@ -6,6 +6,7 @@ const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
 // const { successResponse } = require('../../helper/Response');
 const dataBarang = require('../../database/models/data_barang');
+const httpStatus = require('../../helper/Httplib');
 
 const list = async(req, res) => {
     try {
@@ -180,36 +181,50 @@ const get = async (req, res) => {
 const update = async (req, res) => {
 	try{
 		let id = req.params.id;
-		let body = req.body;
-		let data = await Form3315.update(body, {
+
+		const updateDataPerId = await Form3315.findOne({
 			where: {
-				id: id
+				id: id,
 			}
 		})
-		return successResponse(res, Http.ok, "Success", data, false);
+		const result = updateDataPerId.toJSON();
+		if(result.status = "menunggu"){
+			await Form3315.update({
+				where: {
+					id: id
+				}
+			});
+			return successResponse(res, httpStatus.ok, "Berhasil Di Update", '');
+		}
+
+		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di Update", "");
 	}catch(error){
-		console.error(error);
-		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
 	}
 }
 
 const hapus = async (req, res) => {
 	try{
 		let id = req.params.id;
-		let data = await Form3315.destroy({
+		
+		const statusDataPerId = await Form3315.findOne({
 			where: {
-				id: id
+				id: id,
 			}
-		});
-		return res.json({
-			status: "ok",
-			data: data
 		})
+		const result = statusDataPerId.toJSON();
+		if(result.status != "diterima"){
+			await Form3315.destroy({
+				where: {
+					id: id, 
+				}
+			});
+			return successResponse(res, httpStatus.ok, "Berhasil Di Hapus", '');
+		}
+
+		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di terima", "");
 	}catch(error){
-		res.status(500).json({
-			status:"error",
-			data: error
-		})
+		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
 	}
 }
 
