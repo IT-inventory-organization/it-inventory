@@ -1,4 +1,6 @@
 const dataBarang = require('../../database/models/data_barang');
+const DataKapal = require('../../database/models/data_kapal');
+const Report = require('../../database/models/report');
 const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
 
 const getDataBarang = async (reportId) => {
@@ -21,12 +23,26 @@ const saveDataBarang = async(data, transaction) => {
     }
 }
 
-const fetchBarangAfterChoosingKapalPenjual = async (req, idReport) => {
+const fetchBarangAfterChoosingKapalPenjual = async (req, idKapal) => {
     try {
         const query = {
-            where: {
-                reportId: idReport
-            },
+            include: [
+                {
+                    model: Report,
+                    attributes: [],
+                    required: true,
+                    include: [
+                        {
+                            model: DataKapal,
+                            required: true,
+                            attributes: [],
+                            where: {
+                                id: idKapal
+                            }
+                        }
+                    ]
+                }
+            ],
             attributes:['id', 'kodeBarang']
         }
 

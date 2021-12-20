@@ -61,7 +61,7 @@ const createListDataBarangPO = async(req, res) => {
         
         await trans.commit();
 
-        return successResponse(res, Http.created, "Berhasil Membuat Data Barang PO", resultDataBarangPO, true);
+        return successResponse(res, Http.created, "Berhasil Membuat Data Barang PO", resultDataBarangPO, false);
     } catch (error) {
         if(trans){
             await trans.rollback()

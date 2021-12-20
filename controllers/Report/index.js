@@ -1,6 +1,5 @@
 const { errorResponse, successResponse } = require('../../helper/Response')
 const Http = require('../../helper/Httplib');
-
 const { validationResponse } = require('../../middlewares/validationResponse');
 const authentication = require('../../middlewares/authentication');
 const { formatReport } = require('../../middlewares/reportMiddleware/reformatReport');
@@ -66,9 +65,6 @@ const getReport = async(req, res) => {
 const getDashboard = async(req, res) => {
     try {
         const report = await dashboard(req);
-
-        // _convertDate(report)
-
 
         if(req.currentRole !== "Owner"){
             saveAktifitas({userId: req.currentUser, reportId: req.params.idReport, aktifitas: `Melihat Report ${req.params.idReport}`})
