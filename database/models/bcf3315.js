@@ -5,6 +5,7 @@ const db = require('../../configs/database');
 const bcf3315 = db.define('bcf3315', {
     poId: {
         type: Sequelize.INTEGER,
+        // autoIncrement: true,
         allowNull: false
     },
     nomorPO: {
@@ -74,11 +75,11 @@ const bcf3315 = db.define('bcf3315', {
     },
     status: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 'menunggu'
     },
     nomorbcf3314: {
         type: Sequelize.STRING,
-        allowNull: false
     }
 }, {
     tableName: 'bcf3315',
