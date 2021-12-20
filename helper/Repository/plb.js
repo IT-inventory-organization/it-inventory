@@ -46,8 +46,11 @@ const listPLB = async(limit, offset, query = {}) => {
                     required: false
                 }
             ],
-            limit: limit,
-            offset: offset
+            order: [
+                ['createdAt', 'desc']
+            ]
+            // limit: limit,
+            // offset: offset
         }
         const data = await Report.findAndCountAll(query);
         // if (!data) throw new NotFoundException("Data Tidak Ditemukan");

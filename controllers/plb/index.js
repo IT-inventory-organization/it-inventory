@@ -28,7 +28,6 @@ const list = async(req, res) => {
         const plb = await listPLB(limit, offset);
         return successResponse(res, Http.ok, "Success", plb, false);
     } catch (error) {
-        console.error(error);
         return errorResponse(res, Http.internalServerError, "Something went wrong");
     }
 }
