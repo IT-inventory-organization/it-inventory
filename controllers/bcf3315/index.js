@@ -95,58 +95,35 @@ const onCreateValidation = [
 	body('callSign')
 		.notEmpty().withMessage('kolom call sign kosong, perlu di isi')
 		.trim()
+		,
+	body('poId')
+		.notEmpty().withMessage('poId kosong, terjadi kesalahan server')
+		.isNumeric().withMessage('isi hanya dengan angka tanpa huruf')
+		.trim()
+		,
 ];
 
 const create = async(req, res) => {
 	let transaction;
 	try {
-        const errors = validationResult(req);
-        if(!errors.isEmpty()){
-          return errorResponse(res, Http.internalServerError, "validation error", errors.array());
-        }
-        const body = matchedData(req);
+
+		const errors = validationResult(req);
+		if(!errors.isEmpty()){
+			return errorResponse(res, Http.internalServerError, "validation error", errors.array());
+		}
+
+		const body = matchedData(req);
+
 
         transaction = await sequelize.transaction();
 
 
-        const form3315 = await Form3315.create(body, {transaction, include: ['nomorPO']});
+		const form3315 = await Form3315.create(body, {transaction});
+		
 
-		// const getDataBarang = async(req, res) => {
-		// 	try {
-		// 		const dataBarang = await 
-		// 	}
-		// }
-
-		// const list = async(req, res) => {
-		// 	try {
-		// 		const form3315 = await Form3315.findAll({
-		// 			attributes: ["nama", "tanggal", "nomorFormBcf3315"],
-		// 			include: {
-		// 				model: po,
-		// 				attributes: ["nomorPO"],
-		// 				as: 'nomorPO'
-		// 			}
-		// 		});
-		// 		return successResponse(res, Http.ok, "Success", form3315, false);
-		// 	} catch (error) {
-		// 		console.error(error);
-		// 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
-		// 	}
-		// }
-
-		// const produksi = await ProduksiBarang.create(body, { transaction, include: ['details'] });
-        // const updateHasil = await DataBarang.update({
-        //     stock: sequelize.literal(`stock + ${produksi.quantity}`)
-        // }, {
-        //     where: {
-        //         id: produksi.dataBarangId
-        //     }
-        // });
-
-
-        await transaction.commit();
-        return successResponse(res, Http.ok, "Succes", form3315);
-	} catch (error) {
+		if (transaction) await transaction.commit();
+        return successResponse(res, Http.ok, "Success", form3315, false);
+    } catch (error) {
         console.error(error);
         if (transaction) await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Something went wrong");
@@ -154,6 +131,22 @@ const create = async(req, res) => {
 }
 
 module.exports = routes => {
-	// routes.get('/', authentication, list),
+	routes.get('/', authentication, list),
 	routes.post('/create', authentication, onCreateValidation, create)
 }
+
+// self.save = async (req,res) => {
+// 	try{
+// 		let body = req.body;
+// 		let data = await brand.create(body);
+// 		return res.json({
+// 			status:"ok",
+// 			data:data
+// 		})
+// 	}catch(error){
+// 		res.status(500).json({
+// 			status:"error",
+// 			data:error
+// 		})
+// 	}
+// }
