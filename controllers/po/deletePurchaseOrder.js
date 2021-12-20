@@ -11,7 +11,7 @@ const deletePurchaseOrder = async(req, res) => {
         
         const result = await deletePurchaseOrderPerId(req, idUser, id);
         
-        return successResponse(res, httpStatus.ok, "", result, true);
+        return successResponse(res, httpStatus.ok, "", result, false);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, error);
     } 
