@@ -10,19 +10,17 @@ const convert = (data) => {
 }
 
 const getDataTambahan = async (reportId) => {
-    const data = await DokumenTambahan.findOne({ where: { reportId: reportId } });
-    return data;
+    return DokumenTambahan.findOne({ where: { reportId: reportId } });
 }
 
 const saveDataTambahan = async(data, transaction) => {
     try {
         convert(data);
 
-        const result = await DokumenTambahan.create(data, {
+        return await DokumenTambahan.create(data, {
             transaction,
             returning: true
         })
-        return result
     } catch (error) {
         console.log(error,"saveDataTambahan")
 
@@ -56,7 +54,7 @@ const updateDataTambahan = async(data, reportId, transaction) => {
 
         return result[1].toJSON();
     } catch (error) {
-        console.log(error)
+
         if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
         }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){

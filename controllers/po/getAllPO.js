@@ -1,24 +1,23 @@
-const getAllPO = {};
 
-getAllPO.getAll = async (req, res) => {
+const { errorResponse, successResponse } = require('../../helper/Response');
+const authentication = require('../../middlewares/authentication');
+
+const { getAllPurchaseOrder } = require('../../helper/Repository/dataPO');
+const httpStatus = require('../../helper/Httplib');
+
+const getAllPO = async(req, res) => {
     try {
-        let data = await po.findAll ({
-            attriburs : ["kapalPemilik", "kapalPembeli",
-            "tanggalPurchaseOrder", "jumlahTotal", "remarks"]
-        });
-        return res.json({
-            status: "Ok",
-            data: data
-        })
-    } catch(error){
-        res.status(500).json({
-            status: 'error',
-            data: error
-        })
-    }
+        const idUser = req.currentUser;
+
+        const result = await getAllPurchaseOrder(req, idUser);
+        
+        return successResponse(res, httpStatus.ok, "", result, true);
+    } catch (error) {
+        return errorResponse(res, httpStatus.internalServerError, error);
+    } 
 }
 
 
 module.exports = routes => {
-    routes.get('/getAllPO', getAllPO.getAll); // Get Al
+    routes.get('/', authentication, getAllPO); // Get Al
 }

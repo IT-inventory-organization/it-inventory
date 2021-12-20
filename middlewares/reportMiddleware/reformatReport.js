@@ -11,10 +11,9 @@ const formatReport = (req, res, next) => {
             userId: +req.currentUser
         }
 
-        // console.log(req.body);
         next();
     } catch (error) {
-        console.log(error);
+
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }
