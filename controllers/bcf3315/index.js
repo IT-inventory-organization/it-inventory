@@ -10,12 +10,12 @@ const dataBarang = require('../../database/models/data_barang');
 const list = async(req, res) => {
     try {
 		const form3315 = await Form3315.findAll({
-			attributes: ["nama", "tanggal", "nomorFormBcf3315"],
-			include: {
-				model: po,
-				attributes: ["nomorPO"],
-				as: 'nomorPO'
-			}
+			// attributes: ["nama", "tanggal", "nomorFormBcf3315"],
+			// include: {
+			// 	model: po,
+			// 	attributes: ["nomorPO"],
+			// 	as: 'nomorPO'
+			// }
 		});
 		return successResponse(res, Http.ok, "Success", form3315, false);
     } catch (error) {
@@ -34,9 +34,8 @@ const status = async(req, res) => {
 					status: status
 				}
 			};
-		}
-		
-		const menunggu = await Form3315.findAll(query)
+		}	
+		const getByStatus = await Form3315.findAll(query)
 		return successResponse(res, Http.ok, "Success", status, false);
 	}catch(error){
 		console.error(error);
@@ -121,7 +120,14 @@ const onCreateValidation = [
 		.isNumeric().withMessage('isi hanya dengan angka tanpa huruf')
 		.trim()
 		,
-];
+	body('status')
+		.notEmpty().withMessage('kolom status kosong, perlu terisi')
+		.trim()
+		,
+	body('nomorbcf3314')
+		.notEmpty().withMessage('kolom nomor bcf3314 masih kosong')
+		.trim()
+	];
 
 const create = async(req, res) => {
 	let transaction;
@@ -137,6 +143,7 @@ const create = async(req, res) => {
 
         transaction = await sequelize.transaction();
 
+		// console.log(body) utk melihat data body
 
 		const form3315 = await Form3315.create(body, {transaction});
 		
@@ -151,23 +158,7 @@ const create = async(req, res) => {
 }
 
 module.exports = routes => {
-	routes.get('/', authentication, list),
+	routes.get('/list', authentication, list),
 	routes.post('/create', authentication, onCreateValidation, create),
 	routes.get('/:status', authentication, status)
 }
-
-// self.save = async (req,res) => {
-// 	try{
-// 		let body = req.body;
-// 		let data = await brand.create(body);
-// 		return res.json({
-// 			status:"ok",
-// 			data:data
-// 		})
-// 	}catch(error){
-// 		res.status(500).json({
-// 			status:"error",
-// 			data:error
-// 		})
-// 	}
-// }
