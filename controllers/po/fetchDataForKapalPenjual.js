@@ -11,7 +11,7 @@ const getListKapalPenjualThatBelongToUser = async (req, res) => {
 
         const result = await getKapalPenjual(res, isUser);
     
-        return successResponse(res, httpStatus.ok, "", result, false);
+        return successResponse(res, httpStatus.ok, "", result, true);
     } catch (error) {
         return errorResponse(res, error.status, "Gagal Mengambil Kapal Penjual");
     }
@@ -23,7 +23,7 @@ const getBarangFromKapalPenjual = async (req, res) => {
 
         const result = await fetchBarangAfterChoosingKapalPenjual(req, id);
 
-        return successResponse(res, httpStatus.ok, "", result, false);
+        return successResponse(res, httpStatus.ok, "", result, true);
     } catch (error) {
         return errorResponse(res, error.status, error.message, "");
     }

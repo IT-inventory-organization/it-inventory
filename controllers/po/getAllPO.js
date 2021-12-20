@@ -11,7 +11,7 @@ const getAllPO = async(req, res) => {
 
         const result = await getAllPurchaseOrder(req, idUser);
         
-        return successResponse(res, httpStatus.ok, "", result, false);
+        return successResponse(res, httpStatus.ok, "", result, true);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, error);
     } 
