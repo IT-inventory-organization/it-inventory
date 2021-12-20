@@ -26,7 +26,9 @@ const list = async(req, res) => {
     try {
         const authUser = await findUserById(req.currentUser);
         const users = await InfoPengguna.findAll({
-            exclude: ['password'],
+            attributes: {
+                exclude: ['password'],
+            }
             // include: Roles
         });
  
