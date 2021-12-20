@@ -25,6 +25,7 @@ const getBarangFromKapalPenjual = async (req, res) => {
 
         return successResponse(res, httpStatus.ok, "", result, true);
     } catch (error) {
+        // console.log(error)
         return errorResponse(res, error.status, error.message, "");
     }
 }
