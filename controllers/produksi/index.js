@@ -68,6 +68,7 @@ const create = async(req, res) => {
         if (!errors.isEmpty()) {
             return errorResponse(res, Http.internalServerError, "Validation error", errors.array());
         }
+        
         const body = matchedData(req);
 
         transaction = await sequelize.transaction();
