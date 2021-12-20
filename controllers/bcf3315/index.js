@@ -157,8 +157,46 @@ const create = async(req, res) => {
     }
 }
 
+const get = async (req, res) => {
+	try{
+		let id = req.params.id;
+		let data = await Form3315.findOne({
+			where: {
+				id: id
+			}
+		}); 
+		return res.json({
+			status: "ok",
+			data: data
+		})
+	}catch(error){
+		res.status(500).json({
+			status: 'error',
+			data: error
+		})
+	}
+}
+
+const update = async (req, res) => {
+	try{
+		let id = req.params.id;
+		let body = req.body;
+		let data = await Form3315.update(body, {
+			where: {
+				id: id
+			}
+		})
+		return successResponse(res, Http.ok, "Success", body, false);
+	}catch(error){
+		console.error(error);
+		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+	}
+}
+
 module.exports = routes => {
 	routes.get('/list', authentication, list),
+	routes.get('/get/:id', authentication, get)
 	routes.post('/create', authentication, onCreateValidation, create),
-	routes.get('/:status', authentication, status)
+	routes.get('/:status', authentication, status),
+	routes.put('/update/:id', authentication, update)
 }
