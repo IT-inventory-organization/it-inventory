@@ -186,7 +186,7 @@ const update = async (req, res) => {
 				id: id
 			}
 		})
-		return successResponse(res, Http.ok, "Success", body, false);
+		return successResponse(res, Http.ok, "Success", data, false);
 	}catch(error){
 		console.error(error);
 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
