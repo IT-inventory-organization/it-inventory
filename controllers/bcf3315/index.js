@@ -24,6 +24,26 @@ const list = async(req, res) => {
     }
 }
 
+const status = async(req, res) => {
+	try {
+		let query = {};
+		const {status} = req.params;
+		if(status){
+			query = {
+				where: {
+					status: status
+				}
+			};
+		}
+		
+		const menunggu = await Form3315.findAll(query)
+		return successResponse(res, Http.ok, "Success", menunggu, false);
+	}catch(error){
+		console.error(error);
+		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+	}
+}
+
 
 const onCreateValidation = [
 	body('nomorPO')
@@ -129,7 +149,8 @@ const create = async(req, res) => {
 
 module.exports = routes => {
 	routes.get('/', authentication, list),
-	routes.post('/create', authentication, onCreateValidation, create)
+	routes.post('/create', authentication, onCreateValidation, create),
+	routes.get('/:status', authentication, status)
 }
 
 // self.save = async (req,res) => {
