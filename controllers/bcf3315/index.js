@@ -193,10 +193,31 @@ const update = async (req, res) => {
 	}
 }
 
+const hapus = async (req, res) => {
+	try{
+		let id = req.params.id;
+		let data = await Form3315.destroy({
+			where: {
+				id: id
+			}
+		});
+		return res.json({
+			status: "ok",
+			data: data
+		})
+	}catch(error){
+		res.status(500).json({
+			status:"error",
+			data: error
+		})
+	}
+}
+
 module.exports = routes => {
 	routes.get('/list', authentication, list),
 	routes.get('/get/:id', authentication, get)
 	routes.post('/create', authentication, onCreateValidation, create),
 	routes.get('/:status', authentication, status),
 	routes.put('/update/:id', authentication, update)
+	routes.delete('/delete/:id', authentication, hapus)
 }
