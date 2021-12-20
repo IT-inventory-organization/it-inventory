@@ -4,10 +4,22 @@ const db = require('../../configs/database');
 
 const barangPO = db.define('barangPO', {
   poId: {
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER,
+    references: {
+      model: 'po',
+      key: 'id'
+    },
+    onDelete: 'cascade',
+    onUpdate: 'cascade'
   },
   idBarang: {
-    type: Sequelize.INTEGER
+    type: Sequelize.INTEGER,
+    references: {
+      model: 'dataBarang',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'no action'
   },
   quantity: {
     type: Sequelize.DECIMAL
@@ -21,6 +33,12 @@ const barangPO = db.define('barangPO', {
   hargaSatuan: {
     type: Sequelize.STRING
   },
+  satuanKemasan: {
+    type: Sequelize.STRING
+  },
+  jumlah: {
+    type: Sequelize.STRING
+  }
 }, {
   tableName: 'barangPO',
   freezeTableName: true,

@@ -37,10 +37,10 @@ const bundleLogin = (req, res, next) => {
         req.body = {
             ...Decrypt
         }
-        // console.log(req.body);
+
         next()
     } catch (error) {
-        // console.log(error)
+
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
 }
@@ -84,45 +84,10 @@ const login = async(req, res) => {
             return errorResponse(res, Http.unauthenticated, "Gagal Login, cek username dan password")
         }
     } catch (error) {
-        console.log('asd',error)
+
         return errorResponse(res, Http.internalServerError, "Login Failed, cek usernam dan password")
     }
 }
-
-// const forgotPassword = (req, res) => {
-//     const user = await User.findOne({ email });
-
-//     if (!user) {
-//         throw new Error("User does not exist");
-//     }
-//     let token = await Token.findOne({ userId: user._id });
-//     if (token) { 
-//           await token.deleteOne()
-//     };
-
-    // // const {email} = req.body;
-
-    // // infoPengguna.findOne({email}), (err, username) => {
-    // //     if(err || !username) {
-    // //         return res.status(400).json({error: "User With This Email Already Exists"})
-    // //     }
-        
-    // //     const token = generateToken({_id: username._id}, process.env.RESET_PASSWORD_KEY);
-    // //     return res.status(Http.ok).json({
-    // //         success: true,
-    // //         message: 'Berhasil Membuat Token Baru',
-    // //         data: token
-    // //     })
-
-    // //     const data = {
-    // //         from: 'noreply@hello.com',
-    // //         to: email,
-    // //         subject: "Account Activation Link",
-    // //         html: <h2>Please click on given link to reset your password</h2>
-    // //     }
-    // } 
-         
-// }
 
 module.exports = routes => {
     routes.post('/', bundleLogin, validationLogin, login)

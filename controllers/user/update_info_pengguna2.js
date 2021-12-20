@@ -1,8 +1,5 @@
 const {body, validationResult} = require('express-validator');
-// const {passwordFormat, checkPhoneNumber} = require('../../helper/validation');
-const {createHashText } = require('../../helper/bcrypt');
 const InfoPengguna = require('../../database/models/info_pengguna');
-const { Op } = require('sequelize');
 const { errorResponse, successResponse} = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const Encrypt = require('../../helper/encription');
@@ -18,12 +15,12 @@ const bundleInfoPengguna = (req, res, next) => {
         req.body = {
             ...Decrypt
         }
-        // console.log(req.body);
+
         // return;
         next()
     } catch (error) {
         // cons
-        console.log(error)
+
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
 }
@@ -38,7 +35,7 @@ const updateInfoPengguna = async (req, res) => {
                 isActive:true
             }
         })
-        // console.log(data, 'get');
+
         // Jika Ada Maka Return Respon Error User Sudah Dibuat 
         if(!data){
             return errorResponse(res, Http.notFound, "Data User Tidak Ada")
@@ -52,12 +49,12 @@ const updateInfoPengguna = async (req, res) => {
             },
             returning:true
         });
-        // console.log(resultUser)
+
 
 
         return successResponse(res, Http.created, "Berhasil Mengupdate");
     } catch (error) {
-        console.log(error)
+
         return errorResponse(res, Http.internalServerError, "Gagal Mengupdate")
     }
 }

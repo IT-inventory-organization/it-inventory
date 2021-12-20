@@ -106,6 +106,7 @@ const onCreateValidation = [
 const create = async(req, res) => {
 	let transaction;
 	try {
+
 		const errors = validationResult(req);
 		if(!errors.isEmpty()){
 			return errorResponse(res, Http.internalServerError, "validation error", errors.array());
@@ -113,7 +114,9 @@ const create = async(req, res) => {
 
 		const body = matchedData(req);
 
-		transaction = await sequelize.transaction();
+
+        transaction = await sequelize.transaction();
+
 
 		const form3315 = await Form3315.create(body, {transaction});
 		

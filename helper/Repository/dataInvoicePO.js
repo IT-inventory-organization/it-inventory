@@ -8,7 +8,7 @@ const saveDataInvoicePO = async(data, transaction) => {
         })
         return res;
     } catch (error) {
-        console.log(error)
+
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server')
         }else{

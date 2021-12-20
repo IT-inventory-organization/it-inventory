@@ -21,6 +21,9 @@ const AdjustmentBarang = require("./adjustment_barang");
 const ProduksiBarang = require("./produksi_barang");
 const ProduksiBarangDetail = require("./produksi_barang_detail");
 const PO = require("./po");
+const barangPO = require("./barang_po");
+const BCF3315 = require("./bcf3315");
+const Approval = require("./approval");
 
 const setAssociations = function() {
 
@@ -48,6 +51,9 @@ const setAssociations = function() {
   Report.hasMany(dataBarang, {foreignKey: 'reportId'});
   Report.hasMany(PO, {foreignKey: 'reportId'});
 
+  // Purchase Order
+  Report.hasMany(PO, {foreignKey: 'reportId'});
+  PO.hasMany(barangPO, {foreignKey: 'poId'});
 
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
   DokumenPengeluaran.belongsTo(Report, {foreignKey: 'reportId'});
@@ -69,6 +75,18 @@ const setAssociations = function() {
   dataBarang.belongsTo(Report, {foreignKey: 'reportId'});
   PO.belongsTo(Report, {foreignKey: 'reportId'});
 
+  // Purchase Order
+  PO.belongsTo(Report, {foreignKey: 'reportId'});
+  barangPO.belongsTo(PO, {foreignKey: 'id'})
+
+  // BCF Relation With Purchase Order
+  PO.hasOne(BCF3315, {foreignKey: 'poId'});
+  BCF3315.belongsTo(PO, {foreignKey: 'id'});
+
+  // Relation Barang Purchase Order With Data Barang
+  dataBarang.hasMany(barangPO, {foreignKey: 'idBarang'});
+  barangPO.belongsTo(dataBarang, {foreignKey: 'id'});
+ 
   /**
    * * Roles Relation With User
    * * Success
@@ -89,6 +107,9 @@ const setAssociations = function() {
   ProduksiBarang.hasMany(ProduksiBarangDetail, { as: 'details' });
   ProduksiBarangDetail.belongsTo(ProduksiBarang, { foreignKey: 'produksiBarangId' });
   ProduksiBarangDetail.belongsTo(dataBarang, { foreignKey: 'dataBarangId' });
+
+  BCF3315.hasMany(Approval, { foreignKey: 'bcfId' });
+  Approval.belongsTo(BCF3315, { foreignKey: 'bcfId' });
 };
 
 module.exports = setAssociations;

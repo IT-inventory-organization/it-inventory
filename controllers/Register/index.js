@@ -38,7 +38,7 @@ const bundleRegister = (req, res, next) => {
         req.body = {
             ...Decrypt
         }
-        // console.log(req.body)
+
         next()
     } catch (error) {
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
@@ -94,7 +94,6 @@ const register = async (req, res) => {
 
         return successResponse(res, Http.created, "Berhasil Membuat Pengguna Baru");
     } catch (error) {
-        console.log(error)
         return errorResponse(res, Http.internalServerError, "Gagal Membuat Pengguna Baru")
     }
 }
