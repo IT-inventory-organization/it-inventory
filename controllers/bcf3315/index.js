@@ -37,7 +37,7 @@ const status = async(req, res) => {
 			};
 		}	
 		const getByStatus = await Form3315.findAll(query)
-		return successResponse(res, Http.ok, "Success", status, body, false);
+		return successResponse(res, Http.ok, "Success", query, false);
 	}catch(error){
 		console.error(error);
 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
@@ -160,26 +160,29 @@ const create = async(req, res) => {
 const get = async (req, res) => {
 	try{
 		let id = req.params.id;
-		let data = await Form3315.findOne({
+		let body = req.body;
+		let getDataPerId = await Form3315.findOne({
 			where: {
 				id: id
 			}
-		}); 
-		return res.json({
-			status: "ok",
-			data: data
 		})
+
+		const result = getDataPerId.toJSON();
+		await Form3315.findOne(body,{
+			where: {
+				id: id
+			}
+		});
+		return successResponse(res, httpStatus.ok, result, "Berhasil", '');
 	}catch(error){
-		res.status(500).json({
-			status: 'error',
-			data: error
-		})
+		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
 	}
 }
 
 const update = async (req, res) => {
 	try{
 		let id = req.params.id;
+		let body = req.body;
 
 		const updateDataPerId = await Form3315.findOne({
 			where: {
@@ -188,12 +191,12 @@ const update = async (req, res) => {
 		})
 		const result = updateDataPerId.toJSON();
 		if(result.status = "menunggu"){
-			await Form3315.update({
+			await Form3315.update(body,{
 				where: {
 					id: id
 				}
 			});
-			return successResponse(res, httpStatus.ok, "Berhasil Di Update", '');
+			return successResponse(res, httpStatus.ok, result, "Berhasil Di Update", '');
 		}
 
 		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di Update", "");
@@ -221,7 +224,7 @@ const hapus = async (req, res) => {
 			return successResponse(res, httpStatus.ok, "Berhasil Di Hapus", '');
 		}
 
-		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di terima", "");
+		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di hapus", "");
 	}catch(error){
 		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
 	}
