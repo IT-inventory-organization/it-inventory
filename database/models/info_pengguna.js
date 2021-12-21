@@ -65,6 +65,7 @@ const infoPengguna = db.define('infoPengguna', {
     defaultValue: 'ADMIN'
   },
   isActive: {
+    type: Sequelize.STRING,
     allowNull: false,
     defaultValue: true
   }
