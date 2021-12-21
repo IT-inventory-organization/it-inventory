@@ -19,8 +19,6 @@ const bundleInfoPengguna = (req, res, next) => {
         delete req.body.InfoPengguna;
         next()
     } catch (error) {
-        // cons
-
         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
     }
 }

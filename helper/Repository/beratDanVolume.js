@@ -3,18 +3,15 @@ const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/e
 const { isExist } = require('../checkExistingDataFromTable');
 
 const getBeratDanVolume = async (reportId) => {
-    const data = await beratDanVolume.findOne({ where: { reportId: reportId } });
-    return data;
+    return beratDanVolume.findOne({ where: { reportId: reportId } });
 }
 
 const saveBeratDanVolume = async(data, transaction) => {
     try {
-
-        const result = await beratDanVolume.create(data, {
+        return await beratDanVolume.create(data, {
             transaction,
             returning: true
         });
-        return result;
     } catch (error) {
 
         if(error.name == 'SequelizeValidationError'){

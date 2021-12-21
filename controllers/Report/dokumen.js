@@ -70,13 +70,10 @@ const Report = require('../../database/models/report');
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
-    // return;
     try {
         const {ref} = req.body;
-        // console.log(ref,"REF");
 
         transaction = await sequelize.transaction();
-        // let resultSaved = [];
 
         const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);
         const resultDataTambahan = await saveDataTambahan(ref.dokumenTambahan, transaction);
@@ -128,7 +125,7 @@ const saveDokumenPemasukan = async(req, res) => {
     }
 }
 
-const updateDokumenPemasukan = async(req,res) => {
+const updateDokumenPemasukanData = async(req,res) => {
     const {idReport} = req.params;
     let transaction
     try {
@@ -563,7 +560,7 @@ module.exports = routes => {
         vBeratDanVolume,
         vTempatPenimbunan,
         validationResponse, 
-        updateDokumenPemasukan
+        updateDokumenPemasukanData
     );
 
     routes.get('/list/pengeluaran',
