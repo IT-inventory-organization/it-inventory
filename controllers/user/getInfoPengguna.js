@@ -28,19 +28,6 @@ const getUserData = async(id) => {
     })
 }
 
-// const bundleLogin = (req, res, next) => {
-//     try {
-//         const Decrypt = Encryption.AESDecrypt(req.body.dataLogin);
-//         req.body = {
-//             ...Decrypt
-//         }
-
-//         next()
-//     } catch (error) {
-//         return errorResponse(res, Http.badRequest, "Data Tidak Sesuai")
-//     }
-// }
-
 const getInfoPengguna = async(req, res) => {
     // const validation = validationResult(req);
     // if(!validation.isEmpty()){
