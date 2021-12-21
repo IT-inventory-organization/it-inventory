@@ -8,6 +8,7 @@ const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { convertDate } = require('../../helper/convert');
 const httpStatus = require('../../helper/Httplib');
+const { vReport } = require('../../middlewares/reportMiddleware/validationReport');
 
 const tambahReport = async (req, res) => {
     try {
@@ -30,7 +31,7 @@ const tambahReport = async (req, res) => {
             "jenisPemberitahuan": result.jenisPemberitahuan,
             "diAjukanDiKantor": result.diAjukanDiKantor,
             "jenisDokumenBC": result.jenisDokumenBC
-        });
+        }, true);
     } catch (error) {
         return errorResponse(res, Http.internalServerError, "Gagal Meyimpan Data");
     }
@@ -91,7 +92,7 @@ const deleteReportUser = async(req, res) => {
 }
 
 module.exports = routes => {
-    routes.post('/save', authentication, formatReport, validationResponse, tambahReport);
+    routes.post('/save', authentication, formatReport, vReport, validationResponse, tambahReport);
     routes.get('/get/:idReport', 
         authentication, 
         authorizationReport,

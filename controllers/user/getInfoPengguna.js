@@ -17,7 +17,7 @@ const validationLogin = [
 
 
 const getUserData = async(id) => {    
-    return await InfoPengguna.findOne({
+    return InfoPengguna.findOne({
         where: {
             id,
             isActive: true
@@ -42,11 +42,6 @@ const getUserData = async(id) => {
 // }
 
 const getInfoPengguna = async(req, res) => {
-    // const validation = validationResult(req);
-    // if(!validation.isEmpty()){
-    //     return errorResponse(res, Http.badRequest, validation.array()[0].msg);
-    // }
-
     try {
         // ambil User
         const resultLoginData = await getUserData(req.currentUser);
