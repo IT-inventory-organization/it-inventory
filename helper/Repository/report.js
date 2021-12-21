@@ -261,11 +261,28 @@ const getKapalPenjual = async(req, idUser) => {
     }
 }
 
-const fetchBarangAfterChooseKapalPenjual = async (req, idKapalPenjual) => {
+const deleteReport = async (req, idReport, idUser) => {
     try {
-        
+        const checkReport = await Report.findOne({
+            where: {
+                id: idReport,
+                userId: idUser
+            }
+        });
+
+        if(!checkReport){
+            throw NotFoundException("Data Tidak Ada");
+        }
+
+        return Report.update({
+            isDelete: true
+        }, {
+            where: {
+                id: idReport
+            }
+        })
     } catch (error) {
-        
+        throw error;
     }
 }
 module.exports = {
@@ -273,5 +290,5 @@ module.exports = {
     getReportPerId,
     dashboard,
     getKapalPenjual,
-    fetchBarangAfterChooseKapalPenjual
+    deleteReport
 }

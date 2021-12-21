@@ -8,7 +8,7 @@ const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
 
 const findUserById = async(id) => {    
-    return await InfoPengguna.findOne({
+    return InfoPengguna.findOne({
         where: {
             id,
             isActive: true
@@ -44,6 +44,6 @@ const detail = async(req, res) => {
 }
 
 module.exports = routes => {
-    routes.get('/', authentication, list),
+    routes.get('/', authentication, list);
     routes.get('/:id', authentication, detail)
 }

@@ -3,10 +3,12 @@ const Http = require('../../helper/Httplib');
 const { validationResponse } = require('../../middlewares/validationResponse');
 const authentication = require('../../middlewares/authentication');
 const { formatReport } = require('../../middlewares/reportMiddleware/reformatReport');
-const { saveReport, getReportPerId, dashboard } = require('../../helper/Repository/report');
+const { saveReport, getReportPerId, dashboard, deleteReport } = require('../../helper/Repository/report');
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { convertDate } = require('../../helper/convert');
+const httpStatus = require('../../helper/Httplib');
+const { vReport } = require('../../middlewares/reportMiddleware/validationReport');
 
 const tambahReport = async (req, res) => {
     try {
@@ -29,7 +31,7 @@ const tambahReport = async (req, res) => {
             "jenisPemberitahuan": result.jenisPemberitahuan,
             "diAjukanDiKantor": result.diAjukanDiKantor,
             "jenisDokumenBC": result.jenisDokumenBC
-        });
+        }, true);
     } catch (error) {
         return errorResponse(res, Http.internalServerError, "Gagal Meyimpan Data");
     }
@@ -76,8 +78,21 @@ const getDashboard = async(req, res) => {
     }
 } 
 
+const deleteReportUser = async(req, res) => {
+    try {
+        const {id} = req.params;
+        await deleteReport(req, id, req.currentUser);
+        if(req.currentRole !== "Owner"){
+            saveAktifitas({userId: req.currentUser, reportId: req.params.id, aktifitas: `Menghapus Report ${req.params.idReport}`})
+        }
+        return successResponse(res, httpStatus.ok, "Berhasil Menghapus", "", false);
+    } catch (error) {
+        return errorResponse(res, httpStatus.internalServerError, "Gagal Menghapus Report", "")
+    }
+}
+
 module.exports = routes => {
-    routes.post('/save', authentication, formatReport, validationResponse, tambahReport);
+    routes.post('/save', authentication, formatReport, vReport, validationResponse, tambahReport);
     routes.get('/get/:idReport', 
         authentication, 
         authorizationReport,
@@ -90,4 +105,5 @@ module.exports = routes => {
         // getReport,
         getDashboard
     );
+    routes.delete('/delete/:id', authentication, deleteReportUser);
 }

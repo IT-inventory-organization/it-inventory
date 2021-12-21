@@ -11,7 +11,7 @@ const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
 
 const findUserById = async(id) => {    
-    return await InfoPengguna.findOne({
+    return InfoPengguna.findOne({
         where: {
             id,
             isActive: true
@@ -24,7 +24,7 @@ const findUserById = async(id) => {
 
 const list = async(req, res) => {
     try {
-        const authUser = await findUserById(req.currentUser);
+        await findUserById(req.currentUser);
         const users = await InfoPengguna.findAll({
             attributes: {
                 exclude: ['password'],
@@ -75,7 +75,7 @@ const create = async(req, res) => {
         const authUser = await findUserById(req.currentUser);
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return errorResponse(res, Http.internalServerError, "Validation error", errors.array());
+            return errorResponse(res, Http.internalServerError, "Validation error", errors.array()[0].msg);
         }
         const body = req.body;
         const user = await InfoPengguna.create({
@@ -88,7 +88,6 @@ const create = async(req, res) => {
             namaPemilik: body.namaPemilik,
             alamatPemilik: body.alamatPemilik,
             password: createHashText(body.password),
-            // roleId: body.roleId,
             active: body.active,
             email: body.email,
             username: body.username,
@@ -154,10 +153,12 @@ const onUpdateValidation = [
 
 const update = async(req, res) => {
     try {
-        const authUser = await findUserById(req.currentUser);
+        await findUserById(req.currentUser);
         const errors = validationResult(req);
+        console.log(errors);
+        return;
         if (!errors.isEmpty()) {
-            return errorResponse(res, Http.internalServerError, "Validation error", errors.array());
+            return errorResponse(res, Http.internalServerError, "Validation error", errors.array()[0].msg);
         }
         const body = matchedData(req);
         const user = await InfoPengguna.findByPk(req.params.id);
