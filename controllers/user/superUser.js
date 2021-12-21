@@ -23,8 +23,28 @@ const list  = async (req, res) => {
     }
 }
 
+const get = async (req, res) => {
+    try{
+        let id = req.params.id;
+        let data = await infoPengguna.findOne({
+            where: {
+                id: id
+            }
+        })
+        return res.json({
+            status: "ok",
+            data: data
+        })
+    }catch(error){
+        res.status(500).json({
+            status: 'error',
+            data: error
+        })
+    }
+}
 
 
 module.exports = routes => {
-    routes.get('/list', authentication, list)
+    routes.get('/list', authentication, list),
+    routes.get('/get/:id', authentication, get )
 }
