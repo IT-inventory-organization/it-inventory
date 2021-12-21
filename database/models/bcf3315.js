@@ -76,7 +76,6 @@ const bcf3315 = db.define('bcf3315', {
     status: {
         type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: 'menunggu'
     },
     nomorbcf3314: {
         type: Sequelize.STRING,
