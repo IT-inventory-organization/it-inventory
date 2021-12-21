@@ -9,7 +9,7 @@ const infoPengguna = require('../../database/models/info_pengguna')
 const list  = async (req, res) => {
     try {
         const pengguna = await infoPengguna.findAll({
-            attributees 
+            attributes: []
         })
     return successResponse(res, Http.ok, "Success", form3315, false);
     } catch (error) {
