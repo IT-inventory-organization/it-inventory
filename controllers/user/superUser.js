@@ -5,6 +5,7 @@ const Http = require('../../helper/Httplib');
 const {checkHashText} = require('../../helper/bcrypt');
 const infoPengguna = require('../../database/models/info_pengguna');
 const authentication = require('../../middlewares/authentication');
+const httpStatus = require('../../helper/Httplib');
 
 
 const list  = async (req, res) => {
@@ -16,7 +17,7 @@ const list  = async (req, res) => {
         //     attributes: attributes
         //     }]
         })
-    return successResponse(res, Http.ok, "Success", pengguna, false);
+    return successResponse(res, Http.ok, "Success", pengguna, true);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
@@ -31,36 +32,36 @@ const get = async (req, res) => {
                 id: id
             }
         })
-        return res.json({
-            status: "ok",
-            data: data
-        })
-    }catch(error){
-        res.status(500).json({
-            status: 'error',
-            data: error
-        })
+        return successResponse(res, Http.ok, "Success", data, true);
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
     }
 }
 
-const save = async (req, res) => {
-    try{
+const update = async (req, res) => {
+    try {
+        let id = req.params.id;
         let body = req.body;
-        let data = await infoPengguna.create(body);
-        return res.json({
-            status: 'ok',
-            data: data
+        const updateDataPerId = await infoPengguna.findOne({
+            where: {
+                id: id
+            }
         })
-    }catch(error){
-        res.status(500).json({
-            status: 'error',
-            data: error
+        const result = updateDataPerId.toJSON();
+        await infoPengguna.update(body,{
+            where: {
+                id: id
+            }
         })
-    }
+        return successResponse(res, httpStatus.ok, result, 'Data berhasil di update!', '', true)
+	}catch(error){
+		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
+	}
 }
-
 
 module.exports = routes => {
     routes.get('/list', authentication, list),
-    routes.get('/get/:id', authentication, get )
+    routes.get('/get/:id', authentication, get ),
+    routes.put('/update/:id', authentication, update)
 }

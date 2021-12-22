@@ -140,7 +140,7 @@ const get = async (req, res) => {
                 id: id
             }
         })
-		return successResponse(res, Http.ok, "Success", form3315, true);
+		return successResponse(res, Http.ok, "Success", data, true);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
