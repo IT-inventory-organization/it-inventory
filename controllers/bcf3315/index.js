@@ -25,24 +25,24 @@ const list = async(req, res) => {
     }
 }
 
-const status = async(req, res) => {
-	try {
-		let query = {};
-		const {status} = req.params;
-		if(status){
-			query = {
-				where: {
-					status: status
-				}
-			};
-		}	
-		const getByStatus = await Form3315.findAll(query)
-		return successResponse(res, Http.ok, "Success", query, false);
-	}catch(error){
-		console.error(error);
-		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
-	}
-}
+// const status = async(req, res) => {
+// 	try {
+// 		let query = {};
+// 		const {status} = req.params;
+// 		if(status){
+// 			query = {
+// 				where: {
+// 					status: status
+// 				}
+// 			};
+// 		}	
+// 		const getByStatus = await Form3315.findAll(query)
+// 		return successResponse(res, Http.ok, "Success", query, false);
+// 	}catch(error){
+// 		console.error(error);
+// 		return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+// 	}
+// }
 
 
 const onCreateValidation = [
@@ -158,25 +158,24 @@ const create = async(req, res) => {
 }
 
 const get = async (req, res) => {
-	try{
-		let id = req.params.id;
-		let body = req.body;
-		let getDataPerId = await Form3315.findOne({
-			where: {
-				id: id
-			}
-		})
-
-		const result = getDataPerId.toJSON();
-		await Form3315.findOne(body,{
-			where: {
-				id: id
-			}
-		});
-		return successResponse(res, httpStatus.ok, result, "Berhasil", '');
-	}catch(error){
-		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
-	}
+    try{
+        let id = req.params.id;
+		// let body = req.body
+        let data = await Form3315.findOne({
+            where: {
+                id: id
+            }
+        })
+        return res.json({
+            status: "ok",
+            data: data
+        })
+    }catch(error){
+        res.status(500).json({
+            status: 'error',
+            data: error
+        })
+    }
 }
 
 const update = async (req, res) => {
@@ -232,9 +231,9 @@ const hapus = async (req, res) => {
 
 module.exports = routes => {
 	routes.get('/list', authentication, list),
-	routes.get('/get/:id', authentication, get)
+	routes.get('/:id', authentication, get)
 	routes.post('/create', authentication, onCreateValidation, create),
-	routes.get('/:status', authentication, status),
+	// routes.get('/:status', authentication, status),
 	routes.put('/update/:id', authentication, update)
 	routes.delete('/delete/:id', authentication, hapus)
 }
