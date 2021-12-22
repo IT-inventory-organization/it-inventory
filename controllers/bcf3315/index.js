@@ -21,7 +21,7 @@ const list = async(req, res) => {
 
 const onCreateValidation = [
 	body('nomorPO')
-		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
+		// .notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
 		// .custom(value => {
 		// 	return Form3315.findOne({ where: {nomorPo: value} })
 		// 	.then((d) => {

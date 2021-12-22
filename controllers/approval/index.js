@@ -141,13 +141,12 @@ const revise = async(req, res) => {
 
 const getAlldisetujui = async (req, res) => {
     try{
-        let id = req.params.id;
         let data = await BCF3315.findAll({
             where: {
                 status: "DISETUJUI"
             }
         })
-        return successResponse(res, Http.ok, 'success', data, false);
+        return successResponse(res, Http.ok, 'success', data, true);
     }catch(error){
         console.error(error);
         return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
@@ -156,16 +155,44 @@ const getAlldisetujui = async (req, res) => {
 
 const getAllPerbaikan = async (req, res) => {
     try{
-        let id = req.params.id;
         let data = await BCF3315.findAll({
             where: {
                 status: 'PERBAIKAN'
             }
         })
-        return successResponse(res, Http.ok, 'success', data, false);
+        return successResponse(res, Http.ok, 'success', data, true);
     }catch(error){
         console.error(error);
         return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
+    }
+}
+
+const getAllmenunggu = async (req, res) => {
+    try{
+        let data = await BCF3315.findAll({
+            where: {
+                status: 'MENUNGGU'
+            }
+        })
+        return successResponse(res, Http.ok, 'success', data, true);
+    }catch(error){
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
+    }
+}
+
+const get = async(req, res) => {
+    try{
+        let id = req.params.id;
+        let data = await BCF3315.findOne({
+            where: {
+                id: id
+            }
+        })
+		return successResponse(res, Http.ok, "Success", data, true);
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
     }
 }
 
@@ -174,5 +201,7 @@ module.exports = routes => {
     routes.post('/approve', authentication, onApproveValidation, approve),
     routes.post('/revise', authentication, onReviseValidation, revise),
     routes.get('/getAlldisetujui', authentication, getAlldisetujui),
-    routes.get('/getAllPerbaikan', authentication, getAllPerbaikan)
+    routes.get('/getAllPerbaikan', authentication, getAllPerbaikan),
+    routes.get('/getAllmenunggu', authentication, getAllmenunggu),
+    routes.get('/:id', authentication, get)
 }
