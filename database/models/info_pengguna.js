@@ -63,16 +63,11 @@ const infoPengguna = db.define('infoPengguna', {
     allowNull: false,
     type: Sequelize.ENUM('SUPER_USER', 'ADMIN', 'BC', 'PLB'),
     defaultValue: 'ADMIN'
+  },
+  isActive: {
+    allowNull: false,
+    defaultValue: true
   }
-  // resetLink: {
-  //   type: Sequelize.STRING,
-  //   default: ''
-  // },
-  // createdAt: {
-  //   type: Date,
-  //   default: Date.now,
-  //   expires: 3600,// this is the expiry time
-  // },
 }, {
   tableName: 'infoPengguna',
   freezeTableName: true,

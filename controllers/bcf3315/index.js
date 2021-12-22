@@ -126,7 +126,6 @@ const onCreateValidation = [
 		.trim()
 		,
 	body('nomorbcf3314')
-		.notEmpty().withMessage('kolom nomor bcf3314 masih kosong')
 		.trim()
 	];
 
