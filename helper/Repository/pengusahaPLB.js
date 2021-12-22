@@ -9,17 +9,16 @@ const getPengusahaPLB = async (reportId) => {
 
 const savePengusahaPLB = async(data, transaction) => {
     try {
-        const result = await PengusahaPLB.create(data, {
+    
+        return PengusahaPLB.create(data, {
             transaction,
             returning: true
         });
-
-        return result;
     } catch (error) {
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data");
+            throw new ConflictCreateData("Gagal Menyimpan Data", error);
         }
     }
 }
@@ -46,11 +45,11 @@ const updatePengusahaPLBRepo = async(data, reportId, transaction) => {
     } catch (error) {
 
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){
             throw error
         } else {
-            throw new ConflictCreateData("Gagal Mengubah Data");
+            throw new ConflictCreateData("Gagal Mengubah Data", error);
         }
     }
 }

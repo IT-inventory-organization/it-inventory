@@ -5,27 +5,22 @@ const db = require('../../configs/database');
 
 const infoPengguna = db.define('infoPengguna', {
   namaPerusahaan: {
+    type: Sequelize.STRING,
     allowNull: false,
-    type: Sequelize.STRING
   },
   npwp: {
-    allowNull: false,
     type: Sequelize.STRING
   },
   alamat: {
-    allowNull: false,
     type: Sequelize.STRING
   },
   nomorTelepon: {
-    allowNull: false,
     type: Sequelize.STRING
   },
   fax: {
-    allowNull: true,
     type: Sequelize.STRING
   },
   bidangUsaha: {
-    allowNull: false,
     type: Sequelize.STRING
   },
   namaPemilik: {
@@ -33,7 +28,6 @@ const infoPengguna = db.define('infoPengguna', {
     type: Sequelize.STRING
   },
   alamatPemilik: {
-    allowNull: true,
     type: Sequelize.STRING
   },
   password: {
@@ -52,11 +46,10 @@ const infoPengguna = db.define('infoPengguna', {
     defaultValue: 2
   },
   email: {
-    allowNull: false,
     type: Sequelize.STRING
   },
   username: {
-    allowNull: true,
+    allowNull: false,
     type: Sequelize.STRING
   },
   roleEnum: {

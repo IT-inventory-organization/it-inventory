@@ -1,29 +1,29 @@
+const { Op } = require('sequelize');
 const dataBarang = require('../../database/models/data_barang');
 const DataKapal = require('../../database/models/data_kapal');
 const Report = require('../../database/models/report');
 const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
+const { returnError } = require('../../middlewares/errHandler');
 
 const getDataBarang = async (reportId) => {
-    const data = await dataBarang.findAll({ where: { reportId: reportId } });
-    return data;
+    return dataBarang.findAll({ where: { reportId: reportId } });
 }
 
 const saveDataBarang = async(data, transaction) => {
-    try {
-        const res = await dataBarang.create(data, {
+    try { 
+        return dataBarang.create(data, {
             transaction 
-        })
-        return res;
+        });
     } catch (error) {
         if(error.name == "SequelizeValidationError"){
-            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server')
+            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server', error)
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data")
+            throw new ConflictCreateData("Gagal Menyimpan Data", error)
         }
     }
 }
 
-const fetchBarangAfterChoosingKapalPenjual = async (req, idKapal) => {
+const fetchBarangAfterChoosingKapalPenjual = async (req, idKapal, idUser) => {
     try {
         const query = {
             include: [
@@ -43,14 +43,14 @@ const fetchBarangAfterChoosingKapalPenjual = async (req, idKapal) => {
                     ]
                 }
             ],
-            attributes:['id', 'kodeBarang']
+            attributes:['id', 'kodeBarang', 'uraian', 'satuanKemasan'],
         }
 
         const fetched = await dataBarang.findAll(query);
         if(!fetched){
-            throw NotFoundException('Data Barang Pada Kapal Tidak Di Temukan');
+            throw new NotFoundException('Data Barang Pada Kapal Tidak Di Temukan');
         }
-
+        
         return fetched;
     } catch (error) {
         returnError(error, "Gagal Memproses Data Kapal Penjual");

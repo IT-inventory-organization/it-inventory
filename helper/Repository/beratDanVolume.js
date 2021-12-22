@@ -8,16 +8,16 @@ const getBeratDanVolume = async (reportId) => {
 
 const saveBeratDanVolume = async(data, transaction) => {
     try {
-        return await beratDanVolume.create(data, {
+        return beratDanVolume.create(data, {
             transaction,
             returning: true
         });
     } catch (error) {
 
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server');
+            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server', error);
         }else{
-            throw new ConflictCreateData('Gagal Menyimpan Data');
+            throw new ConflictCreateData('Gagal Menyimpan Data', error);
         }
     }
 }
@@ -45,11 +45,11 @@ const updateBeratDanVolumeRepo = async(data, reportId, transaction) => {
     } catch (error) {
 
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){
             throw error
         } else {
-            throw new ConflictCreateData("Gagal Mengubah Data");
+            throw new ConflictCreateData("Gagal Mengubah Data", error);
         }
     }
 }

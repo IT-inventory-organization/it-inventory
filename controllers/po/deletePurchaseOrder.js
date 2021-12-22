@@ -4,6 +4,12 @@ const authentication = require('../../middlewares/authentication');
 const { deletePurchaseOrderPerId } = require('../../helper/Repository/dataPO');
 const httpStatus = require('../../helper/Httplib');
 
+/**
+ * 
+ * @param {Request} Req Request From User
+ * @param {Response} Res Response To User
+ * @throws {InternalServerError} 
+ */
 const deletePurchaseOrder = async(req, res) => {
     try {
         const idUser = req.currentUser;

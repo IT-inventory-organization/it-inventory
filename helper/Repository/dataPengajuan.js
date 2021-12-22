@@ -1,58 +1,76 @@
+const { Transaction } = require("sequelize");
 const DokumenPemasukan = require("../../database/models/dokumen_pemasukan");
 const DokumenPengeluaran = require("../../database/models/dokumen_pengeluaran");
 const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/errHandler");
 const { isExist } = require("../checkExistingDataFromTable");
 
 const getDataPengajuan = async (reportId) => {
-    const data = await DokumenPemasukan.findOne({ where: { reportId: reportId } });
-    return data;
+    return DokumenPemasukan.findOne({ where: { reportId: reportId } });
 }
 
 const getDataPengajuanPengeluaran = async (reportId) => {
-    const data = await DokumenPengeluaran.findOne({
+    return DokumenPengeluaran.findOne({
         where: { reportId: reportId },
         include: [DokumenPemasukan]
     });
-    return data;
 }
-
+/**
+ * @async 
+ * @method
+ * @param {Object} data DataPemasukan
+ * @param {Transaction} transaction Transaction From Sequelize
+ * @returns {DokumenPemasukan} DokumenPemasukan Model 
+ * @throws {ForeignKeyViolation} Error For This Specific Function
+ * @throws {ConflictCreateData}
+ */
 const saveDataPengajuan = async (data, transaction) => {
     try {
         
-        const result = await DokumenPemasukan.create(data, {
+        return DokumenPemasukan.create(data, {
             transaction,
             returning: true 
         });
-        return result;
     } catch (error) {
-        console.log(error,"saveDataPengajuan")
         if(error.name == "SequelizeValidationError"){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data");
+            throw new ConflictCreateData("Gagal Menyimpan Data", error);
         }
     }
 }
-
+/**
+ * Save Dokumen Pengeluaran
+ * @param {Object} data 
+ * @param {Transaction} transaction 
+ * @returns {DataPengajuanPengeluaran} DokumenPengeluaran Model
+ * @throws {ForeignKeyViolation} Error Ketika Input Data
+ */
 const saveDataPengajuanPengeluaran = async (data, transaction) => {
     try {
         
-        const result = await DokumenPengeluaran.create(data, {
+        return DokumenPengeluaran.create(data, {
             transaction,
             returning: true 
         });
-        return result;
     } catch (error) {
-        console.log(error,"saveDataPengajuanPengeluaran")
-
         if(error.name == "SequelizeValidationError"){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data");
+            throw new ConflictCreateData("Gagal Menyimpan Data", error);
         }
     }
 }
 
+/**
+ * Update Data Pengajuan
+ * @async
+ * @method
+ * @param {Object} data DataPengajuan Model
+ * @param {Number} reportId Number Report Id 
+ * @param {Transaction} transaction Tranasction Dari Sequelize
+ * @returns {DataPengajuan} Model Data Pengajuan
+ * @throws {ForeignKeyViolation} Error Pada Update
+ */
 const updateDataPengajuan = async(data, reportId, transaction) => {
     try {
         const query = {
@@ -73,17 +91,25 @@ const updateDataPengajuan = async(data, reportId, transaction) => {
 
         return result[1].toJSON();
     } catch (error) {
-
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error)
         }else if(error.name == 'ServerFault' || error.name == 'NotFoundException'){
             throw error
         }else{
-            throw new ConflictCreateData('Gagal Menyimpan Data')
+            throw new ConflictCreateData('Gagal Menyimpan Data', error)
         }
     }
 }
-
+/**
+ * Update Data Pengajuan
+ * @async
+ * @method
+ * @param {Object} data DataPengajuan Model
+ * @param {Number} reportId Number Report Id 
+ * @param {Transaction} transaction Tranasction Dari Sequelize
+ * @returns {DataPengajuan} Model Data Pengajuan
+ * @throws {ForeignKeyViolation} Error Pada Update
+ */
 const updateDataPengajuanPengeluaran = async(data, reportId, transaction) => {
     try {
         const query = {
@@ -106,11 +132,11 @@ const updateDataPengajuanPengeluaran = async(data, reportId, transaction) => {
     } catch (error) {
         console.log(error)
         if (error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error)
         } else if (error.name == 'ServerFault' || error.name == 'NotFoundException'){
             throw error
         } else {
-            throw new ConflictCreateData('Gagal Menyimpan Data')
+            throw new ConflictCreateData('Gagal Menyimpan Data', error)
         }
     }
 }

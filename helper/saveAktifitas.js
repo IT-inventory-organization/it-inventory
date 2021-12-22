@@ -1,5 +1,4 @@
 const { ConflictCreateData } = require("../middlewares/errHandler");
-const httpStatus = require("./Httplib");
 const { saveAktifitasUser } = require("./Repository/aktifitasUser")
 
 const saveAktifitas = (
@@ -11,7 +10,7 @@ const saveAktifitas = (
     transaction = null
 ) => {
     saveAktifitasUser(data, transaction).catch(error => {
-        throw new ConflictCreateData("Gagal Menyimpan Data");
+        throw new ConflictCreateData("Gagal Menyimpan Data", error);
     })
 }
 

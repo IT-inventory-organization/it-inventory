@@ -5,7 +5,7 @@ const dataBarang = require('../../database/models/data_barang');
 const DataKapal = require('../../database/models/data_kapal');
 const dataPO = require('../../database/models/po');
 const Report = require('../../database/models/report');
-const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
+const { ForeignKeyViolation, ConflictCreateData, ServerFault } = require('../../middlewares/errHandler');
 const { isExist } = require("../checkExistingDataFromTable");
 
 const saveDataPO = async(data, transaction) => {
@@ -16,9 +16,11 @@ const saveDataPO = async(data, transaction) => {
         });
     } catch (error) {
         if(error.name == "SequelizeValidationError"){
-            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server')
+            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server', error)
+        }else if(error.name == "SequelizeDatabaseError"){
+            throw new ServerFault('Terjadi Kesalahan Pada Server', error);
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data")
+            throw new ConflictCreateData("Gagal Menyimpan Data", error)
         }
     }
 }
@@ -73,14 +75,15 @@ const getAllPurchaseOrder= async (req, idUser) => {
                 where: {
                     reportId: {
                         [Op.not]: null 
-                    }
+                    },
+                    isDelete: false
                 },
                 plain: false,
 
                 attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
             }
             
-            return dataPO.findAll(query); 
+            return dataPO.findAndCountAll(query); 
    
     } catch (error) {
         console.log(error)

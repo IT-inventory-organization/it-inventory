@@ -9,12 +9,12 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     const promises = [
-      await queryInterface.changeColum('bcf3315', 'status', {
+      await queryInterface.changeColumn('bcf3315', 'status', {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: false
       }),
-      await queryInterface.changeColum('bcf3315', 'nomorbcf3314', {
+      await queryInterface.changeColumn('bcf3315', 'nomorbcf3314', {
         type: Sequelize.STRING,
         allowNull: false,
         defaultValue: false
@@ -42,6 +42,6 @@ module.exports = {
         defaultValue: 'menunggu'
       })
     ]
-    return Promise.all(promises)
+    return Promise.all(promise)
   }
 };

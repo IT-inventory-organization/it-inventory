@@ -15,7 +15,7 @@ const validationLogin = [
 ];
 
 const getUserData = async(email) => {    
-    return await InfoPengguna.findOne({
+    return InfoPengguna.findOne({
         where: {
             [Op.or]: [
                 {email: email},
