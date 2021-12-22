@@ -141,7 +141,6 @@ const create = async(req, res) => {
 
 		const body = matchedData(req);
 
-
         transaction = await sequelize.transaction();
 
 		// console.log(body) utk melihat data body
@@ -149,8 +148,8 @@ const create = async(req, res) => {
 		const form3315 = await Form3315.create(body, {transaction});
 		
 
-		if (transaction) await transaction.commit();
-        return successResponse(res, Http.ok, "Success", form3315, false);
+		if (transaction) {await transaction.commit()}
+        return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
         console.error(error);
         if (transaction) await transaction.rollback();

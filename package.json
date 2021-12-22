@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
+  "types": "./helper/Interface/Res",
   "scripts": {
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,7 +11,8 @@
     "local": "npx nodemon app.js",
     "migrate": "sequelize db:migrate",
     "migrate-undo-all": "sequelize db:migrate:undo:all",
-    "migrate-undo-file": "sequelize db:migrate:undo"
+    "migrate-undo-file": "sequelize db:migrate:undo",
+    "generate-docs": "jsdoc -c conf.json"
   },
   "repository": {
     "type": "git",
@@ -43,6 +45,7 @@
     "sequelize": "^6.9.0"
   },
   "devDependencies": {
+    "jsdoc": "^3.6.7",
     "sequelize-cli": "^6.3.0"
   }
 }

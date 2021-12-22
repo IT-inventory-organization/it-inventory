@@ -6,7 +6,7 @@ const checkFormat = (value) => {
         return true
     }
     if(!date.test(value)){
-        throw Error('Date Format is Incorrect, Format example: dd-mm-yyyy');
+        throw Error('Date Format is Incorrect, Format example: yyyy-mm-dd');
     }
 
     return true;

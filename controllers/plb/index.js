@@ -26,7 +26,7 @@ const list = async(req, res) => {
         const authUser = await findUserById(req.currentUser);
         // Todo: Check user role and add query
         const plb = await listPLB(limit, offset);
-        return successResponse(res, Http.ok, "Success", plb, false);
+        return successResponse(res, Http.ok, "Success", plb, true);
     } catch (error) {
         return errorResponse(res, Http.internalServerError, "Something went wrong");
     }
@@ -36,7 +36,7 @@ const detail = async(req, res) => {
     try {
         const { id } = req.params;
         const plb = await getPLB(id);
-        return successResponse(res, Http.ok, "Success", plb, false);
+        return successResponse(res, Http.ok, "Success", plb, true);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "Something went wrong");

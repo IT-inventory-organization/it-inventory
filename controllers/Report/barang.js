@@ -2,12 +2,11 @@ const {body, validationResult} = require('express-validator');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
-const { createDataBarang, dataBarang} = require('../../helper/bundleDataBarang');
 const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
 const { saveDataBarang } = require('../../helper/Repository/dataBarang');
-const { create } = require('nconf');
 const { internalServerError } = require('../../helper/Httplib');
+const Report = require('../../database/models/report');
 
 const validationBarang = [
     body('lists.dataBarang.*.kodeBarang').trim().notEmpty().withMessage("Kolom Kode Barang Terjadi Kesalahan"),
@@ -30,9 +29,11 @@ const bundle = (req, res, next) => {
         if(Decrypt.listDataBarang.length == 0){
             return errorResponse(res, Http.badRequest, "Item Kosong");
         }
-        for (let i = 0; i < Decrypt.listDataBarang.length; i++) {
-            Decrypt.listDataBarang[i].reportId = Decrypt.reportId;
+        
+        for (const iterator of Decrypt.listDataBarang) {
+            iterator['reportId'] = Decrypt.reportId
         }
+
         req.body.lists = {
             dataBarang: Decrypt.listDataBarang,
             reportId: Decrypt.reportId
@@ -49,7 +50,6 @@ const bundle = (req, res, next) => {
 const createListBarang = async(req, res) => {
     let trans;
     try {
-        //(/((\[[0-9]{1,}\]))/g)
         const validation = validationResult(req);
         if(!validation.isEmpty()){
             const value = validation.array()[0].param.match(/([0-9]{1,})/g);
@@ -61,11 +61,12 @@ const createListBarang = async(req, res) => {
         const {lists} = req.body;
 
         const resultBarang = [];
-        for (let i = 0; i < lists.dataBarang.length; i++) {
-            const result = await saveDataBarang(lists.dataBarang[i], trans);   
-            resultBarang.push(result);
+
+        for (const iterator of lists.dataBarang) {
+            const result = await saveDataBarang(iterator, trans);
+            resultBarang.push(result)
         }
-        
+
         await trans.commit();
 
         return successResponse(res, Http.created, "Berhasil Membuat Barang", resultBarang);
@@ -90,16 +91,17 @@ const updateDataBarang = async (req, res) => {
         await isExist(Report, {where: {id: idReport, userId: req.currentUser}});
 
         transaction = await sequelize.transaction();
-        let resulsListBarang = [];
+        const resulsListBarang = [];
 
         await fullDelete(req, null, idReport, transaction)
 
-        for(let i = 0; i < listDataBarang.length; i++) {
-            if(listDataBarang[i].id || typeof listDataBarang[i].id !== 'undefined'){
-                delete listDataBarang[i].id
+
+        for (const iterator of listDataBarang) {
+            if(iterator.id || typeof iterator.id !== 'undefined'){
+                delete iterator.id
             }
 
-            let result = await createListBarang(listDataBarang[i].id, transaction, idReport);
+            let result = await saveDataBarang(iterator, transaction);
             if(result.error){
                 return errorResponse(res, Http.badRequest, result.error);
             }
@@ -111,7 +113,7 @@ const updateDataBarang = async (req, res) => {
             reportId: resultsListBarang[0].id
         }
 
-        await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`);
+        await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`, dataReturn, true);
 
         await transaction.commit();
         return successResponse(res, Http.created, `Update Success`, dataToReturn);

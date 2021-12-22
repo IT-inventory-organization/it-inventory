@@ -3,23 +3,21 @@ const { ForeignKeyViolation, ConflictCreateData } = require("../../middlewares/e
 const { isExist } = require('../checkExistingDataFromTable');
 
 const getDataPpjk = async (reportId) => {
-    const data = await ppjk.findOne({ where: { reportId: reportId } });
-    return data;
+    return ppjk.findOne({ where: { reportId: reportId } });
 }
 
 const saveDataPpjk = async(data, transaction) => {
     try {
-        const result = await ppjk.create(data, {
+        
+        return ppjk.create(data, {
             transaction,
             returning: true
-        })
-
-        return result;
+        });
     } catch (error) {
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server")
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error)
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data")
+            throw new ConflictCreateData("Gagal Menyimpan Data", error)
         }
     }
 }
@@ -47,11 +45,11 @@ const updateDataPpjkRepo = async(data,  reportId, transaction) => {
     } catch (error) {
 
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server');
+            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server', error);
         }else if(error.name == 'ServerFault' || error.name == 'NotFoundException') {
             throw error
         } else {
-            throw new ConflictCreateData('Gagal Saat Mengubah data')
+            throw new ConflictCreateData('Gagal Saat Mengubah data', error)
         }
     }
 }

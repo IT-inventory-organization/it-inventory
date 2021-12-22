@@ -67,12 +67,37 @@ const { updateDataPO } = require('../../helper/Repository/dataPO');
 const DokumenPengeluaran = require('../../database/models/dokumen_pengeluaran');
 const DokumenPemasukan = require('../../database/models/dokumen_pemasukan');
 const Report = require('../../database/models/report');
+const httpStatus = require('../../helper/Httplib');
+const { getBcf3315ThatAlreadyBeenAcceptByBeaCukai } = require('../../helper/Repository/bcf3315');
 
+
+const fetchBCF3314 = async(req, res) => {
+    try {
+        return successResponse(
+            res, 
+            httpStatus.ok, 
+            "", 
+            await getBcf3315ThatAlreadyBeenAcceptByBeaCukai(req, req.currentUser), 
+            false
+        );
+    } catch (error) {
+        return errorResponse(res, httpStatus.internalServerError, "", []);
+    }
+}
+
+/**
+ * Save Dokumen Pemasukan
+ * @async
+ * @method
+ * @param {Request} req A Request From User
+ * @param {Response} res A Response From Server
+ * @returns 
+ */
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
     try {
         const {ref} = req.body;
-
+        console.log(ref);
         transaction = await sequelize.transaction();
 
         const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);
@@ -116,11 +141,11 @@ const saveDokumenPemasukan = async(req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
     } catch (error) {
-        console.log(error,"<<<<<<<<<<<<")
+        // console.log(error,"<<<<<<<<<<<<")
         if(transaction){
             await transaction.rollback();
         }
-        return errorResponse(res, error.status, error.message);
+        return errorResponse(res, error.status, error.message, "", error);
 
     }
 }
@@ -342,7 +367,7 @@ const updateDokumenPengeluaran = async(req, res) => {
         const { ref } = matchedData(req);
         transaction = await sequelize.transaction();
 
-        const updateDokumenPengeluaran = await updateDataPengajuanPengeluaran(ref.dokumenPengeluaran, idReport, transaction)
+        const updateDokumenPengeluaranData = await updateDataPengajuanPengeluaran(ref.dokumenPengeluaran, idReport, transaction)
         const updateDokumenTambahan = await updateDataTambahan(ref.dokumenTambahan, idReport, transaction);
         const updateDataPelabuhan = await updateDataPelabuhanRepo(ref.dataPelabuhan, idReport, transaction);
         const updateDataKapal = await updateDataKapalRepo(ref.dataKapal, idReport, transaction);
@@ -357,7 +382,7 @@ const updateDokumenPengeluaran = async(req, res) => {
         const updateDataPengangkutan = await updateDataPengangkutanRepo(ref.dataPengangkutan, idReport, transaction);
         const updateBeratDanVolume = await updateBeratDanVolumeRepo(ref.beratDanVolume, idReport, transaction);
         const updatedData = {
-            dokumenPengeluaran: updateDokumenPengeluaran.id,
+            dokumenPengeluaran: updateDokumenPengeluaranData.id,
             dokumenTambahan: updateDokumenTambahan.id,
             dataPelabuhan: updateDataPelabuhan.id,
             dataKapal: updateDataKapal.id,
@@ -494,7 +519,6 @@ const updatePO = async(req, res) => {
     }
 }
 
-
 module.exports = routes => {
     routes.post('/save/pemasukan',
         authentication,
@@ -567,6 +591,7 @@ module.exports = routes => {
         authentication,
         getDokumenPengeluaran
     );
+
     routes.get('/list/pemasukan',
         authentication,
         getDokumenPemasukan
@@ -605,6 +630,7 @@ module.exports = routes => {
             .isNumeric().withMessage('Isi dengan angka'),
         updatePO
     );
+    routes.get('/get/bcf/', authentication, fetchBCF3314);
 }
 
 

@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const beratDanVolume = require("../../database/models/berat_dan_volume");
 const dataBarang = require("../../database/models/data_barang");
 const DataKapal = require("../../database/models/data_kapal");
@@ -16,24 +17,18 @@ const Report = require("../../database/models/report");
 const TempatPenimbunan = require("../../database/models/tempat_penimbunan");
 const { ServerFault, NotFoundException } = require("../../middlewares/errHandler");
 
-const saveReport = async(data) => {
+const saveReport = async (data) => {
     try {
-        const result = await Report.create(data,{
+        return Report.create(data,{
             logging:true,
             returning: true
         });
-        
-        return result;
     } catch (error) {
 
         return false
     }
 }
 
-/**
- * * Data Barang Belum
- *  
- */
 const getReportPerId = async(id) => {
     try {
         const query = {
@@ -186,78 +181,87 @@ const dashboard = async(req) => {
     }
 }
 
-const getPO = async(req) => {
-    try {
-        const query = {
-            where: {
-                userId: req.currentUser,
-                isDelete: false
-            },
-            attributes: ['jenisDokumenBC'],
-            include: [
-                {
-                    model: DataKapal,
-                    attributes:  [
-                            'voyageKapal', 'namaKapal', 'benderaKapal',
-                            'updatedAt', 'createdAt']
-                    
-                }
-            ]
-        }
-        const resultDashboard = await Report.findAll(query);
-        if(!resultDashboard){
-            throw new NotFoundException("Data Tidak Ditemukan");
-        }
-        return resultDashboard;
-    } catch (error){
-
-        if(error.name == "ReferenceError"){
-            throw new ServerFault("Terjadi Kesalahan Pada Server")
-        }else{
-            throw error
-        }
-    }
-}
-
 const getKapalPenjual = async(req, idUser) => {
     try {
-
         const query = {
             include: [
                 {
                     model: TempatPenimbunan,
                     required: true,
                     where: {
-                        isTempatPenimbunan: true
+                        isTempatPenimbunan: true,
+                        reportId: {
+                            [Op.ne] : null
+                        }
                     },
                     attributes: ['isTempatPenimbunan']
                 },
                 {
                     model: DataKapal,
                     required: true,
-                    attributes: ['voyageKapal', 'namaKapal', 'id']
+                    attributes: [
+                        'voyageKapal',
+                        'namaKapal', 
+                        'id'
+                    ],
+                    where: {
+                        reportId: {
+                            [Op.ne] : null
+                        }
+                    }
                 }
             ],
             where: {
-                userId: idUser
+                userId: {
+                    [Op.ne]: idUser
+                },
             },
-            attributes: ['id'],
-            plain:true
+            raw: true,
+            attributes: ['id']
         }
 
         const result = await Report.findAll(query);
         if(!result){
-            throw NotFoundException('Data Tidak Ditemukan')
+            throw new NotFoundException('Data Tidak Ditemukan')
         }
+        
+        const fetchFilter = [];
+        for (const value of result) {
+            let obj = {};
+            for (const val in value) {
+                __regexKapalPenjual(val, obj, value);
 
-        return result;
+            }
+            fetchFilter.push(obj);
+        }
+        return fetchFilter;
 
     } catch (error) {
+        console.log(error)
         if(error.name == "ReferenceError"){
-            throw ServerFault("Terjadi Kesalahan Pada Server")
+            throw new ServerFault("Terjadi Kesalahan Pada Server")
         }else{
             throw error;
         }
+    }
+}
+
+/**
+ * To Reduce Cognitive Complexity For getKapalPenjual Function
+ * @param {Object} val 
+ * @param {Object} obj 
+ */
+const __regexKapalPenjual = (val, obj, value) => {
+    const regex = /[\.]/i;        
+    if(regex.test(val)){
+        const split = val.split('.');
+        if(split[1] == 'id' && split[0] == 'dataKapal'){
+            obj['idKapal'] = value[val];    
+        }else{
+            obj[split[1]] = value[val];
+        }
+    }else{
+        obj[val] = value[val];
     }
 }
 
@@ -271,7 +275,7 @@ const deleteReport = async (req, idReport, idUser) => {
         });
 
         if(!checkReport){
-            throw NotFoundException("Data Tidak Ada");
+            throw new NotFoundException("Data Tidak Ada");
         }
 
         return Report.update({
@@ -282,6 +286,7 @@ const deleteReport = async (req, idReport, idUser) => {
             }
         })
     } catch (error) {
+        console.log(error);
         throw error;
     }
 }
