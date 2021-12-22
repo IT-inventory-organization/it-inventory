@@ -11,6 +11,7 @@ const httpStatus = require('../../helper/Httplib');
 const list = async(req, res) => {
     try {
 		const form3315 = await Form3315.findAndCountAll({});
+		// console.log(form3315);
 		return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
         console.error(error);
