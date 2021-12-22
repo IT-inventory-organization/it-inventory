@@ -4,7 +4,7 @@ const authentication = require('../../middlewares/authentication');
 const { viewOnePo } = require('../../helper/Repository/dataPO');
 const httpStatus = require('../../helper/Httplib');
 
-const getOnePOEachUser = async(req, res) => {
+const getOnePurchaseOrderEachUser = async(req, res) => {
     try {
         const idUser = req.currentUser;
         const {id} = req.params;
@@ -18,5 +18,5 @@ const getOnePOEachUser = async(req, res) => {
 }
 
 module.exports = routes => {
-    routes.get('/:id', authentication ,getOnePOEachUser)
+    routes.get('/:id', authentication ,getOnePurchaseOrderEachUser)
 }

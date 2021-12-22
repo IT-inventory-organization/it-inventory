@@ -1,25 +1,25 @@
 const MataUang = require("../../database/models/mata_uang");
-const { ForeignKeyViolation, ConflictCreateData, NotFoundException } = require("../../middlewares/errHandler");
+const { ForeignKeyViolation, ConflictCreateData, BadRequest } = require("../../middlewares/errHandler");
 const { isExist } = require('../checkExistingDataFromTable')
 
 const getMataUang = async (reportId) => {
-    const data = await MataUang.findOne({ where: { reportId: reportId } });
-    return data;
+    return MataUang.findOne({ where: { reportId: reportId } });
 }
 
 const saveMataUang = async(data, transaction) => {
     try {
-        const result = await MataUang.create(data, {
+        return await MataUang.create(data, {
             transaction,
             returning: true
-        })
-
-        return result;
+        });
     } catch (error) {
+        // console.log(error)
         if(error.name == "SequelizeValidationError"){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
+        }else if(error.name == "SequelizeDatabaseError"){
+            throw new BadRequest("Inputan User Salah", error)
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data");
+            throw new ConflictCreateData("Gagal Menyimpan Data", error);
         }
     }
 }
@@ -45,13 +45,14 @@ const updateMataUangRepo = async(data, reportId, transaction) => {
 
         return result[1].toJSON();
     } catch (error) {
-
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation('Terjadi KKesalahan Pada Data Server');
+            throw new ForeignKeyViolation('Terjadi Kesalahan Pada Data Server', error);
         }else if(error.name == 'ServerFault' || error.name == 'NotFoundException'){
             throw error
-        } else {
-            throw new ConflictCreateData('Gagal Mengubah Data')
+        } else if(error.name == "SequelizeDatabaseError"){
+            throw new BadRequest("Inputan User Salah", error)
+        }else {
+            throw new ConflictCreateData('Gagal Mengubah Data', error)
         }
     }
 }

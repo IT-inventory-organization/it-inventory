@@ -4,3 +4,5 @@ package-lock.json
 *.ts
 ngrok.exe
 .env
+error.log
+docs

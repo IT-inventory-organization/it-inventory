@@ -1,14 +1,10 @@
 const {body, validationResult} = require('express-validator');
 const { errorResponse, successResponse } = require('../../helper/Response');
 const Http = require('../../helper/Httplib');
-// const authentication = require('../../middlewares/authentication');
 const { createDataPO, dataPO} = require('../../helper/bundleDataPO');
 const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
-// const { saveDataPO } = require('../../helper/Repository/dataPO');
-const { create } = require('nconf');
 const { saveDataBarangPO } = require('../../helper/Repository/dataBarangPO');
-// const { internalServerError } = require('../../helper/Httplib');
 
 const validationBarangPO = [
     body('lists.dataBarangPO.*.kodeBarang').trim().notEmpty().withMessage("Terjadi Kesalahan Pada Kolom Kode Barang"),
@@ -25,9 +21,11 @@ const bundle = (req, res, next) => {
         if(Decrypt.listDataBarangPO.length == 0){
             return errorResponse(res, Http.badRequest, "Item Kosong");
         }
-        for (let i = 0; i < Decrypt.listDataBarangPO.length; i++) {
-            Decrypt.listDataBarangPO[i].reportId = Decrypt.reportId;
+
+        for (const iterator of Decrypt.listDataBarangPO) {
+            iterator['reportId'] = Decrypt.reportId;
         }
+
         req.body.lists = {
             dataBarangPO: Decrypt.listDataBarangPO,
             reportId: Decrypt.reportId
@@ -39,14 +37,20 @@ const bundle = (req, res, next) => {
     }
 }
 
-
+/**
+ * Save New List DataBarangPO
+ * @async
+ * @method
+ * @param {Request} Req Request From User 
+ * @param {Response} Res Response To User
+ * @throws {InternalServerError} -- Error On server 
+ */
 const createListDataBarangPO = async(req, res) => {
     let trans;
     try {
-        //(/((\[[0-9]{1,}\]))/g)
         const validation = validationResult(req);
         if(!validation.isEmpty()){
-            const value = validation.array()[0].param.match(/([0-9]{1,})/g);
+            const value = validation.array()[0].param.match(/([\d]]+)/g);
             return errorResponse(res, Http.badRequest, `${validation.array()[0].msg} Item No ${+value + 1}`);
         }
         // return;
@@ -56,9 +60,8 @@ const createListDataBarangPO = async(req, res) => {
 
         const resultDataBarangPO = [];
       
-        const result = await saveDataBarangPO(lists.dataPO, trans);
+        await saveDataBarangPO(lists.dataPO, trans);
     
-        
         await trans.commit();
 
         return successResponse(res, Http.created, "Berhasil Membuat Data Barang PO", resultDataBarangPO, true);

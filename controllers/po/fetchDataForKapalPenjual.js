@@ -10,18 +10,19 @@ const getListKapalPenjualThatBelongToUser = async (req, res) => {
         const isUser = req.currentUser;
 
         const result = await getKapalPenjual(res, isUser);
-    
+        
         return successResponse(res, httpStatus.ok, "", result, true);
     } catch (error) {
-        return errorResponse(res, error.status, "Gagal Mengambil Kapal Penjual");
+        return errorResponse(res, error.status, error.message);
     }
 }
 
 const getBarangFromKapalPenjual = async (req, res) => {
     try {
         const {id} = req.params;
+        const idUser = req.currentUser;
 
-        const result = await fetchBarangAfterChoosingKapalPenjual(req, id);
+        const result = await fetchBarangAfterChoosingKapalPenjual(req, id, idUser);
 
         return successResponse(res, httpStatus.ok, "", result, true);
     } catch (error) {

@@ -9,6 +9,11 @@ const convert = (data) => {
     data.tanggalBL = convertStrignToDateUTC(data.tanggalBL);
 }
 
+/**
+ * Save Data Tambahan
+ * @param {number} reportId Report Id Pada Data 
+ * @returns 
+ */
 const getDataTambahan = async (reportId) => {
     return DokumenTambahan.findOne({ where: { reportId: reportId } });
 }
@@ -22,12 +27,11 @@ const saveDataTambahan = async(data, transaction) => {
             returning: true
         })
     } catch (error) {
-        console.log(error,"saveDataTambahan")
 
         if(error.name == "SequelizeValidationError"){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data");
+            throw new ConflictCreateData("Gagal Menyimpan Data", error);
         }
     }
 }
@@ -57,10 +61,10 @@ const updateDataTambahan = async(data, reportId, transaction) => {
 
         if(error.name == 'SequelizeValidationError'){
             throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
-        }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){
+        }else if(error.name == "ServerFault" || error.name == 'NotFoundException', error){
             throw error
         } else {
-            throw new ConflictCreateData("Gagal Mengubah Data");
+            throw new ConflictCreateData("Gagal Mengubah Data", error);
         }
     }
 }

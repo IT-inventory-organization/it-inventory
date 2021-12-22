@@ -1,5 +1,4 @@
 const {verifyToken} = require("../helper/jwt");
-// const User = require("../database/models/user");
 const InfoPengguna = require('../database/models/info_pengguna');
 const { errorResponse } = require("../helper/Response");
 const httpStatus = require("../helper/Httplib");

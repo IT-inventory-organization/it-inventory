@@ -8,23 +8,22 @@ const convert = (data) => {
 }
 
 const getTempatPenimbunan = async (reportId) => {
-    const data = await TempatPenimbunan.findOne({ where: { reportId: reportId } });
-    return data;
+    return TempatPenimbunan.findOne({ where: { reportId: reportId } });
 }
 
 const saveTempatPenimbunan = async(data, transaction) => {
     try {
         convert(data);
-        const result = await TempatPenimbunan.create(data, {
+        
+        return TempatPenimbunan.create(data, {
             transaction,
             returning: true
-        });
-        return result;
+        });;
     } catch (error) {
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else{
-            throw new ConflictCreateData("Gagal Menyimpan Data");
+            throw new ConflictCreateData("Gagal Menyimpan Data", error);
         }
     }
 }
@@ -52,11 +51,11 @@ const updateTempatPenimbunanRepo = async(data, reportId, transaction) => {
     } catch (error) {
 
         if(error.name == 'SequelizeValidationError'){
-            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server");
+            throw new ForeignKeyViolation("Terjadi Kesalahan Pada Server", error);
         }else if(error.name == "ServerFault" || error.name == 'NotFoundException'){
             throw error
         } else {
-            throw new ConflictCreateData("Gagal Mengubah Data");
+            throw new ConflictCreateData("Gagal Mengubah Data", error);
         }
     }
 }
