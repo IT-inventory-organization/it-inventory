@@ -43,6 +43,22 @@ const get = async (req, res) => {
     }
 }
 
+const save = async (req, res) => {
+    try{
+        let body = req.body;
+        let data = await infoPengguna.create(body);
+        return res.json({
+            status: 'ok',
+            data: data
+        })
+    }catch(error){
+        res.status(500).json({
+            status: 'error',
+            data: error
+        })
+    }
+}
+
 
 module.exports = routes => {
     routes.get('/list', authentication, list),
