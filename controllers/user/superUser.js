@@ -60,8 +60,29 @@ const update = async (req, res) => {
 	}
 }
 
+const hapus = async (req, res) => {
+    try{
+        let id = req.params.id;
+        const dataPerId = await infoPengguna.findOne({
+            where: {
+                id: id
+            }
+        })
+        const result = dataPerId.toJSON();
+        await infoPengguna.destroy({
+            where: {
+                id: id
+            }
+        })
+        return successResponse(res, httpStatus.ok, result, 'Data berhasil di hapus!', '', true)
+	}catch(error){
+		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
+	}
+}
+
 module.exports = routes => {
     routes.get('/list', authentication, list),
     routes.get('/get/:id', authentication, get ),
-    routes.put('/update/:id', authentication, update)
+    routes.put('/update/:id', authentication, update),
+    routes.delete('/delete/:id', authentication, hapus)
 }
