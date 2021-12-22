@@ -139,30 +139,30 @@ const revise = async(req, res) => {
     }
 }
 
-const disetujui = async (req, res) => {
+const getAlldisetujui = async (req, res) => {
     try{
-        let status = req.params.status;
-        let data = await Approval.findAll({
+        let id = req.params.id;
+        let data = await BCF3315.findAll({
             where: {
-                status: 'DISETUJUI'
+                status: "DISETUJUI"
             }
         })
-        return successResponse(res, Http.ok, 'success', data, true);
+        return successResponse(res, Http.ok, 'success', data, false);
     }catch(error){
         console.error(error);
         return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
     }
 }
 
-const perbaikan = async (req, res) => {
+const getAllPerbaikan = async (req, res) => {
     try{
-        let status = req.params.status;
-        let data = await Approval.findAll({
+        let id = req.params.id;
+        let data = await BCF3315.findAll({
             where: {
                 status: 'PERBAIKAN'
             }
         })
-        return successResponse(res, Http.ok, 'success', data, true);
+        return successResponse(res, Http.ok, 'success', data, false);
     }catch(error){
         console.error(error);
         return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
@@ -173,6 +173,6 @@ module.exports = routes => {
     routes.get('/', authentication, list),
     routes.post('/approve', authentication, onApproveValidation, approve),
     routes.post('/revise', authentication, onReviseValidation, revise),
-    routes.get('/disetujui', authentication, disetujui),
-    routes.get('/perbaikan', authentication, perbaikan)
+    routes.get('/getAlldisetujui', authentication, getAlldisetujui),
+    routes.get('/getAllPerbaikan', authentication, getAllPerbaikan)
 }
