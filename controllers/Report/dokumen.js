@@ -212,8 +212,7 @@ const getDokumenPengeluaran = async(req, res) => {
     try {
         let query = {};
         const dokumenPengeluaran = await DokumenPengeluaran.findAll({
-            attributes: ['id','reportId',
-                'nomorDokumenPemasukan','tanggalDokumenPemasukan'],
+            attributes: ['id', 'reportId', 'nomorDokumen', 'tanggalDokumen'],
             include: [
                 {
                     model:Report,

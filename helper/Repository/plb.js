@@ -17,15 +17,14 @@ const Report = require("../../database/models/report");
 const TempatPenimbunan = require("../../database/models/tempat_penimbunan");
 const { ServerFault, NotFoundException } = require("../../middlewares/errHandler");
 
-const listPLB = async(limit, offset, query = {}) => {
+const listPLB = async(limit, offset, additionalQuery = {}) => {
     limit = limit || 10;
     offset = offset || 0;
     try {
         const query = {
             where: {
                 isDelete: false,
-                // ...query
-                // BUG: ERROR HERE
+                ...additionalQuery
             },
             attributes: {
                 exclude: ['updatedAt', 'isDelete']

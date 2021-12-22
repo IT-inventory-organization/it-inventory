@@ -130,7 +130,6 @@ const revise = async(req, res) => {
                 id: approve.bcfId
             }
         });
-
         if (transaction) await transaction.commit();
         return successResponse(res, Http.ok, "Success", approval, false);
     } catch (error) {
@@ -140,8 +139,40 @@ const revise = async(req, res) => {
     }
 }
 
+const disetujui = async (req, res) => {
+    try{
+        let status = req.params.status;
+        let data = await Approval.findAll({
+            where: {
+                status: 'DISETUJUI'
+            }
+        })
+        return successResponse(res, Http.ok, 'success', data, true);
+    }catch(error){
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
+    }
+}
+
+const perbaikan = async (req, res) => {
+    try{
+        let status = req.params.status;
+        let data = await Approval.findAll({
+            where: {
+                status: 'PERBAIKAN'
+            }
+        })
+        return successResponse(res, Http.ok, 'success', data, true);
+    }catch(error){
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
+    }
+}
+
 module.exports = routes => {
     routes.get('/', authentication, list),
     routes.post('/approve', authentication, onApproveValidation, approve),
-    routes.post('/revise', authentication, onReviseValidation, revise)
+    routes.post('/revise', authentication, onReviseValidation, revise),
+    routes.get('/disetujui', authentication, disetujui),
+    routes.get('/perbaikan', authentication, perbaikan)
 }
