@@ -9,6 +9,8 @@ const dataBarang = require('../../database/models/data_barang');
 const httpStatus = require('../../helper/Httplib');
 const po = require('../../database/models/po');
 const Report = require('../../database/models/report');
+const { deleteBCF } = require('../../helper/Repository/bcf3315');
+const STATUS = require('../../helper/Status.const');
 
 const list = async(req, res) => {
     try {
@@ -31,6 +33,9 @@ const list = async(req, res) => {
 				}
 			],
 			attributes: [],
+			where: {
+				isDelete: 'false'
+			},
 			order: [
 				['tanggal', 'asc']
 			]
@@ -144,6 +149,8 @@ const create = async(req, res) => {
 
 		const form3315 = await Form3315.create(body, {transaction});
 		
+
+
 		if (transaction) {await transaction.commit()}
         return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
@@ -156,9 +163,11 @@ const create = async(req, res) => {
 const get = async (req, res) => {
     try{
         let id = req.params.id;
+		// let body = req.body
         let data = await Form3315.findOne({
             where: {
-                id: id
+                id: id,
+				isDelete: false
             }
         })
 		return successResponse(res, Http.ok, "Success", data, true);
@@ -176,10 +185,11 @@ const update = async (req, res) => {
 		const updateDataPerId = await Form3315.findOne({
 			where: {
 				id: id,
+				isDelete: false
 			}
 		})
 		const result = updateDataPerId.toJSON();
-		if(result.status = "menunggu"){
+		if(result.status = STATUS.MENUNGGU){
 			await Form3315.update(body,{
 				where: {
 					id: id
@@ -204,12 +214,8 @@ const hapus = async (req, res) => {
 			}
 		})
 		const result = statusDataPerId.toJSON();
-		if(result.status != "diterima"){
-			await Form3315.destroy({
-				where: {
-					id: id, 
-				}
-			});
+		if(result.status != STATUS.DISETUJUI){
+			await deleteBCF(req, id);
 			return successResponse(res, httpStatus.ok,  "Berhasil Di Hapus", result, true);
 		}
 
@@ -220,10 +226,10 @@ const hapus = async (req, res) => {
 }
 
 module.exports = routes => {
-	routes.get('/list', authentication, list);
-	routes.get('/:id', authentication, get);
-	routes.post('/create', authentication, onCreateValidation, create);
+	routes.get('/list', authentication, list),
+	routes.get('/:id', authentication, get)
+	routes.post('/create', authentication, onCreateValidation, create),
 	// routes.get('/:status', authentication, status),
-	routes.put('/update/:id', authentication, update);
-	routes.delete('/delete/:id', authentication, hapus);
+	routes.put('/update/:id', authentication, update)
+	routes.delete('/delete/:id', authentication, hapus)
 }
