@@ -7,9 +7,10 @@ const BCF3315 = require('../../database/models/bcf3315');
 const InfoPengguna = require('../../database/models/info_pengguna');
 const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
+const { changeStatusRepo } = require('../../helper/Repository/bcf3315');
 
 const findUserById = async(id) => {    
-    return await InfoPengguna.findOne({
+    return InfoPengguna.findOne({
         where: {
             id,
             isActive: true
@@ -70,7 +71,7 @@ const approve = async(req, res) => {
             userId: authUser.id
         }, { transaction });
 
-        const updateBCF = await BCF.update({
+        const updateBCF = await BCF3315.update({
             status: 'DISETUJUI',
             nomorbcf3314: body.nomor
         }, {
@@ -157,7 +158,7 @@ const getAllPerbaikan = async (req, res) => {
     try{
         let data = await BCF3315.findAll({
             where: {
-                status: 'PERBAIKAN'
+                status: 'PERBAIKAN',
             }
         })
         return successResponse(res, Http.ok, 'success', data, true);

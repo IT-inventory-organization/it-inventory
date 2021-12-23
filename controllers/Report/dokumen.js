@@ -68,22 +68,44 @@ const DokumenPengeluaran = require('../../database/models/dokumen_pengeluaran');
 const DokumenPemasukan = require('../../database/models/dokumen_pemasukan');
 const Report = require('../../database/models/report');
 const httpStatus = require('../../helper/Httplib');
-const { getBcf3315ThatAlreadyBeenAcceptByBeaCukai } = require('../../helper/Repository/bcf3315');
+const { getBcf3315ThatAlreadyBeenAcceptByBeaCukai, fetchBCF3315PerId } = require('../../helper/Repository/bcf3315');
+const { NotFoundException, BadRequest } = require('../../middlewares/errHandler');
 
 
 const fetchBCF3314 = async(req, res) => {
     try {
+        const fetchBCF3314Value = await getBcf3315ThatAlreadyBeenAcceptByBeaCukai(req, req.currentUser);
+        if(!fetchBCF3314Value){
+            throw new NotFoundException('Data Tidak Ada', "", req);
+        }
         return successResponse(
             res, 
             httpStatus.ok, 
             "", 
-            await getBcf3315ThatAlreadyBeenAcceptByBeaCukai(req, req.currentUser), 
-            false
+            fetchBCF3314Value, 
+            true
         );
     } catch (error) {
-        return errorResponse(res, httpStatus.internalServerError, "", []);
+        return errorResponse(res, error.status, "", []);
     }
 }
+
+const fetchPerBCF3314 = async(req, res) => {
+    try {
+
+        const {id} = req.params;
+        if(!id){
+            throw new BadRequest("ID BCF Tidak Ada", "", req);
+        }
+
+        const result = await fetchBCF3315PerId(req, req.currentUser, id) 
+        console.log(result.toJSON());
+
+        // const fetchPerItemBCF;
+    } catch (error) {
+        return errorResponse(res, httpStatus.internalServerError);
+    }
+};
 
 /**
  * Save Dokumen Pemasukan
@@ -97,7 +119,6 @@ const saveDokumenPemasukan = async(req, res) => {
     let transaction;
     try {
         const {ref} = req.body;
-        console.log(ref);
         transaction = await sequelize.transaction();
 
         const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);
@@ -630,6 +651,7 @@ module.exports = routes => {
         updatePO
     );
     routes.get('/get/bcf/', authentication, fetchBCF3314);
+    routes.get('/get/bcf/:id', authentication, fetchPerBCF3314);
 }
 
 
