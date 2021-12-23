@@ -97,7 +97,6 @@ const saveDokumenPemasukan = async(req, res) => {
     let transaction;
     try {
         const {ref} = req.body;
-        console.log(ref);
         transaction = await sequelize.transaction();
 
         const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);

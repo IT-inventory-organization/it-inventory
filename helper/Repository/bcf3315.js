@@ -90,7 +90,8 @@ const fetchBCF3315PerId = async(req, idUser) => {
     }
 }
 
+
 module.exports = {
     getBcf3315ThatAlreadyBeenAcceptByBeaCukai,
-    fetchBCF3315PerId
+    fetchBCF3315PerId,
 }

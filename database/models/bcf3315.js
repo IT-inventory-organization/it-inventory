@@ -79,6 +79,11 @@ const bcf3315 = db.define('bcf3315', {
     },
     nomorbcf3314: {
         type: Sequelize.STRING,
+        allowNull: false,
+    },
+    alasan: {
+        type: Sequelize.STRING,
+        allowNull: true,
     }
 }, {
     tableName: 'bcf3315',

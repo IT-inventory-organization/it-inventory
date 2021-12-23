@@ -68,10 +68,8 @@ const createListPO = async(req, res) => {
             throw new BadRequest('Nomor Purchase Order Duplikat', null, req);
         }
         trans = await sequelize.transaction();
-    
         
         lists.dataPO.PurchaseOrder.nomorPO = `PO-${lists.dataPO.PurchaseOrder.nomorPO}`;
-        lists.dataPO.PurchaseOrder.tanggalPurchaseOrder = convertForInputDateOnly(lists.dataPO.PurchaseOrder.tanggalPurchaseOrder);
         
         const result = await saveDataPO(lists.dataPO.PurchaseOrder, trans);
 
@@ -87,6 +85,7 @@ const createListPO = async(req, res) => {
 
         return successResponse(res, Http.created, "Berhasil Membuat PO", '', true);
     } catch (error) {
+        console.log(error)
         if(trans){
             await trans.rollback()
         }

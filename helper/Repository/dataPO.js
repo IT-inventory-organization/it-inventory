@@ -10,7 +10,7 @@ const { isExist } = require("../checkExistingDataFromTable");
 
 const saveDataPO = async(data, transaction) => {
     try {
-        return await dataPO.create(data, {
+        return dataPO.create(data, {
             transaction,
             returning: true
         });

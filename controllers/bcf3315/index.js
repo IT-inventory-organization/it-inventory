@@ -120,8 +120,6 @@ const create = async(req, res) => {
 
 		const form3315 = await Form3315.create(body, {transaction});
 		
-
-
 		if (transaction) {await transaction.commit()}
         return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
@@ -134,7 +132,6 @@ const create = async(req, res) => {
 const get = async (req, res) => {
     try{
         let id = req.params.id;
-		// let body = req.body
         let data = await Form3315.findOne({
             where: {
                 id: id
@@ -199,10 +196,10 @@ const hapus = async (req, res) => {
 }
 
 module.exports = routes => {
-	routes.get('/list', authentication, list),
-	routes.get('/:id', authentication, get)
-	routes.post('/create', authentication, onCreateValidation, create),
+	routes.get('/list', authentication, list);
+	routes.get('/:id', authentication, get);
+	routes.post('/create', authentication, onCreateValidation, create);
 	// routes.get('/:status', authentication, status),
-	routes.put('/update/:id', authentication, update)
-	routes.delete('/delete/:id', authentication, hapus)
+	routes.put('/update/:id', authentication, update);
+	routes.delete('/delete/:id', authentication, hapus);
 }

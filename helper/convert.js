@@ -21,6 +21,7 @@ const addZero = (val) => {
 
 const convertForInputDateOnly = date => {
     const data = date.split('-');
+    console.log(data)
     return `${parseInt(data[2])}-${parseInt(data[1])}-${parseInt(data[0])+1}`;
 }
 
