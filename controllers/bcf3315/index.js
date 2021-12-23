@@ -7,12 +7,36 @@ const sequelize = require('../../configs/database');
 // const { successResponse } = require('../../helper/Response');
 const dataBarang = require('../../database/models/data_barang');
 const httpStatus = require('../../helper/Httplib');
+const po = require('../../database/models/po');
+const Report = require('../../database/models/report');
 
 const list = async(req, res) => {
     try {
-		const form3315 = await Form3315.findAndCountAll({});
+		const form3315 = await Form3315.findAndCountAll({
+			include: [
+				{
+					model: po,
+					required: true,
+					include: [
+						{
+							model: Report,
+							required: true,
+							where: {
+								userId: req.currentUser
+							},
+							attributes: [],
+						}
+					],
+					attributes: ['nomorPO']
+				}
+			],
+			attributes: [],
+			order: [
+				['tanggal', 'asc']
+			]
+		});
 		// console.log(form3315);
-		return successResponse(res, Http.ok, "Success", form3315, true);
+		return successResponse(res, Http.ok, "Success", form3315, false);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
