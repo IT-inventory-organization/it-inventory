@@ -6,23 +6,33 @@ const {checkHashText} = require('../../helper/bcrypt');
 const infoPengguna = require('../../database/models/info_pengguna');
 const authentication = require('../../middlewares/authentication');
 const httpStatus = require('../../helper/Httplib');
+const sequelize = require('../../configs/database')
 
 
 const list  = async (req, res) => {
     try {
-        const pengguna = await infoPengguna.findAll({
-        attributes : ['id', 'username', 'namaPemilik', 'roleEnum', 'isActive'],
-        // include    : [{ 
-        //     model: bar,
-        //     attributes: attributes
-        //     }]
-        })
-    return successResponse(res, Http.ok, "Success", pengguna, true);
+        // const listData = await infoPengguna.findAll({
+        
+        // })
+        const sql = `select u.username, u."namaPemilik", u."roleEnum", u.status, au.aktifitasterakhir
+        from "infoPengguna" u
+        LEFT JOIN 
+        (
+            select "userId", max("createdAt") as aktifitasterakhir from "aktifitasUsers" GROUP BY "userId"
+        ) au on au."userId"=u."id"
+        `;
+    const result = await sequelize.query(sql);
+    // console.log(result);
+    return successResponse(res, Http.ok, "Success", result, false);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
     }
 }
+
+
+
+
 
 const get = async (req, res) => {
     try{
