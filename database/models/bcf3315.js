@@ -10,7 +10,6 @@ const bcf3315 = db.define('bcf3315', {
     },
     nomorPO: {
         type: Sequelize.STRING,
-        allowNull: false
     },
     tanggal: {
         type: Sequelize.DATEONLY,
@@ -76,6 +75,7 @@ const bcf3315 = db.define('bcf3315', {
     status: {
         type: Sequelize.STRING,
         allowNull: false,
+        defaultValue: 'MENUNGGU'
     },
     nomorbcf3314: {
         type: Sequelize.STRING,
