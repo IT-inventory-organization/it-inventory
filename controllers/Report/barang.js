@@ -52,7 +52,7 @@ const createListBarang = async(req, res) => {
     try {
         const validation = validationResult(req);
         if(!validation.isEmpty()){
-            const value = validation.array()[0].param.match(/([0-9]{1,})/g);
+            const value = validation.array()[0].param.match(/([\d]+)/g);
             return errorResponse(res, Http.badRequest, `${validation.array()[0].msg} Item No ${+value + 1}`);
         }
         // return;

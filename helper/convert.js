@@ -8,7 +8,8 @@ const convertDate = (date) => {
         return null;
     }
     const ISO = new Date(`${date}`);
-    return `${addZero(ISO.getDate())}-${addZero(ISO.getMonth()+1)}-${ISO.getFullYear()}`;
+    const data = `${addZero(ISO.getUTCDate())}-${addZero(ISO.getUTCMonth()+1)}-${ISO.getUTCFullYear()} }`; 
+    return data;
 }
 
 const addZero = (val) => {
@@ -21,6 +22,7 @@ const addZero = (val) => {
 
 const convertForInputDateOnly = date => {
     const data = date.split('-');
+    console.log(data)
     return `${parseInt(data[2])}-${parseInt(data[1])}-${parseInt(data[0])+1}`;
 }
 

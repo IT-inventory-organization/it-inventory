@@ -10,7 +10,8 @@ module.exports = {
      */
     const promises = [
       await queryInterface.changeColumn('bcf3315', 'nomorbcf3314', {
-        defaultValue: null,
+        type: Sequelize.STRING,
+        defaultValue: '',
         allowNull: true
       })
     ]
@@ -25,7 +26,10 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     const promises = [
-      await queryInterface.changeColumn('bcf3315', 'nomorbcf3314')
+      await queryInterface.changeColumn('bcf3315', 'nomorbcf3314', {
+        defaultValue: null,
+        allowNull: false
+      })
     ]
     return Promise.all(promises)
   }

@@ -79,7 +79,27 @@ const bcf3315 = db.define('bcf3315', {
     },
     nomorbcf3314: {
         type: Sequelize.STRING,
-    }
+        allowNull: false,
+    },
+    alasan: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    userId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'info_pengguna',
+            key: 'id'
+        },
+        onUpdte: 'cascade',
+        onDelete: 'no action'
+    },
+    isDelete: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+        defaultValue: false
+    },
 }, {
     tableName: 'bcf3315',
     freezeTableName: true
