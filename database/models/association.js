@@ -89,9 +89,10 @@ const setAssociations = function() {
  
   /**
    * Realsi PO Dengan InfoPengguna
+   * Perbaikan 23/12/2021
    */
-  InfoPengguna.hasMany(PO, {foreignKey: 'userId'});
-  PO.belongsTo(InfoPengguna, {foreignKey: 'id'});
+  InfoPengguna.hasMany(PO, {foreignKey: 'id'});
+  PO.belongsTo(InfoPengguna, {foreignKey: 'userId'});
 
   /**
    * * Roles Relation With User

@@ -175,20 +175,13 @@ const viewOnePo = async(req, idUser, idPO) => {
                         exclude: ['id', 'createdAt', 'updatedAt', 'idBarang']
                     }
                 },
-                {
-                    model: Report,
-                    required: true,
-                    attributes: [],
-                    where: {
-                        userId: idUser
-                    }
-                }
             ],
             where: {
                 id: idPO,
                 isDelete: {
                     [Op.ne]: null
-                }
+                },
+                userId: idUser
             },
             attributes: {
                 exclude: ['id', 'createdAt', 'updatedAt', 'reportId']
