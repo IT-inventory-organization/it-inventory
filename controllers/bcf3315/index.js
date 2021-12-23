@@ -188,7 +188,7 @@ const update = async (req, res) => {
 					id: id
 				}
 			});
-			return successResponse(res, httpStatus.ok, result, "Berhasil Di Update", '', true);
+			return successResponse(res, httpStatus.ok, "Berhasil Di Update", result, true);
 		}
 
 		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di Update", "");
@@ -213,7 +213,7 @@ const hapus = async (req, res) => {
 					id: id, 
 				}
 			});
-			return successResponse(res, httpStatus.ok, "Berhasil Di Hapus", '', true);
+			return successResponse(res, httpStatus.ok,  "Berhasil Di Hapus", result, true);
 		}
 
 		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di hapus", "");
