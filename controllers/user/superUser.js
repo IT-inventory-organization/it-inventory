@@ -84,7 +84,7 @@ const hapus = async (req, res) => {
                 id: id
             }
         })
-        return successResponse(res, httpStatus.ok, result, 'Data berhasil di hapus!', '', true)
+        return successResponse(res, httpStatus.ok,  "Berhasil Di Hapus", result, true);
 	}catch(error){
 		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
 	}
