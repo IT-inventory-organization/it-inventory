@@ -21,6 +21,10 @@ const list  = async (req, res) => {
             select "userId", max("createdAt") as aktifitasterakhir from "aktifitasUsers" GROUP BY "userId"
         ) au on au."userId"=u."id"
         `;
+
+        // console.log(sql);
+        // logging:console.log;
+
     const result = await sequelize.query(sql);
     // console.log(result);
     return successResponse(res, Http.ok, "Success", result, false);
@@ -90,33 +94,11 @@ const hapus = async (req, res) => {
 	}
 }
 
-const getOneDisetujui = async(req, res) => {
-    try{
-        let id = req.params.id;
-        let data = await BCF3315.findOne({
-            where: {
-                id: id
-            }
-        })
-        const result = data.toJSON();
-        if(result.status = 'DISETUJUI'){
-            await BCF3315.findOne(body,{
-                where: {
-                    id: id
-                }
-            })
-        }
-		return successResponse(res, Http.ok, "Success", result, true);
-    } catch (error) {
-        console.error(error);
-        return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
-    }
-}
+
 
 module.exports = routes => {
     routes.get('/list', authentication, list),
     routes.get('/get/:id', authentication, get ),
     routes.put('/update/:id', authentication, update),
-    routes.delete('/delete/:id', authentication, hapus),
-    routes.get('/getOneDisetujui/:id', authentication, getOneDisetujui)
+    routes.delete('/delete/:id', authentication, hapus)
 }

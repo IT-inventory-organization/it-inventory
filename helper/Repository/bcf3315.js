@@ -6,6 +6,7 @@ const DataPengangkutan = require("../../database/models/data_pengangkutan")
 const infoPengguna = require("../../database/models/info_pengguna")
 const po = require("../../database/models/po")
 const Report = require("../../database/models/report")
+const { isExist } = require("../checkExistingDataFromTable")
 
 const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     try {
@@ -90,7 +91,27 @@ const fetchBCF3315PerId = async(req, idUser) => {
     }
 }
 
+const deleteBCF = async(req, idBCF) => {
+    try {
+        await isExist(bcf3315, {
+            where: {
+                id: idBCF
+            }
+        });
+
+        return bcf3315.update({
+            isDelete: true
+        }, {
+            where: {
+                id: idBCF
+            }
+        });
+    } catch (error) {
+        throw error;
+    }
+}
 module.exports = {
     getBcf3315ThatAlreadyBeenAcceptByBeaCukai,
-    fetchBCF3315PerId
+    fetchBCF3315PerId,
+    deleteBCF
 }
