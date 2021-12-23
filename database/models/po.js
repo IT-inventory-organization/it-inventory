@@ -37,6 +37,16 @@ const po = db.define('po', {
     type: Sequelize.BOOLEAN,
     allowNull: true,
     defaultValue: false
+  },
+  userId: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'info_pengguna',
+      key: 'id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'NO ACTION',
   }
 }, {
   tableName: 'po',

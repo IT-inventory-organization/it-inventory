@@ -70,6 +70,7 @@ const createListPO = async(req, res) => {
         trans = await sequelize.transaction();
         
         lists.dataPO.PurchaseOrder.nomorPO = `PO-${lists.dataPO.PurchaseOrder.nomorPO}`;
+        lists.dataPO.PurchaseOrder.userId = req.currentUser;
         
         const result = await saveDataPO(lists.dataPO.PurchaseOrder, trans);
 

@@ -85,6 +85,10 @@ const fetchBCF3314 = async(req, res) => {
     }
 }
 
+const fetchPerBCF3314 = async(req, res) => {
+    
+};
+
 /**
  * Save Dokumen Pemasukan
  * @async

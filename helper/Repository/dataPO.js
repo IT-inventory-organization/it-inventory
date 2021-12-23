@@ -56,31 +56,23 @@ const getAllPurchaseOrder= async (req, idUser) => {
                         required: true,
                         attributes: []
                     },
-                    {
-                        model: Report,
-                        required: true,
-                        attributes: [],
-                        include: [
-                            {
-                                model: DataKapal,
-                                required: true,
-                                attributes: []
-                            }
-                        ],
-                        where: {
-                            userId: idUser
-                        }
-                    },
+                ],
+                order: [
+                    ['createdAt', 'desc'],
+                    ['updatedAt', 'desc'],
                 ],
                 where: {
                     reportId: {
                         [Op.not]: null 
                     },
+                    nomorPO: {
+                        [Op.not]: null
+                    }, 
+                    userId: idUser,
                     isDelete: false
                 },
-                plain: false,
 
-                attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id']
+                attributes: ['nomorPO', 'tanggalPurchaseOrder', 'kapalPenjual', 'id', 'createdAt']
             }
             
             return dataPO.findAndCountAll(query); 

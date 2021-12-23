@@ -88,6 +88,12 @@ const setAssociations = function() {
   barangPO.belongsTo(dataBarang, {foreignKey: 'idBarang'});
  
   /**
+   * Realsi PO Dengan InfoPengguna
+   */
+  InfoPengguna.hasMany(PO, {foreignKey: 'userId'});
+  PO.belongsTo(InfoPengguna, {foreignKey: 'id'});
+
+  /**
    * * Roles Relation With User
    * * Success
    */
