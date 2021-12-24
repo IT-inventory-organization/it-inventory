@@ -19,6 +19,7 @@ const list = async(req, res) => {
 				{
 					model: po,
 					required: true,
+					attributes: ['nomorPO'],
 					include: [
 						{
 							model: Report,
@@ -29,10 +30,9 @@ const list = async(req, res) => {
 							attributes: [],
 						}
 					],
-					attributes: ['nomorPO']
 				}
 			],
-			attributes: [],
+			// attributes: [],
 			where: {
 				isDelete: 'false'
 			},
@@ -41,7 +41,7 @@ const list = async(req, res) => {
 			]
 		});
 		// console.log(form3315);
-		return successResponse(res, Http.ok, "Success", form3315, false);
+		return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
@@ -192,7 +192,8 @@ const update = async (req, res) => {
 		if(result.status = STATUS.MENUNGGU){
 			await Form3315.update(body,{
 				where: {
-					id: id
+					id: id,
+					isDelete: false
 				}
 			});
 			return successResponse(res, httpStatus.ok, "Berhasil Di Update", result, true);

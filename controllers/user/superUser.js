@@ -11,9 +11,6 @@ const sequelize = require('../../configs/database')
 
 const list  = async (req, res) => {
     try {
-        // const listData = await infoPengguna.findAll({
-        
-        // })
         const sql = `select u.username, u."namaPemilik", u."roleEnum", u.status, au.aktifitasterakhir
         from "infoPengguna" u
         LEFT JOIN 
@@ -33,9 +30,6 @@ const list  = async (req, res) => {
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
     }
 }
-
-
-
 
 
 const get = async (req, res) => {

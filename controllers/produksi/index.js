@@ -7,6 +7,13 @@ const ProduksiBarang = require('../../database/models/produksi_barang');
 const ProduksiBarangDetail = require('../../database/models/produksi_barang_detail');
 const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
+const { x64 } = require('crypto-js');
+const { addAbortSignal } = require('nodemailer/lib/xoauth2');
+const httpStatus = require('../../helper/Httplib');
+// const STATUS = require("../Status.const");
+// const approval = require("../../database/models/approval");
+const { deleteApproval } = require('../../helper/Repository/bcf3315');
+const { deleteProduksi } = require('../../helper/Repository/bcf3315');
 
 const list = async(req, res) => {
     try {
@@ -18,6 +25,30 @@ const list = async(req, res) => {
         return errorResponse(res, Http.internalServerError, "Something went wrong");
     }
 }
+
+// const list = async(req, res) => {
+//     try{
+//         const produksi = await ProduksiBarang.findCountAll({
+//             where: {
+//                 isDelete: 'false'
+//             },
+//             order: [
+//                 ['tanggal', 'asc']
+//             ],
+//             include: [
+//                 {
+//                     model: xxx,
+//                     require: true,
+//                     attributes: ['zzz'],
+//                 }
+//             ]
+//         })
+//         return successResponse(res, Http.ok, 'Success', produksi, true)
+//     } catch (error) {
+//         console.error(error);
+//         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+//     }
+// }
 
 const onCreateValidation = [
     body('nomorProduksi')
@@ -103,20 +134,39 @@ const create = async(req, res) => {
     }
 }
 
-const destroy = async(req, res) => {
-    try {
-        const produksi = await ProduksiBarang.findByPk(req.params.id);
-        if (produksi) produksi.destroy();
+// const destroy = async(req, res) => {
+//     try {
+//         const produksi = await ProduksiBarang.findByPk(req.params.id);
+//         if (produksi) produksi.destroy();
  
-        return successResponse(res, Http.ok, "Success", null, false);
-    } catch (error) {
-        console.error(error);
-        return errorResponse(res, Http.internalServerError, "Something went wrong");
+//         return successResponse(res, Http.ok, "Success", null, false);
+//     } catch (error) {
+//         console.error(error);
+//         return errorResponse(res, Http.internalServerError, "Something went wrong");
+//     }
+// }
+
+const destroy = async (req, res) => {
+    try {
+        let id = req.params.id;
+        const statusDataPerId = await ProduksiBarang.findOne({
+            where: {
+                id: id
+            }
+        })
+        const result = statusDataPerId.toJSON();
+        await deleteProduksi(req, id)
+        return successResponse(res, httpStatus.ok, 'data berhasil di hapus', result, false)
+    }catch(error){
+        console.log(error);
+        return errorResponse(res, httpStatus.internalServerError, 'gagal menghapus data, terjadi kesalahan pada server')
     }
 }
+
+
 
 module.exports = routes => {
     routes.get('/', authentication, list),
     routes.post('/create', authentication, onCreateValidation, create),
-    routes.post('/:id/delete', authentication, destroy)
+    routes.delete('/:id/delete', authentication, destroy)
 }

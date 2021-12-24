@@ -25,7 +25,12 @@ const produksiBarang = db.define('produksiBarang', {
   },
   remarks: {
     type: Sequelize.STRING
-  }
+  },
+  isDelete: {
+    type: Sequelize.BOOLEAN,
+    allowNull: true,
+    defaultValue: false
+},
 }, {
   tableName: 'produksiBarang',
   freezeTableName: true,
