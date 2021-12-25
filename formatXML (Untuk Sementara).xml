@@ -114,4 +114,49 @@
 			</DETIL_PUNGUTAN>
 		</BARANG>
 	</DETIL>
-</HEADER>       
+</HEADER>
+const data = await bcf3315.findOne({
+            include: [
+                {
+                    model: infoPengguna,
+                    required: true,
+                    attributes: ['namaPemilik', 'nip']
+                },
+                {
+                    model: po,
+                    required: true,
+                    include: [
+                        {
+                            model: barangPO,
+                            required: true,
+                            attributes: [['jumlah', 'perkiraanJumlah'], ['hargaSatuan', 'satuan']],
+                            include: [
+                                {
+                                    model: dataBarang,
+                                    required: true,
+                                    attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenisBarang']]
+                                }
+                            ]
+                        }
+                    ],
+                    attributes: []
+                }
+            ],
+            where: {
+                id: idBCF
+            },
+            logging: console.log,
+            attributes: [
+                'npwp',
+                'nama',
+                'alamat',
+                'lokasiPLB',
+                'caraPengangkutan',
+                'pelabuhanMuat',
+                'tanggalPerkiraan',
+                'namaPengangkutKeLuar',
+                'voyage',
+                'callSign',
+
+            ],
+        });

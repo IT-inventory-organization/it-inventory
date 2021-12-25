@@ -52,7 +52,6 @@ const setAssociations = function() {
   Report.hasMany(PO, {foreignKey: 'reportId'});
 
  
-
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
   DokumenPengeluaran.belongsTo(Report, {foreignKey: 'reportId'});
   DokumenPengeluaran.belongsTo(DokumenPemasukan, { foreignKey: 'dokumenPemasukanId' });
@@ -77,9 +76,8 @@ const setAssociations = function() {
   Report.hasMany(PO, {foreignKey: 'reportId'});
   PO.belongsTo(Report, {foreignKey: 'reportId'});
   
-  PO.hasMany(barangPO, {foreignKey: 'poId'});
-  barangPO.belongsTo(PO, {foreignKey: 'id'});
-
+  PO.hasMany(barangPO);
+  barangPO.belongsTo(PO);
 
   // BCF Relation With Purchase Order
   PO.hasMany(BCF3315, {foreignKey: 'poId'});

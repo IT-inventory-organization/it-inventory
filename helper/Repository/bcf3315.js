@@ -10,7 +10,8 @@ const infoPengguna = require("../../database/models/info_pengguna")
 const po = require("../../database/models/po")
 const Report = require("../../database/models/report");
 const { ServerFault } = require("../../middlewares/errHandler");
-const STATUS = require("../Status.const")
+const STATUS = require("../Status.const");
+const { TransformFetchBCF3314 } = require("../Transform");
 
 const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     try {
@@ -54,56 +55,60 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
 
 const fetchBCF3315PerId = async(req, idUser, idBCF) => {
     try {
-        const data = await bcf3315.findOne({
+        return po.findOne({
             include: [
                 {
-                    model: infoPengguna,
-                    required: true,
-                    attributes: ['namaPemilik', 'nip']
-                },
-                {
-                    model: po,
+                    model: barangPO,
                     required: true,
                     include: [
                         {
-                            model: barangPO,
-                            required: true,
-                            attributes: [['jumlah', 'perkiraanJumlah'], ['hargaSatuan', 'satuan']],
-                            include: [
-                                {
-                                    model: dataBarang,
-                                    required: true,
-                                    attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenisBarang']]
-                                }
-                            ]
+                            model: dataBarang,
+                            attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
                         }
                     ],
-                    attributes: []
+                    attributes: [
+                        ['jumlah', 'perkiraanJumlah'],
+                        ['hargaSatuan', 'satuan']
+                    ]
+                },{
+                    model: bcf3315,
+                    required: true,
+                    where: {
+                        id: idBCF
+                    },
+                    attributes: [
+                        'npwp',
+                        'nama',
+                        'alamat',
+                        'lokasiPLB',
+                        'caraPengangkutan',
+                        'pelabuhanMuat',
+                        'tanggalPerkiraan',
+                        'namaPengangkutKeLuar',
+                        'voyage',
+                        'callSign',
+        
+                    ],
+                    include: [
+                        {
+                            model: infoPengguna,
+                            attributes: [
+                                ['namaPemilik', 'nama'],
+                                'nip'
+                            ]
+                        }
+                    ]
                 }
-            ],
-            where: {
-                id: idBCF
-            },
-            logging: console.log,
-            attributes: [
-                'npwp',
-                'nama',
-                'alamat',
-                'lokasiPLB',
-                'caraPengangkutan',
-                'pelabuhanMuat',
-                'tanggalPerkiraan',
-                'namaPengangkutKeLuar',
-                'voyage',
-                'callSign',
 
             ],
-        });
-        console.log(data);
-        return data; 
+            where: {
+                userId: idUser
+            },
+            attributes: [],
+            logging: console.log
+        })
     } catch (error) {
-        console.log(error)
-        // throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
+        throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
     }
 }
 

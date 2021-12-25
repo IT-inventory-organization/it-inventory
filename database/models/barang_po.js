@@ -10,7 +10,7 @@ const barangPO = db.define('barangPO', {
       key: 'id'
     },
     onDelete: 'cascade',
-    onUpdate: 'cascade'
+    onUpdate: 'no action'
   },
   idBarang: {
     type: Sequelize.INTEGER,
