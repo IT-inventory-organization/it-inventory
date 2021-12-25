@@ -8,10 +8,12 @@ const DataPengangkutan = require("../../database/models/data_pengangkutan");
 const DokumenPemasukan = require("../../database/models/dokumen_pemasukan");
 const infoPengguna = require("../../database/models/info_pengguna")
 const po = require("../../database/models/po")
-const Report = require("../../database/models/report");
+const Report = require("../../database/models/report")
+const { isExist } = require("../checkExistingDataFromTable")
 const { ServerFault } = require("../../middlewares/errHandler");
 const STATUS = require("../Status.const");
-const { TransformFetchBCF3314 } = require("../Transform");
+const approval = require("../../database/models/approval");
+const produkiBarang = require('../../database/models/produksi_barang')
 
 const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     try {
@@ -129,9 +131,50 @@ const updateDokumnBCFAfterChoosingForPLB = async(req, idReport, idBCF) => {
     }
 }
 
+const deleteBCF = async(req, idBCF) => {
+    try {
+        await isExist(bcf3315, {
+            where: {
+                id: idBCF
+            }
+        });
+
+        return bcf3315.update({
+            isDelete: true
+        }, {
+            where: {
+                id: idBCF
+            }
+        });
+    } catch (error) {
+        throw error;
+    }
+}
+
+const deleteProduksi = async(req, id) => {
+    try{
+        await isExist(produkiBarang, {
+            where: {
+                id: id
+            }
+        });
+        return produkiBarang.update({
+            isDelete: true
+        }, {
+            where: {
+                id: id
+            }
+        })
+    }catch(error){
+        throw error;
+    }
+}
+
 
 module.exports = {
     getBcf3315ThatAlreadyBeenAcceptByBeaCukai,
     fetchBCF3315PerId,
     updateDokumnBCFAfterChoosingForPLB
+    deleteBCF,
+    deleteProduksi
 }

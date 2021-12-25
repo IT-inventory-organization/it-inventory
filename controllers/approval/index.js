@@ -197,6 +197,22 @@ const get = async(req, res) => {
     }
 }
 
+const getOneDisetujui = async(req, res) => {
+    try{
+        let id = req.params.id;
+        let data = await BCF3315.findOne({
+            where: {
+                id: id,
+                status: 'DISETUJUI'
+            }
+        })
+		return successResponse(res, Http.ok, "Success", data, true);
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+    }
+}
+
 module.exports = routes => {
     routes.get('/', authentication, list),
     routes.post('/approve', authentication, onApproveValidation, approve),
@@ -204,5 +220,6 @@ module.exports = routes => {
     routes.get('/getAlldisetujui', authentication, getAlldisetujui),
     routes.get('/getAllPerbaikan', authentication, getAllPerbaikan),
     routes.get('/getAllmenunggu', authentication, getAllmenunggu),
-    routes.get('/:id', authentication, get)
+    routes.get('/:id', authentication, get),
+    routes.get('/getOneDisetujui/:id', authentication, getOneDisetujui)
 }

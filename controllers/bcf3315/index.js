@@ -5,18 +5,41 @@ const Form3315 = require('../../database/models/bcf3315');
 const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
 const dataBarang = require('../../database/models/data_barang');
+const httpStatus = require('../../helper/Httplib');
+const po = require('../../database/models/po');
+const Report = require('../../database/models/report');
+const { deleteBCF } = require('../../helper/Repository/bcf3315');
+const STATUS = require('../../helper/Status.const');
 
 const list = async(req, res) => {
     try {
-		const form3315 = await Form3315.findAll({
-			attributes: ["nama", "tanggal", "nomorFormBcf3315"],
-			include: {
-				model: po,
-				attributes: ["nomorPO"],
-				as: 'nomorPO'
-			}
+		const form3315 = await Form3315.findAndCountAll({
+			include: [
+				{
+					model: po,
+					required: true,
+					attributes: ['nomorPO'],
+					include: [
+						{
+							model: Report,
+							required: true,
+							where: {
+								userId: req.currentUser
+							},
+							attributes: [],
+						}
+					],
+				}
+			],
+			// attributes: [],
+			where: {
+				isDelete: 'false'
+			},
+			order: [
+				['tanggal', 'asc']
+			]
 		});
-		return successResponse(res, Http.ok, "Success", form3315, false);
+		return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
@@ -108,18 +131,87 @@ const create = async(req, res) => {
         transaction = await sequelize.transaction();
 
 
-        const form3315 = await Form3315.create(body, {transaction, include: ['nomorPO']});
+        const form3315 = await Form3315.create(body, {transaction});
 
-        await transaction.commit();
-        return successResponse(res, Http.ok, "Succes", form3315);
-	} catch (error) {
-        console.error(error);
+		    await transaction.commit()
+        return successResponse(res, Http.ok, "Success", form3315, true);
+    } catch (error) {
         if (transaction) await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Something went wrong");
     }
 }
 
+
+const get = async (req, res) => {
+    try{
+        let id = req.params.id;
+        let data = await Form3315.findOne({
+            where: {
+                id: id,
+				        isDelete: false
+            }
+        })
+		return successResponse(res, Http.ok, "Success", data, true);
+    } catch (error) {
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+    }
+}
+
+const update = async (req, res) => {
+	try{
+		let id = req.params.id;
+		let body = req.body;
+
+		const updateDataPerId = await Form3315.findOne({
+			where: {
+				id: id,
+				isDelete: false
+			}
+		})
+		const result = updateDataPerId.toJSON();
+		if(result.status = STATUS.MENUNGGU){
+			await Form3315.update(body,{
+				where: {
+					id: id,
+					isDelete: false
+				}
+			});
+			return successResponse(res, httpStatus.ok, "Berhasil Di Update", result, true);
+		}
+
+		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di Update", "");
+	}catch(error){
+		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
+	}
+}
+
+const hapus = async (req, res) => {
+	try{
+		let id = req.params.id;
+		
+		const statusDataPerId = await Form3315.findOne({
+			where: {
+				id: id,
+			}
+		})
+		const result = statusDataPerId.toJSON();
+		if(result.status != STATUS.DISETUJUI){
+			await deleteBCF(req, id);
+			return successResponse(res, httpStatus.ok,  "Berhasil Di Hapus", result, true);
+		}
+
+		return errorResponse(res, httpStatus.badRequest, "BCF 3.3.15 Sudah Di hapus", "");
+	}catch(error){
+		return errorResponse(res, httpStatus.internalServerError, "Gagal Terjadi Kesalahan Pada Server", "")
+	}
+}
+
 module.exports = routes => {
-	// routes.get('/', authentication, list),
-	routes.post('/create', authentication, onCreateValidation, create)
+	routes.get('/list', authentication, list),
+	routes.get('/:id', authentication, get)
+	routes.post('/create', authentication, onCreateValidation, create),
+	// routes.get('/:status', authentication, status),
+	routes.put('/update/:id', authentication, update)
+	routes.delete('/delete/:id', authentication, hapus)
 }
