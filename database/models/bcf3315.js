@@ -5,7 +5,12 @@ const db = require('../../configs/database');
 const bcf3315 = db.define('bcf3315', {
     poId: {
         type: Sequelize.INTEGER,
-        // autoIncrement: true,
+        references: {
+            model: 'po',
+            key: 'id'
+        },
+        onUpdte: 'cascade',
+        onDelete: 'no action',
         allowNull: false
     },
     nomorPO: {

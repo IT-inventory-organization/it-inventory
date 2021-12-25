@@ -69,7 +69,7 @@ function addLog(error, req = null, message = null){
   let time = `[${addZero(date.getHours())}-${addZero(date.getMinutes())}-${addZero(date.getSeconds())} ${addZero(date.getDate())}-${addZero(date.getMonth() + 1)}-${addZero(date.getFullYear())}]================================================ `;
 
   const Data = {
-    Body: req.body,
+    Body: req.body ? req.body : '',
     BaseUrl: req.baseUrl,
     Params: req.params,
     Query: req.query,

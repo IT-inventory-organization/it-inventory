@@ -54,54 +54,56 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
 
 const fetchBCF3315PerId = async(req, idUser, idBCF) => {
     try {
-        return bcf3315.findOne({
+        const data = await bcf3315.findOne({
             include: [
+                {
+                    model: infoPengguna,
+                    required: true,
+                    attributes: ['namaPemilik', 'nip']
+                },
                 {
                     model: po,
                     required: true,
                     include: [
                         {
-                            model: infoPengguna,
-                            required: true,
-                            attributes: ['npwp', ['namaPemilik', 'nama'], 'alamat']
-                        },
-                        {
-                            model: Report,
-                            required: true,
-                            attributes: [],
-                            include: [
-                                {
-                                    model: DataPengangkutan,
-                                    required: true,
-                                    attributes: [['caraAngkut', 'caraPengangkutan']]
-                                },
-                                {
-                                    model: DokumenPemasukan,
-                                    required: true,
-                                    attributes: ['tanggalDokumenPemasukan']
-                                }
-                            ]
-                        },
-                        {
                             model: barangPO,
                             required: true,
-                            attributes: [['hargaSatuan', 'satuan']],
-                            // include: [
-
-                            // ]
+                            attributes: [['jumlah', 'perkiraanJumlah'], ['hargaSatuan', 'satuan']],
+                            include: [
+                                {
+                                    model: dataBarang,
+                                    required: true,
+                                    attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenisBarang']]
+                                }
+                            ]
                         }
                     ],
-                    
+                    attributes: []
                 }
             ],
             where: {
                 id: idBCF
             },
-            attributes: [],
-        })
+            logging: console.log,
+            attributes: [
+                'npwp',
+                'nama',
+                'alamat',
+                'lokasiPLB',
+                'caraPengangkutan',
+                'pelabuhanMuat',
+                'tanggalPerkiraan',
+                'namaPengangkutKeLuar',
+                'voyage',
+                'callSign',
+
+            ],
+        });
+        console.log(data);
+        return data; 
     } catch (error) {
         console.log(error)
-        throw new ServerFault("Terjadi Kesalahan Pada Server")
+        // throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
     }
 }
 

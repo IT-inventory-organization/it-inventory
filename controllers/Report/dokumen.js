@@ -98,12 +98,12 @@ const fetchPerBCF3314 = async(req, res) => {
             throw new BadRequest("ID BCF Tidak Ada", "", req);
         }
 
-        const result = await fetchBCF3315PerId(req, req.currentUser, id) 
-        console.log(result.toJSON());
-
-        // const fetchPerItemBCF;
+        const result = await fetchBCF3315PerId(req, req.currentUser, id)
+        console.log(result);
+        return successResponse(res, httpStatus.ok, "", result, false)
     } catch (error) {
-        return errorResponse(res, httpStatus.internalServerError);
+        // console.log(error)
+        return errorResponse(res, httpStatus.internalServerError, error);
     }
 };
 

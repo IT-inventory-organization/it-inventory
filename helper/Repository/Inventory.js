@@ -22,7 +22,7 @@ const getAllInventory = async (req, idUser) => {
             include: [
                 {
                     model: DataKapal,
-                    attributes: ['voyageKapal', 'namaKapal', ['benderaKapal', 'bendera']],
+                    attributes: ['id','voyageKapal', 'namaKapal', ['benderaKapal', 'bendera']],
                     required: true,
                 },
                 {
