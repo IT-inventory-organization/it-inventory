@@ -36,6 +36,10 @@ const dataBarang = db.define('dataBarang', {
   cukai: {
     type: Sequelize.DECIMAL
   },
+  nilaiPabeanHargaPenyerahan: {
+    type: Sequelize.DECIMAL,
+    allowNull: true
+  },
   reportId: {
     type: Sequelize.INTEGER,
     allowNull: false,

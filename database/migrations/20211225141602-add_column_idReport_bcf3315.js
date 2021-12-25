@@ -9,24 +9,24 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
     const promises = [
+      await queryInterface.addColumn('bcf3315', 'reportId', {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      }),
       await queryInterface.addConstraint('bcf3315', {
         type: 'foreign key',
-        name: 'fkey_constraint_poId_bcf3315',
-        fields: ['poId'],
+        name: 'fkey_bcf3315_to_report',
+        fields: ['reportId'],
         references: {
-          table: 'po',
+          table: 'report',
           field: 'id'
         },
-        onDelete: 'no action',
+        onDelete: 'cascade',
         onUpdate: 'cascade'
-      }),
-      await queryInterface.changeColumn('bcf3315', 'isDelete', {
-        type: Sequelize.BOOLEAN,
-        allowNull: true,
-        defaultValue: false
       })
     ];
-    return Promise.all(promises)
+
+    return Promise.all(promises); 
   },
 
   down: async (queryInterface, Sequelize) => {
@@ -36,14 +36,11 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    const promises = [
-      await queryInterface.removeConstraint('bcf3315', 'fkey_constraint_poId_bcf3315'),
-      await queryInterface.changeColumn('bcf3315', 'isDelete', {
-        type: Sequelize.BOOLEAN,
-        allowNull: true,
-        defaultValue: ''
-      })
+     const promises = [
+      await queryInterface.removeConstraint('bcf3315', 'fkey_bcf3315_to_report'),
+      await queryInterface.removeColumn('bcf3315', 'reportId'),
     ];
-    return Promise.all(promises)
+
+    return Promise.all(promises); 
   }
 };

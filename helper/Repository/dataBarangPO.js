@@ -2,11 +2,10 @@ const barangPO = require('../../database/models/barang_po');
 const { ForeignKeyViolation, ConflictCreateData, NotFoundException, ServerFault, returnError } = require('../../middlewares/errHandler');
 const saveDataBarangPO = async(data, transaction) => {
     try {
-        const res = await barangPO.create(data, {
+        return barangPO.create(data, {
             transaction,
             returning: true
-        })
-        return res;
+        });
     } catch (error) {
 
         if(error.name == "SequelizeValidationError"){

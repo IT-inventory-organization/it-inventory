@@ -15,7 +15,6 @@ const STATUS = require("../Status.const");
 const approval = require("../../database/models/approval");
 const produkiBarang = require('../../database/models/produksi_barang')
 
-
 const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     try {
         console.log(idUser);
@@ -35,7 +34,10 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
             ],
             where: {
                 nomorbcf3314: {
-                    [Op.not]: null
+                    [Op.ne]: null
+                },
+                reportId: {
+                    [Op.is]: null
                 },
                 status: STATUS.DISETUJUI
             },
@@ -58,54 +60,74 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
 
 const fetchBCF3315PerId = async(req, idUser, idBCF) => {
     try {
-        return bcf3315.findOne({
+        return po.findOne({
             include: [
                 {
-                    model: po,
+                    model: barangPO,
                     required: true,
                     include: [
                         {
-                            model: infoPengguna,
-                            required: true,
-                            attributes: ['npwp', ['namaPemilik', 'nama'], 'alamat']
-                        },
-                        {
-                            model: Report,
-                            required: true,
-                            attributes: [],
-                            include: [
-                                {
-                                    model: DataPengangkutan,
-                                    required: true,
-                                    attributes: [['caraAngkut', 'caraPengangkutan']]
-                                },
-                                {
-                                    model: DokumenPemasukan,
-                                    required: true,
-                                    attributes: ['tanggalDokumenPemasukan']
-                                }
-                            ]
-                        },
-                        {
-                            model: barangPO,
-                            required: true,
-                            attributes: [['hargaSatuan', 'satuan']],
-                            // include: [
-
-                            // ]
+                            model: dataBarang,
+                            attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
                         }
                     ],
-                    
+                    attributes: [
+                        ['jumlah', 'perkiraanJumlah'],
+                        ['hargaSatuan', 'satuan']
+                    ]
+                },{
+                    model: bcf3315,
+                    required: true,
+                    where: {
+                        id: idBCF
+                    },
+                    attributes: [
+                        'npwp',
+                        'nama',
+                        'alamat',
+                        'lokasiPLB',
+                        'caraPengangkutan',
+                        'pelabuhanMuat',
+                        'tanggalPerkiraan',
+                        'namaPengangkutKeLuar',
+                        'voyage',
+                        'callSign',
+        
+                    ],
+                    include: [
+                        {
+                            model: infoPengguna,
+                            attributes: [
+                                ['namaPemilik', 'nama'],
+                                'nip'
+                            ]
+                        }
+                    ]
                 }
+
             ],
             where: {
-                id: idBCF
+                userId: idUser
             },
             attributes: [],
+            logging: console.log
         })
     } catch (error) {
-        console.log(error)
-        throw new ServerFault("Terjadi Kesalahan Pada Server")
+        throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
+    }
+}
+
+const updateDokumnBCFAfterChoosingForPLB = async(req, idReport, idBCF) => {
+    try {
+        return bcf3315.update({
+            reportId: idReport
+        }, {
+            where: {
+                id: idBCF
+            }
+        })
+    } catch (error) {
+        throw new ServerFault("Terjadi Kesalahan Pada Server", error, req);
     }
 }
 
@@ -152,6 +174,7 @@ const deleteProduksi = async(req, id) => {
 module.exports = {
     getBcf3315ThatAlreadyBeenAcceptByBeaCukai,
     fetchBCF3315PerId,
+    updateDokumnBCFAfterChoosingForPLB
     deleteBCF,
     deleteProduksi
 }

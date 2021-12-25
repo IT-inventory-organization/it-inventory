@@ -98,12 +98,12 @@ const fetchPerBCF3314 = async(req, res) => {
             throw new BadRequest("ID BCF Tidak Ada", "", req);
         }
 
-        const result = await fetchBCF3315PerId(req, req.currentUser, id) 
-        console.log(result.toJSON());
-
-        // const fetchPerItemBCF;
+        const result = await fetchBCF3315PerId(req, req.currentUser, id)
+        
+        return successResponse(res, httpStatus.ok, "", result, true)
     } catch (error) {
-        return errorResponse(res, httpStatus.internalServerError);
+        
+        return errorResponse(res, error.status, error.message);
     }
 };
 
@@ -739,39 +739,3 @@ const getPLB = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = 
     }
 }
 
-// const getAllPO = async (req, pageSize, pageNo, sortBy, searchQuery = null, type = null, status = null) => {
-//     try {
-//         let searchUser = 'AND';
-//         let qtSearch = '';
-//         let orderQuery = '';
-//         let typeQuery = '';
-//         let statusQuery = '';
-//         const limit = pageSize  ? +pageSize : 10
-//         const offset = pageNo ? (+pageNo - 1) * pageSize : 0
-
-//         switch (sortBy){
-//             case 'oldest':
-//                 orderQuery+=`ORDER BY "RP"."createdAt ASC`;
-//                 break;
-//             default:
-//                 orderQuery+=`ORDER BY "RP"."createdAt DESC`;
-//                 break;
-//         }
-
-//         if(req.currentRole !== "Admin" && req.currentRole !== "Owner") {
-//             searchUser+=`"RP"."userId" = ${req.currentUser}`;
-//         }
-
-//         if(searchQuery != null){
-//             if(req.currentRole !== "Admin" && req.currentRole !== "Owner"){
-//                 qtSearch+=`AND `;
-//             }
-//             qtSearch+=`("RP".")`
-//         }
-
-//     }
-// }
-
-// module.exports = {
-//     getPLB
-// }

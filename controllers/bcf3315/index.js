@@ -4,7 +4,6 @@ const Http = require('../../helper/Httplib');
 const Form3315 = require('../../database/models/bcf3315');
 const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
-// const { successResponse } = require('../../helper/Response');
 const dataBarang = require('../../database/models/data_barang');
 const httpStatus = require('../../helper/Httplib');
 const po = require('../../database/models/po');
@@ -40,7 +39,6 @@ const list = async(req, res) => {
 				['tanggal', 'asc']
 			]
 		});
-		// console.log(form3315);
 		return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
         console.error(error);
@@ -48,9 +46,10 @@ const list = async(req, res) => {
     }
 }
 
+
 const onCreateValidation = [
 	body('nomorPO')
-		// .notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
+		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
 		// .custom(value => {
 		// 	return Form3315.findOne({ where: {nomorPo: value} })
 		// 	.then((d) => {
@@ -118,56 +117,38 @@ const onCreateValidation = [
 	body('callSign')
 		.notEmpty().withMessage('kolom call sign kosong, perlu di isi')
 		.trim()
-		,
-	body('poId')
-		.notEmpty().withMessage('poId kosong, terjadi kesalahan server')
-		.isNumeric().withMessage('isi hanya dengan angka tanpa huruf')
-		.trim()
-		,
-	body('status')
-		.notEmpty().withMessage('kolom status kosong, perlu terisi')
-		.trim()
-		,
-	body('nomorbcf3314')
-		.trim()
-	];
+];
 
 const create = async(req, res) => {
 	let transaction;
 	try {
-
-		const errors = validationResult(req);
-		if(!errors.isEmpty()){
-			return errorResponse(res, Http.internalServerError, "validation error", errors.array());
-		}
-
-		const body = matchedData(req);
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+          return errorResponse(res, Http.internalServerError, "validation error", errors.array());
+        }
+        const body = matchedData(req);
 
         transaction = await sequelize.transaction();
 
-		// console.log(body) utk melihat data body
 
-		const form3315 = await Form3315.create(body, {transaction});
-		
+        const form3315 = await Form3315.create(body, {transaction});
 
-
-		if (transaction) {await transaction.commit()}
+		    await transaction.commit()
         return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
-        console.error(error);
         if (transaction) await transaction.rollback();
         return errorResponse(res, Http.internalServerError, "Something went wrong");
     }
 }
 
+
 const get = async (req, res) => {
     try{
         let id = req.params.id;
-		// let body = req.body
         let data = await Form3315.findOne({
             where: {
                 id: id,
-				isDelete: false
+				        isDelete: false
             }
         })
 		return successResponse(res, Http.ok, "Success", data, true);

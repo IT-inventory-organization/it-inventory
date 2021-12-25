@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const dataBarang = require('../../database/models/data_barang');
 const DataKapal = require('../../database/models/data_kapal');
 const Report = require('../../database/models/report');
-const { ForeignKeyViolation, ConflictCreateData } = require('../../middlewares/errHandler');
+const { ForeignKeyViolation, ConflictCreateData, ServerFault } = require('../../middlewares/errHandler');
 const { returnError } = require('../../middlewares/errHandler');
 
 const getDataBarang = async (reportId) => {
@@ -15,11 +15,29 @@ const saveDataBarang = async(data, transaction) => {
             transaction 
         });
     } catch (error) {
+        console.log(error)
         if(error.name == "SequelizeValidationError"){
             throw new ForeignKeyViolation('Terjadi Kesalahan Pada Server', error)
+        }else if(error.name == 'SequelizeDatabaseError'){
+            throw new ServerFault('Terjadi Kesalahan Pada Server', error)
         }else{
             throw new ConflictCreateData("Gagal Menyimpan Data", error)
         }
+    }
+}
+
+const updateDataBarangRepo = async(req, data, id, idReport, trans) => {
+    try {
+        return dataBarang.update(data, {
+            where: {
+                id: id,
+                reportId: idReport
+            },
+            transaction: trans,
+            returning: true
+        })
+    } catch (error) {
+        throw new ServerFault('Terjadi Kesalahan Pada Server');
     }
 }
 
@@ -56,8 +74,23 @@ const fetchBarangAfterChoosingKapalPenjual = async (req, idKapal, idUser) => {
         returnError(error, "Gagal Memproses Data Kapal Penjual");
     }
 }
+
+const fullDelete = async (req, idReport, trans) => {
+    try {
+        return dataBarang.destroy({
+            where: {
+                reportId: idReport
+            },
+            transaction: trans
+        })
+    } catch (error) {
+        throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
+    }
+}
 module.exports = {
     saveDataBarang,
     getDataBarang,
-    fetchBarangAfterChoosingKapalPenjual
+    fetchBarangAfterChoosingKapalPenjual,
+    fullDelete,
+    updateDataBarangRepo
 }

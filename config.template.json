@@ -7,5 +7,6 @@
   "DB_PASS": "",
   "DIALECT": "postgres",
   "JWT_SECRET_KEY": "TEST233",
-  "KEY_ENCRYPT": ""
+  "KEY_ENCRYPT": "",
+  "STAGE": "DEVELOPMENT | PRODUCTION | TEST"
 }

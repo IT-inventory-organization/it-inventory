@@ -51,10 +51,7 @@ const setAssociations = function() {
   Report.hasMany(dataBarang, {foreignKey: 'reportId'});
   Report.hasMany(PO, {foreignKey: 'reportId'});
 
-  // Purchase Order
-  Report.hasMany(PO, {foreignKey: 'reportId'});
-  PO.hasMany(barangPO, {foreignKey: 'poId'});
-
+ 
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
   DokumenPengeluaran.belongsTo(Report, {foreignKey: 'reportId'});
   DokumenPengeluaran.belongsTo(DokumenPemasukan, { foreignKey: 'dokumenPemasukanId' });
@@ -76,17 +73,24 @@ const setAssociations = function() {
   PO.belongsTo(Report, {foreignKey: 'reportId'});
 
   // Purchase Order
+  Report.hasMany(PO, {foreignKey: 'reportId'});
   PO.belongsTo(Report, {foreignKey: 'reportId'});
-  barangPO.belongsTo(PO, {foreignKey: 'poId'});
+  
+  PO.hasMany(barangPO);
+  barangPO.belongsTo(PO);
 
   // BCF Relation With Purchase Order
-  PO.hasMany(BCF3315, {foreignKey: 'id'});
+  PO.hasMany(BCF3315, {foreignKey: 'poId'});
   BCF3315.belongsTo(PO, {foreignKey: 'poId'});
 
   // Relation Barang Purchase Order With Data Barang
   dataBarang.hasMany(barangPO, {foreignKey: 'idBarang'});
   barangPO.belongsTo(dataBarang, {foreignKey: 'idBarang'});
  
+  InfoPengguna.hasMany(BCF3315, {foreignKey: 'id'});
+  BCF3315.belongsTo(InfoPengguna, {foreignKey: 'userId'})
+
+
   /**
    * Realsi PO Dengan InfoPengguna
    * Perbaikan 23/12/2021

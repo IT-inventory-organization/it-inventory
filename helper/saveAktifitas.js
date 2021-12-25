@@ -7,10 +7,11 @@ const saveAktifitas = (
         reportId: null,
         aktifitas: null
     },
-    transaction = null
+    transaction = null,
+    req = null
 ) => {
-    saveAktifitasUser(data, transaction).catch(error => {
-        throw new ConflictCreateData("Gagal Menyimpan Data", error);
+    saveAktifitasUser(data, transaction, req).catch(error => {
+        console.log(error);
     })
 }
 

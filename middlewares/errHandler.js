@@ -67,9 +67,9 @@ function log(error, req = null, message = null){
 function addLog(error, req = null, message = null){
   const date = new Date();
   let time = `[${addZero(date.getHours())}-${addZero(date.getMinutes())}-${addZero(date.getSeconds())} ${addZero(date.getDate())}-${addZero(date.getMonth() + 1)}-${addZero(date.getFullYear())}]================================================ `;
-
+  // console.log(JSON.stringify(req.body))
   const Data = {
-    Body: req.body,
+    Body: req.body ? JSON.stringify(req.body): '',
     BaseUrl: req.baseUrl,
     Params: req.params,
     Query: req.query,
