@@ -4,9 +4,11 @@ const Http = require('../../helper/Httplib');
 const authentication = require('../../middlewares/authentication');
 const Crypt = require('../../helper/encription');
 const sequelize = require('../../configs/database');
-const { saveDataBarang } = require('../../helper/Repository/dataBarang');
-const { internalServerError } = require('../../helper/Httplib');
-const Report = require('../../database/models/report');
+const { saveDataBarang, updateDataBarangRepo } = require('../../helper/Repository/dataBarang');
+const DataBarang = require('../../database/models/data_barang');
+const { isExist } = require('../../helper/checkExistingDataFromTable');
+const { saveAktifitas } = require('../../helper/saveAktifitas');
+const { saveAktifitasUser } = require('../../helper/Repository/aktifitasUser');
 
 const validationBarang = [
     body('lists.dataBarang.*.kodeBarang').trim().notEmpty().withMessage("Kolom Kode Barang Terjadi Kesalahan"),
@@ -16,6 +18,7 @@ const validationBarang = [
     body('lists.dataBarang.*.posTarif').trim().notEmpty().withMessage(`Kolom Pos Tarif Terjadi Kesalahan`),
     body('lists.dataBarang.*.uraian').trim().notEmpty().withMessage(`Kolom Uraian Terjadi Kesalahan`),
     body('lists.dataBarang.*.nettoBruttoVolume').trim().notEmpty().withMessage(`Kolom Netto, Bruto, Volume Terjadi Kesalahan`),
+    body('lists.dataBarang.*.nilaiPabeanHargaPenyerahan').trim().notEmpty().withMessage('Kolom Nilai Pabean Dan Harga Penyerahan Kosong'),
     body('lists.dataBarang.*.bm').trim().notEmpty().withMessage(`Kolom BM Terjadi Kesalahan`),
     body('lists.dataBarang.*.ppn').trim().notEmpty().withMessage('Kolom PPN Terjadi Kesalahan'),
     body('lists.dataBarang.*.ppnbm').trim().notEmpty().withMessage('Kolom PPNBM Terjadi Kesalahan'),
@@ -38,9 +41,10 @@ const bundle = (req, res, next) => {
             dataBarang: Decrypt.listDataBarang,
             reportId: Decrypt.reportId
         }
- 
+        delete req.body.dataBarang;
         next();    
     } catch (error) {
+        
         throw errorResponse(res, Http.badRequest, 'Gagal Menyimpan Data Barang');
     }
 }
@@ -55,7 +59,6 @@ const createListBarang = async(req, res) => {
             const value = validation.array()[0].param.match(/([\d]+)/g);
             return errorResponse(res, Http.badRequest, `${validation.array()[0].msg} Item No ${+value + 1}`);
         }
-        // return;
         trans = await sequelize.transaction();
         
         const {lists} = req.body;
@@ -71,63 +74,72 @@ const createListBarang = async(req, res) => {
 
         return successResponse(res, Http.created, "Berhasil Membuat Barang", resultBarang);
     } catch (error) {
-
+        
         if(trans){
             await trans.rollback()
         }
-        return errorResponse(res, +error.status, error.message)
+        if(!error.status){
+            return errorResponse(res, Http.internalServerError, "Terjadi Kesalahan Pada Server")
+        }
+        return errorResponse(res, error.status, error.message)
     }
     
 }
 
+/**
+ * Incomplete Function End Point
+ */
 const updateDataBarang = async (req, res) => {
 
     let transaction;
-    
-    const{idReport} = req.params;
 
     try {
-        const {DataToInput: {listDataBarang}} = req.body;
-        await isExist(Report, {where: {id: idReport, userId: req.currentUser}});
+        const validation = validationResult(req);
+        if(!validation.isEmpty()){
+            const value = validation.array()[0].param.match(/([\d]+)/g);
+            return errorResponse(res, Http.badRequest, `${validation.array()[0].msg} Item No ${+value + 1}`);
+        }
+
+        const {lists: {dataBarang, reportId}} = req.body;
+
+        await isExist(DataBarang, {
+            where: {
+                reportId: reportId
+            }
+        });
 
         transaction = await sequelize.transaction();
         const resulsListBarang = [];
 
-        await fullDelete(req, null, idReport, transaction)
-
-
-        for (const iterator of listDataBarang) {
-            if(iterator.id || typeof iterator.id !== 'undefined'){
-                delete iterator.id
-            }
-
-            let result = await saveDataBarang(iterator, transaction);
-            if(result.error){
-                return errorResponse(res, Http.badRequest, result.error);
-            }
-            resultsListBarang.push(result);
+        for (const iterator of dataBarang) {
+            
+            const {id, ...dataUpdate} = iterator;
+            
+            let result = await updateDataBarangRepo(req, dataUpdate, id, reportId, transaction);
+            resulsListBarang.push(result);
         }
+
+        const data = {
+            user: req.currentUser,
+            reportId: reportId,
+            aktifitas: 'Update Data Barang'
+        }
+        await saveAktifitasUser(data, transaction, req);
 
         const dataReturn = {
             listDataBarang: resulsListBarang.map(el => el.id),
-            reportId: resultsListBarang[0].id
+            reportId: reportId
         }
 
-        await createUserActivity(req.currentUser, idReport, `Updating "Data Barang" Report`, dataReturn, true);
-
         await transaction.commit();
-        return successResponse(res, Http.created, `Update Success`, dataToReturn);
+        return successResponse(res, Http.created, `Update Success`, dataReturn);
     } catch (error) {
-
         if(transaction) {
             await transaction.rollback();
         }
-        return errorResponse (res, internalServerError, error.message)
+        return errorResponse(res, error.status, error.message)
     }
 };
-
-
-
 
 
 module.exports = routes => {

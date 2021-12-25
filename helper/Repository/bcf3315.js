@@ -32,7 +32,10 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
             ],
             where: {
                 nomorbcf3314: {
-                    [Op.not]: null
+                    [Op.ne]: null
+                },
+                reportId: {
+                    [Op.is]: null
                 },
                 status: STATUS.DISETUJUI
             },
@@ -112,8 +115,23 @@ const fetchBCF3315PerId = async(req, idUser, idBCF) => {
     }
 }
 
+const updateDokumnBCFAfterChoosingForPLB = async(req, idReport, idBCF) => {
+    try {
+        return bcf3315.update({
+            reportId: idReport
+        }, {
+            where: {
+                id: idBCF
+            }
+        })
+    } catch (error) {
+        throw new ServerFault("Terjadi Kesalahan Pada Server", error, req);
+    }
+}
+
 
 module.exports = {
     getBcf3315ThatAlreadyBeenAcceptByBeaCukai,
     fetchBCF3315PerId,
+    updateDokumnBCFAfterChoosingForPLB
 }

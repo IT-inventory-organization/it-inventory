@@ -1,7 +1,8 @@
 const TempatPenimbunan = require("../../database/models/tempat_penimbunan");
-const { ConflictCreateData, ForeignKeyViolation } = require("../../middlewares/errHandler");
+const { ConflictCreateData, ForeignKeyViolation, ServerFault } = require("../../middlewares/errHandler");
 const { convertStrignToDateUTC } = require("../convert");
 const { isExist } = require("../checkExistingDataFromTable");
+const Report = require("../../database/models/report");
 
 const convert = (data) => {
     data.perkiraanTanggalPengeluaran = convertStrignToDateUTC(data.perkiraanTanggalPengeluaran)
@@ -9,6 +10,27 @@ const convert = (data) => {
 
 const getTempatPenimbunan = async (reportId) => {
     return TempatPenimbunan.findOne({ where: { reportId: reportId } });
+}
+
+const getTempatPenimbunanAllThatTrueRepo = async(req) => {
+    try {
+        return TempatPenimbunan.findAll({
+            include: [
+                {
+                    model: Report,
+                    required: true,
+                    attributes: [],
+                }
+            ],
+            attributes: ['id','tempatPenimbunan', 'perkiraanTanggalPengeluaran'],
+            where: {
+                isTempatPenimbunan: true
+            }
+        })
+
+    } catch (error) {
+        throw new ServerFault('Terjadi Kesalahan Pada Server', error, req)
+    }
 }
 
 const saveTempatPenimbunan = async(data, transaction) => {
@@ -63,5 +85,6 @@ const updateTempatPenimbunanRepo = async(data, reportId, transaction) => {
 module.exports = {
     saveTempatPenimbunan,
     updateTempatPenimbunanRepo,
-    getTempatPenimbunan
+    getTempatPenimbunan,
+    getTempatPenimbunanAllThatTrueRepo
 }

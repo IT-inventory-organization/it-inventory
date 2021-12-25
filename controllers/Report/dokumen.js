@@ -99,10 +99,10 @@ const fetchPerBCF3314 = async(req, res) => {
         }
 
         const result = await fetchBCF3315PerId(req, req.currentUser, id)
-        console.log(result);
-        return successResponse(res, httpStatus.ok, "", result, false)
+        
+        return successResponse(res, httpStatus.ok, "", result, true)
     } catch (error) {
-        // console.log(error)
+        
         return errorResponse(res, error.status, error.message);
     }
 };

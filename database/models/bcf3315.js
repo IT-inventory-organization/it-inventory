@@ -105,6 +105,16 @@ const bcf3315 = db.define('bcf3315', {
         allowNull: true,
         defaultValue: false
     },
+    reportId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+            model: 'report',
+            key: 'id'
+        },
+        onUpdate: 'cascade',
+        onDelete: 'cascade'
+    }
 }, {
     tableName: 'bcf3315',
     freezeTableName: true
