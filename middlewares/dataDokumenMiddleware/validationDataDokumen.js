@@ -58,6 +58,7 @@ const vIdentitasBarang = [
 
 const vPenjualBarang = [
   body('ref.penjualBarang.jenisIdentitasPenjual').trim().isString().withMessage("Kolom Jenis Identitas Penjual Terjadi Kesalahan"),
+  body('ref.penjualbarang.nomorIdentitasPenjual').trim().isString().withMessage("Kolom Nomor Identitas Penjual Terjadi Kesalahan"),
   body('ref.penjualBarang.namaPenjual').trim().isString().withMessage("Kolom Nama Penjual Terjadi Kesalahan"),
   body('ref.penjualBarang.alamatPenjual').trim().isString().withMessage("Kolom Alamat Penjual Terjadi Kesalahan"),
   body('ref.penjualBarang.reportId').optional().trim().isNumeric().notEmpty().withMessage("Report ID Harus Diisi"),
@@ -133,7 +134,8 @@ const vTempatPenimbunan = [
   body('ref.tempatPenimbunan.perkiraanTanggalPengeluaran').trim().custom(checkFormat),
   body('ref.tempatPenimbunan.isTempatPenimbunan').trim().notEmpty(),
   body('ref.tempatPenimbunan.reportId').optional().trim().isNumeric().notEmpty().withMessage("Report ID Harus Diisi"),
-  body('ref.tempatPenimbunan.id').optional().trim().isNumeric().notEmpty().withMessage("ID Harus Diisi")
+  body('ref.tempatPenimbunan.id').optional().trim().isNumeric().notEmpty().withMessage("ID Harus Diisi"),
+  body('ref.tempatPenimbunan.idKapal').optional().trim().isNumeric().withMessage("Tempat Penimbunan Tidak Dipilih")
 ]
 
 module.exports = {

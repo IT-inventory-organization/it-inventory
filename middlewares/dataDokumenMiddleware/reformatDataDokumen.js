@@ -40,7 +40,7 @@ const formatDataDokumenKeluaran = (req, res, next) => {
     }
 }
 
-const formatDataDokumenTambahan =  (req, res, next) => {
+const formatDataDokumenTambahan = (req, res, next) => {
     try {
         const Decrypt = Encrypt.AESDecrypt(req.body.dataDokumen);
 
@@ -127,10 +127,9 @@ const formatDataDokumenPenjualBarang = (req, res, next) => {
                 reportId: Decrypt.reportId
             }
         }
-
+        delete Decrypt.penjualBarang;
         next()
     } catch (error) {
-        
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data")
     }
 } 

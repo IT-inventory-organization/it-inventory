@@ -70,6 +70,7 @@ const Report = require('../../database/models/report');
 const httpStatus = require('../../helper/Httplib');
 const { getBcf3315ThatAlreadyBeenAcceptByBeaCukai, fetchBCF3315PerId } = require('../../helper/Repository/bcf3315');
 const { NotFoundException, BadRequest } = require('../../middlewares/errHandler');
+const { Op } = require('sequelize');
 
 
 const fetchBCF3314 = async(req, res) => {
@@ -115,11 +116,12 @@ const fetchPerBCF3314 = async(req, res) => {
  * @param {Response} res A Response From Server
  * @returns 
  */
-const saveDokumenPemasukan = async(req, res) => {
+const saveDokumenPemasukan = async(req, res) => {   
     let transaction;
     try {
         const {ref} = req.body;
         transaction = await sequelize.transaction();
+
 
         const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);
         const resultDataTambahan = await saveDataTambahan(ref.dokumenTambahan, transaction);
@@ -162,7 +164,7 @@ const saveDokumenPemasukan = async(req, res) => {
         await transaction.commit();
         return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
     } catch (error) {
-        // console.log(error,"<<<<<<<<<<<<")
+        console.log(error,"<<<<<<<<<<<<")
         if(transaction){
             await transaction.rollback();
         }
@@ -187,7 +189,6 @@ const updateDokumenPemasukanData = async(req,res) => {
         const updatePengirimBarang = await updatePengirimBarangRepo(ref.pengirimBarang, idReport, transaction);
         const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
         const updatePembeliBarang = await updatePembeliBarangRepo(ref.pembeliBarang, idReport, transaction);
-        // const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
         const updateDataPpjk = await updateDataPpjkRepo(ref.ppjk, idReport, transaction);
         const updateMataUang = await updateMataUangRepo(ref.mataUang, idReport, transaction);
         const updateDataPengangkutan = await updateDataPengangkutanRepo(ref.dataPengangkutan, idReport, transaction);
@@ -204,7 +205,6 @@ const updateDokumenPemasukanData = async(req,res) => {
             pengirimBarang: updatePengirimBarang.id,
             pengusahaPLB: updatePengusahaPLB.id,
             pembeliBarang: updatePembeliBarang.id,
-            pengusahaPLB: updatePengusahaPLB.id,
             ppjk: updateDataPpjk.id,
             mataUang: updateMataUang.id,
             updatePengangkutan: updateDataPengangkutan.id,
@@ -231,7 +231,6 @@ const updateDokumenPemasukanData = async(req,res) => {
 
 const getDokumenPengeluaran = async(req, res) => {
     try {
-        let query = {};
         const dokumenPengeluaran = await DokumenPengeluaran.findAll({
             attributes: ['id', 'reportId', 'nomorDokumen', 'tanggalDokumen'],
             include: [
@@ -244,8 +243,8 @@ const getDokumenPengeluaran = async(req, res) => {
                 }
             ]
         });
-
-        return successResponse(res, Http.ok, "Success", dokumenPengeluaran, false);
+        console.log(dokumenPengeluaran);
+        return successResponse(res, Http.ok, "", dokumenPengeluaran, true);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "Something went wrong");
@@ -253,22 +252,34 @@ const getDokumenPengeluaran = async(req, res) => {
 }
 const getDokumenPemasukan = async(req, res) => {
     try {
-        let query = {};
-        const dokumenpemasukan = await DokumenPemasukan.findAll({
-            attributes: ['id','reportId',
-                'nomorDokumenPemasukan','tanggalDokumenPemasukan'],
+        const DataDokumenPemasukan = await DokumenPemasukan.findAll({
             include: [
                 {
-                    model:Report,
+                    model: Report,
                     where: {
                         userId: req.currentUser
                     },
-                    attributes: []
+                    attributes: ['id'],
+                },
+                {
+                    model: DokumenPengeluaran,
                 }
-            ]
-        });
-
-        return successResponse(res, Http.ok, "Success", dokumenpemasukan, false);
+            ],
+            logging: console.log,
+            attributes: ['id', 'nomorDokumenPemasukan']
+        })
+        
+        if(DataDokumenPemasukan.length !== 0){
+            for (const key in DataDokumenPemasukan) {   
+                const DocIn = DataDokumenPemasukan[key].toJSON();
+                console.log(DocIn)
+                if(DocIn.dokumenPengeluaran){
+                    delete DataDokumenPemasukan[key];
+                }
+            }
+        }
+        
+        return successResponse(res, Http.ok, "Success", DataDokumenPemasukan.flat(), false);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "Something went wrong");

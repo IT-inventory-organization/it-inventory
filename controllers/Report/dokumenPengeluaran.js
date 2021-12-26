@@ -1,7 +1,7 @@
 const { errorResponse, successResponse } = require('../../helper/Response')
 const HHtp = require('../../helper/Httplib');
 const {
-    formatDataDokumenPengeluaran,
+    formatDataDokumenKeluaran,
     formatDataDokumenMasukan,
     formatDataDokumenTambahan,
     formatDataDokumenPelabuhan,

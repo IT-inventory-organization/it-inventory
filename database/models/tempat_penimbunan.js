@@ -22,6 +22,16 @@ const TempatPenimbunan = db.define('tempatPenimbunan', {
     onUpdate: 'cascade',
     onDelete: 'cascade'
   },
+  idKapal: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+    references: {
+      model: 'dataKapal',
+      key: 'id'
+    },
+    onUpdate: 'cascade',
+    onDelete: 'cascade'
+  }
 }, {
   tableName: 'tempatPenimbunan',
   freezeTableName: true,

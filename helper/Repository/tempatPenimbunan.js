@@ -3,6 +3,7 @@ const { ConflictCreateData, ForeignKeyViolation, ServerFault } = require("../../
 const { convertStrignToDateUTC } = require("../convert");
 const { isExist } = require("../checkExistingDataFromTable");
 const Report = require("../../database/models/report");
+const DataKapal = require("../../database/models/data_kapal");
 
 const convert = (data) => {
     data.perkiraanTanggalPengeluaran = convertStrignToDateUTC(data.perkiraanTanggalPengeluaran)
@@ -18,11 +19,19 @@ const getTempatPenimbunanAllThatTrueRepo = async(req) => {
             include: [
                 {
                     model: Report,
+                    attributes: ['id'],
                     required: true,
-                    attributes: [],
+                    include: [
+                        {
+                            model: DataKapal,
+                            required: true,
+                            attributes: ['id']
+                        }
+                    ]
                 }
             ],
-            attributes: ['id','tempatPenimbunan', 'perkiraanTanggalPengeluaran'],
+            logging: console.log,
+            attributes: ['tempatPenimbunan', 'perkiraanTanggalPengeluaran'],
             where: {
                 isTempatPenimbunan: true
             }

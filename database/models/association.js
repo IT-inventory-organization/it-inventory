@@ -51,10 +51,11 @@ const setAssociations = function() {
   Report.hasMany(dataBarang, {foreignKey: 'reportId'});
   Report.hasMany(PO, {foreignKey: 'reportId'});
 
+  DokumenPemasukan.hasOne(DokumenPengeluaran, {foreignKey: 'dokumenPemasukanId'});
  
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
   DokumenPengeluaran.belongsTo(Report, {foreignKey: 'reportId'});
-  DokumenPengeluaran.belongsTo(DokumenPemasukan, { foreignKey: 'dokumenPemasukanId' });
+  DokumenPengeluaran.belongsTo(DokumenPemasukan, { foreignKey: 'id' });
   DokumenTambahan.belongsTo(Report, {foreignKey: 'reportId'});
   DataPelabuhan.belongsTo(Report, {foreignKey: 'reportId'});
   DataKapal.belongsTo(Report, {foreignKey: 'reportId'});
