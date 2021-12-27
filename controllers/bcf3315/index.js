@@ -47,7 +47,6 @@ const list = async(req, res) => {
     }
 }
 
-
 const onCreateValidation = [
 	body('nomorPO')
 		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
@@ -142,15 +141,14 @@ const create = async(req, res) => {
     }
 }
 
-
 const get = async (req, res) => {
     try{
         const {id} = req.params;
         const data = await fetchBCF3315PerIdForBC(req, id);
-		if(!data){
-			throw new NotFoundException("Data Tidak Ditemukan", '', req);
-		}
-		return successResponse(res, Http.ok, "Success", data, true);
+        if(!data){
+          throw new NotFoundException("Data Tidak Ditemukan", '', req);
+        }
+		    return successResponse(res, Http.ok, "Success", data, true);
     } catch (error) {
 		console.log(error)
         if(!error.status){

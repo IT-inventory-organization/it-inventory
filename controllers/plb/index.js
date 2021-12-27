@@ -36,7 +36,7 @@ const detail = async(req, res) => {
     try {
         const { id } = req.params;
         const plb = await getPLB(id);
-        return successResponse(res, Http.ok, "Success", plb, true);
+        return successResponse(res, Http.ok, "Success", plb, false);
     } catch (error) {
         console.error(error);
         return errorResponse(res, Http.internalServerError, "Something went wrong");
