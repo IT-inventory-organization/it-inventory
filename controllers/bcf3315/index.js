@@ -46,7 +46,6 @@ const list = async(req, res) => {
     }
 }
 
-
 const onCreateValidation = [
 	body('nomorPO')
 		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
@@ -141,7 +140,6 @@ const create = async(req, res) => {
     }
 }
 
-
 const get = async (req, res) => {
     try{
         let id = req.params.id;
@@ -151,6 +149,8 @@ const get = async (req, res) => {
 				        isDelete: false
             }
         })
+
+
 		return successResponse(res, Http.ok, "Success", data, true);
     } catch (error) {
         console.error(error);

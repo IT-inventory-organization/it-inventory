@@ -174,7 +174,7 @@ const deleteProduksi = async(req, id) => {
 module.exports = {
     getBcf3315ThatAlreadyBeenAcceptByBeaCukai,
     fetchBCF3315PerId,
-    updateDokumnBCFAfterChoosingForPLB
+    updateDokumnBCFAfterChoosingForPLB,
     deleteBCF,
     deleteProduksi
 }

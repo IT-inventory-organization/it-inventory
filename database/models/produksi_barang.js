@@ -30,7 +30,11 @@ const produksiBarang = db.define('produksiBarang', {
     type: Sequelize.BOOLEAN,
     allowNull: true,
     defaultValue: false
-},
+  },
+  idKapal: {
+    type: Sequelize.STRING,
+    allowNull: false
+  }
 }, {
   tableName: 'produksiBarang',
   freezeTableName: true,
