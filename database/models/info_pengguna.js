@@ -52,15 +52,19 @@ const infoPengguna = db.define('infoPengguna', {
     allowNull: false,
     type: Sequelize.STRING
   },
-  roleEnum: {
-    allowNull: false,
-    type: Sequelize.ENUM('SUPER_USER', 'ADMIN', 'BC', 'PLB'),
-    defaultValue: 'ADMIN'
-  },
+  // roleEnum: {
+  //   allowNull: false,
+  //   type: Sequelize.ENUM('SUPER_USER', 'ADMIN', 'BC', 'PLB'),
+  //   defaultValue: 'ADMIN'
+  // },
   isActive: {
     type: Sequelize.STRING,
     allowNull: false,
     defaultValue: true
+  },
+  nip: {
+    type: Sequelize.STRING,
+    allowNull: true
   }
 }, {
   tableName: 'infoPengguna',

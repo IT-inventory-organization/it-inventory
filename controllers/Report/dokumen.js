@@ -71,6 +71,7 @@ const httpStatus = require('../../helper/Httplib');
 const { getBcf3315ThatAlreadyBeenAcceptByBeaCukai, fetchBCF3315PerId } = require('../../helper/Repository/bcf3315');
 const { NotFoundException, BadRequest } = require('../../middlewares/errHandler');
 const { Op } = require('sequelize');
+const { getOneDocumentPemasukanForCheck } = require('../../helper/Repository/dokumenPemasukan');
 
 
 const fetchBCF3314 = async(req, res) => {
@@ -243,7 +244,6 @@ const getDokumenPengeluaran = async(req, res) => {
                 }
             ]
         });
-        console.log(dokumenPengeluaran);
         return successResponse(res, Http.ok, "", dokumenPengeluaran, true);
     } catch (error) {
         console.error(error);
@@ -265,7 +265,6 @@ const getDokumenPemasukan = async(req, res) => {
                     model: DokumenPengeluaran,
                 }
             ],
-            logging: console.log,
             attributes: ['id', 'nomorDokumenPemasukan']
         })
         
@@ -407,7 +406,6 @@ const updateDokumenPengeluaran = async(req, res) => {
         const updatePengirimBarang = await updatePengirimBarangRepo(ref.pengirimBarang, idReport, transaction);
         const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
         const updatePembeliBarang = await updatePembeliBarangRepo(ref.pembeliBarang, idReport, transaction);
-        // const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
         const updateDataPpjk = await updateDataPpjkRepo(ref.ppjk, idReport, transaction);
         const updateMataUang = await updateMataUangRepo(ref.mataUang, idReport, transaction);
         const updateDataPengangkutan = await updateDataPengangkutanRepo(ref.dataPengangkutan, idReport, transaction);
@@ -422,7 +420,6 @@ const updateDokumenPengeluaran = async(req, res) => {
             pengirimBarang: updatePengirimBarang.id,
             pengusahaPLB: updatePengusahaPLB.id,
             pembeliBarang: updatePembeliBarang.id,
-            pengusahaPLB: updatePengusahaPLB.id,
             ppjk: updateDataPpjk.id,
             mataUang: updateMataUang.id,
             updatePengangkutan: updateDataPengangkutan.id,
@@ -441,7 +438,6 @@ const updateDokumenPengeluaran = async(req, res) => {
 
         return successResponse(res, Http.created, "Berhasil Update Report Pengeluaran", updatedData, false);
     } catch (error) {
-        console.error(error)
         if(transaction){
             await transaction.rollback();
         }
@@ -549,6 +545,8 @@ const updatePO = async(req, res) => {
         return errorResponse(res, error.status, error.message);
     }
 }
+
+
 
 module.exports = routes => {
     routes.post('/save/pemasukan',
@@ -661,6 +659,7 @@ module.exports = routes => {
             .isNumeric().withMessage('Isi dengan angka'),
         updatePO
     );
+
     routes.get('/get/bcf/', authentication, fetchBCF3314);
     routes.get('/get/bcf/:id', authentication, fetchPerBCF3314);
 }

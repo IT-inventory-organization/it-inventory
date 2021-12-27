@@ -286,10 +286,10 @@ const deleteReport = async (req, idReport, idUser) => {
             }
         })
     } catch (error) {
-        console.log(error);
-        throw error;
+        throw new ServerFault('Terjaid Kesalaha Pada Server', error, req);
     }
 }
+
 module.exports = {
     saveReport,
     getReportPerId,

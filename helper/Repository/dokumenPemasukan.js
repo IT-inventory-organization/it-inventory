@@ -3,6 +3,7 @@ const dataBarang = require("../../database/models/data_barang")
 const DataKapal = require("../../database/models/data_kapal")
 const DataPelabuhan = require("../../database/models/data_pelabuhan")
 const DataPengangkutan = require("../../database/models/data_pengangkutan")
+const DokumenPemasukan = require("../../database/models/dokumen_pemasukan")
 const DokumenPengeluaran = require("../../database/models/dokumen_pengeluaran")
 const DokumenTambahan = require("../../database/models/dokumen_tambahan")
 const IdentitasBarang = require("../../database/models/identitas_barang")
@@ -13,9 +14,11 @@ const PengusahaPLB = require("../../database/models/pengusaha_plb")
 const PenjualBarang = require("../../database/models/penjual_barang")
 const PPJK = require("../../database/models/ppjk")
 const Report = require("../../database/models/report")
+const TempatPenimbunan = require("../../database/models/tempat_penimbunan")
+const { ServerFault } = require("../../middlewares/errHandler")
 
-const getOneDocumentPengeluaran = async(req, idReport) => {
-    return DokumenPengeluaran.findOne({
+const getOneDocumentPemasukan = async(req, idReport) => {
+    return DokumenPemasukan.findOne({
         include: [
             {
                 model: Report,
@@ -73,6 +76,16 @@ const getOneDocumentPengeluaran = async(req, idReport) => {
                         attributes: ['beratMuatan', 'beratKapalDenganMuatan', 'volume']
                     },
                     {
+                        model: TempatPenimbunan,
+                        include: [
+                            {
+                                model: DataKapal,
+                                attributes: ['namaKapal']
+                            }
+                        ],
+                        attributes: ['tempatPenimbunan', 'perkiraanTanggalPengeluaran']
+                    },
+                    {
                         model: dataBarang,
                         attributes: {
                             exclude: ['id', 'createdAt', 'updatedAt', 'reportId']
@@ -81,12 +94,13 @@ const getOneDocumentPengeluaran = async(req, idReport) => {
                 ]
             }
         ],
-        attributes: ['nomorDokumen', 'tanggalDokumen']
+        attributes: ['nomorDokumenPemasukan', 'tanggalDokumenPemasukan'],
+        // logging: console.log
     })
 }
 
-const getOneDocumentPengeluaranXML = async(req, idReport) => {
-    return DokumenPengeluaran.findOne({
+const getOneDocumentPemasukanXML = async(req, idReport) => {
+        return DokumenPemasukan.findOne({
         include: [
             {
                 model: Report,
@@ -113,7 +127,7 @@ const getOneDocumentPengeluaranXML = async(req, idReport) => {
                         model: PengusahaPLB,
                     },
                     {
-                        model: PengirimBarang,
+                        model: PengirimBarang, 
                     },
                     {
                         model: PembeliBarang,
@@ -131,15 +145,45 @@ const getOneDocumentPengeluaranXML = async(req, idReport) => {
                         model: beratDanVolume,
                     },
                     {
+                        model: TempatPenimbunan,
+                        include: [
+                            {
+                                model: DataKapal,
+                                attributes: ['namaKapal']
+                            }
+                        ],
+                    },
+                    {
                         model: dataBarang,
                     }
                 ]
             }
         ],
+        // logging: console.log
     })
 }
 
+const getOneDocumentPemasukanForCheck = async(req, idReport) => {
+    try {
+        return Report.findOne({
+            where: {
+                id: idReport
+            },
+            include: [
+                {
+                    model: DokumenPemasukan
+                },
+                {
+                    model: DokumenPengeluaran
+                }
+            ]
+        })
+    } catch (error) {
+        throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
+    }
+}
 module.exports = {
-    getOneDocumentPengeluaran,
-    getOneDocumentPengeluaranXML
+    getOneDocumentPemasukan,
+    getOneDocumentPemasukanXML,
+    getOneDocumentPemasukanForCheck
 }

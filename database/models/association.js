@@ -73,6 +73,9 @@ const setAssociations = function() {
   dataBarang.belongsTo(Report, {foreignKey: 'reportId'});
   PO.belongsTo(Report, {foreignKey: 'reportId'});
 
+  DataKapal.hasOne(TempatPenimbunan, {foreignKey: 'id'});
+  TempatPenimbunan.belongsTo(DataKapal, {foreignKey: 'idKapal'})
+
   // Purchase Order
   Report.hasMany(PO, {foreignKey: 'reportId'});
   PO.belongsTo(Report, {foreignKey: 'reportId'});
@@ -90,7 +93,6 @@ const setAssociations = function() {
  
   InfoPengguna.hasMany(BCF3315, {foreignKey: 'id'});
   BCF3315.belongsTo(InfoPengguna, {foreignKey: 'userId'})
-
 
   /**
    * Realsi PO Dengan InfoPengguna

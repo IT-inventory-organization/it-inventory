@@ -3,6 +3,12 @@ const config = require("../config");
 const { appendFileSync } = require('fs');
 const STAGE = require('../helper/Stage.interface');
 
+/**
+ * Conflict When Try To Use Foreign Key 
+ * @param {*} message 
+ * @param {*} error 
+ * @param {*} req 
+ */
 function ForeignKeyViolation(message, error = null, req = null){
   log(error, req, message)
   this.message = message;
@@ -10,13 +16,24 @@ function ForeignKeyViolation(message, error = null, req = null){
   this.status = httpStatus.internalServerError;
 }
 
+/**
+ * Conflict When Creating New Data 
+ * @param {*} message 
+ * @param {*} error 
+ * @param {*} req 
+ */
 function ConflictCreateData(message, error = null, req = null){
   log(error, req, message)
   this.message = message;
   this.name = 'ConflictCreateData';
   this.status = httpStatus.conflict;
 }
-
+/**
+ * Use it When Data You Try To Found is Doesnt Exist
+ * @param {*} message 
+ * @param {*} error 
+ * @param {*} req 
+ */
 function NotFoundException(message, error=null, req = null){
   log(error, req, message)
   this.message = message;
@@ -45,6 +62,13 @@ function BadRequest(message, error = null, req = null){
   this.status = httpStatus.badRequest;
 }
 
+function Forbidden(message, error = null, req = null){
+  log(error, req, message)
+  this.message = message;
+  this.name = "Forbidden";
+  this.status = httpStatus.conflict;
+}
+
 function returnError(error, message){
   switch (error.name) {
     case 'ReferenceError':
@@ -67,9 +91,9 @@ function log(error, req = null, message = null){
 function addLog(error, req = null, message = null){
   const date = new Date();
   let time = `[${addZero(date.getHours())}-${addZero(date.getMinutes())}-${addZero(date.getSeconds())} ${addZero(date.getDate())}-${addZero(date.getMonth() + 1)}-${addZero(date.getFullYear())}]================================================ `;
-  // console.log(JSON.stringify(req.body))
+
   const Data = {
-    Body: req.body ? JSON.stringify(req.body): '',
+    Body: (!req.body) ? '' : JSON.stringify(req.body),
     BaseUrl: req.baseUrl,
     Params: req.params,
     Query: req.query,
@@ -104,5 +128,6 @@ module.exports = {
   UnAuthorizedUser,
   returnError,
   addLog,
-  BadRequest
+  BadRequest,
+  Forbidden
 }

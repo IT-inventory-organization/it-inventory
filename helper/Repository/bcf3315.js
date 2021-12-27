@@ -57,7 +57,7 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
         throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
     }
 }
-
+// 3.3.14
 const fetchBCF3315PerId = async(req, idUser, idBCF) => {
     try {
         return po.findOne({
@@ -82,6 +82,7 @@ const fetchBCF3315PerId = async(req, idUser, idBCF) => {
                         id: idBCF
                     },
                     attributes: [
+                        'lampiran',
                         'npwp',
                         'nama',
                         'alamat',
@@ -116,6 +117,115 @@ const fetchBCF3315PerId = async(req, idUser, idBCF) => {
         throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
     }
 }
+// 3.3.15
+const fetchBCF3315PerIdForBC = async(req, idBCF) => {
+    try {
+        return bcf3315.findOne({
+            include: [
+                {
+                    model: po,
+                    attributes: ['id'],
+                    include: [
+                        {
+                            model: barangPO,
+                            include: [
+                                {
+                                    model: dataBarang,
+                                    attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
+                                }
+                            ],
+                            attributes: [
+                                ['jumlah', 'perkiraanJumlah'],
+                                ['hargaSatuan', 'satuan']
+                            ]
+                        }
+                    ],
+                    
+                }
+            ],
+            where: {
+                id: idBCF
+            },
+            attributes: [
+                'npwp',
+                'nama',
+                'alamat',
+                'jabatan',
+                'lokasiPLB',
+                'caraPengangkutan',
+                'pelabuhanMuat',
+                'tanggalPerkiraan',
+                'penanggungJawab',
+                'namaPengangkutKeLuar',
+                'voyage',
+                'callSign'
+            ],
+        })
+    } catch (error) {
+        
+        throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
+    }
+}
+/**
+ * let query = {
+            include: [
+                {
+                    model: barangPO,
+                    required: true,
+                    include: [
+                        {
+                            model: dataBarang,
+                            attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
+                        }
+                    ],
+                    attributes: [
+                        ['jumlah', 'perkiraanJumlah'],
+                        ['hargaSatuan', 'satuan']
+                    ]
+                },{
+                    model: bcf3315,
+                    required: true,
+                    where: {
+                        id: idBCF
+                    },
+                    attributes: [
+                        'npwp',
+                        'nama',
+                        'alamat',
+                        'lokasiPLB',
+                        'caraPengangkutan',
+                        'pelabuhanMuat',
+                        'tanggalPerkiraan',
+                        'namaPengangkutKeLuar',
+                        'voyage',
+                        'callSign',
+                        'alasan',
+                        'lampiran'
+                    ],
+                    include: [
+                        {
+                            model: infoPengguna,
+                            attributes: [
+                                ['namaPemilik', 'nama'],
+                                'nip'
+                            ]
+                        }
+                    ]
+                }
+            ],
+            attributes: [],
+        }
+
+        if(req.currentRole == 'User'){
+            query.where = {
+                userId: req.currentUser
+            }
+        }
+        return po.findOne({
+            ...query,
+            logging: console.log
+        });
+ */
 
 const updateDokumnBCFAfterChoosingForPLB = async(req, idReport, idBCF) => {
     try {
@@ -174,7 +284,8 @@ const deleteProduksi = async(req, id) => {
 module.exports = {
     getBcf3315ThatAlreadyBeenAcceptByBeaCukai,
     fetchBCF3315PerId,
-    updateDokumnBCFAfterChoosingForPLB
+    updateDokumnBCFAfterChoosingForPLB,
     deleteBCF,
-    deleteProduksi
+    deleteProduksi,
+    fetchBCF3315PerIdForBC
 }

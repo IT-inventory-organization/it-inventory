@@ -115,48 +115,198 @@
 		</BARANG>
 	</DETIL>
 </HEADER>
-const data = await bcf3315.findOne({
-            include: [
-                {
-                    model: infoPengguna,
-                    required: true,
-                    attributes: ['namaPemilik', 'nip']
-                },
-                {
-                    model: po,
-                    required: true,
-                    include: [
-                        {
-                            model: barangPO,
-                            required: true,
-                            attributes: [['jumlah', 'perkiraanJumlah'], ['hargaSatuan', 'satuan']],
-                            include: [
-                                {
-                                    model: dataBarang,
-                                    required: true,
-                                    attributes: [['kodeBarang', 'hsCode'], ['uraian', 'jenisBarang']]
-                                }
-                            ]
-                        }
-                    ],
-                    attributes: []
-                }
-            ],
-            where: {
-                id: idBCF
-            },
-            logging: console.log,
-            attributes: [
-                'npwp',
-                'nama',
-                'alamat',
-                'lokasiPLB',
-                'caraPengangkutan',
-                'pelabuhanMuat',
-                'tanggalPerkiraan',
-                'namaPengangkutKeLuar',
-                'voyage',
-                'callSign',
 
-            ],
-        });
+<?xml version="1.0" encoding="UTF-8" ?>
+<root>
+  <id>163</id>
+  <reportId>90</reportId>
+  <nomorDokumenPemasukan>18293-0023</nomorDokumenPemasukan>
+  <tanggalDokumenPemasukan>2021-12-30T00:00:00.000Z</tanggalDokumenPemasukan>
+  <createdAt>2021-12-26T14:02:52.563Z</createdAt>
+  <updatedAt>2021-12-26T14:02:52.563Z</updatedAt>
+  <report>
+    <id>90</id>
+    <jenisPemberitahuan>Pemasukan</jenisPemberitahuan>
+    <diAjukanDiKantor>Tanjungpinang</diAjukanDiKantor>
+    <jenisDokumenBC>BC 4.0 (TLDPP)</jenisDokumenBC>
+    <userId>2</userId>
+    <isDelete>false</isDelete>
+    <createdAt>2021-12-26T08:03:38.042Z</createdAt>
+    <updatedAt>2021-12-26T08:03:38.042Z</updatedAt>
+    <dokumenTambahan>
+      <id>128</id>
+      <nomorBC10>9982-834</nomorBC10>
+      <nomorBC11>8832-990</nomorBC11>
+      <nomorBL>0003000</nomorBL>
+      <tanggalBC10>2020-10-10</tanggalBC10>
+      <tanggalBC11>2020-10-10</tanggalBC11>
+      <tanggalBL>2020-09-10</tanggalBL>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.583Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.583Z</updatedAt>
+    </dokumenTambahan>
+    <dataPelabuhan>
+      <id>116</id>
+      <pelabuhan>oooo</pelabuhan>
+      <status>Masuk</status>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.603Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.603Z</updatedAt>
+    </dataPelabuhan>
+    <dataKapal>
+      <id>115</id>
+      <voyageKapal>AAA_000</voyageKapal>
+      <benderaKapal>BLC</benderaKapal>
+      <namaKapal>GRT</namaKapal>
+      <tanggalKedatangan>2019-12-31T00:00:00.000Z</tanggalKedatangan>
+      <tanggalKeberangkatan>2018-12-21T00:00:00.000Z</tanggalKeberangkatan>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.610Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.610Z</updatedAt>
+    </dataKapal>
+    <identitasBarang>
+      <id>108</id>
+      <negaraAsal>IOA</negaraAsal>
+      <jenisBarang>82</jenisBarang>
+      <nilaiBarang>92929</nilaiBarang>
+      <caraPembayaran>Utang</caraPembayaran>
+      <asalBarang>CPT</asalBarang>
+      <jumlahBarang>8888</jumlahBarang>
+      <reportId>90</reportId>
+      <jumlahKemasan>666</jumlahKemasan>
+      <createdAt>2021-12-26T14:02:52.618Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.618Z</updatedAt>
+    </identitasBarang>
+    <penjualBarang>
+      <id>105</id>
+      <jenisIdentitasPenjual>NPWP</jenisIdentitasPenjual>
+      <namaPenjual>MATIA</namaPenjual>
+      <nomorIdentitasPenjual>123-049</nomorIdentitasPenjual>
+      <alamatPenjual>ajdioaslwhjd</alamatPenjual>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.625Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.625Z</updatedAt>
+    </penjualBarang>
+    <pengusahaPLB>
+      <id>69</id>
+      <jenisIdentitasPengusahaPLB>NPWP</jenisIdentitasPengusahaPLB>
+      <namaPengusahaPLB>welkhasf893w</namaPengusahaPLB>
+      <nomorIdentitasPengusahaPLB>891273i</nomorIdentitasPengusahaPLB>
+      <alamatPengusahaPLB>09123423oiu4</alamatPengusahaPLB>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.649Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.649Z</updatedAt>
+    </pengusahaPLB>
+    <pengirimBarang>
+      <id>104</id>
+      <jenisIdentitasPengirim>NPWP</jenisIdentitasPengirim>
+      <namaPengirim>NMASd</namaPengirim>
+      <nomorIdentitasPengirim>qw2897 e</nomorIdentitasPengirim>
+      <alamatPengirim>129038</alamatPengirim>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.633Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.633Z</updatedAt>
+    </pengirimBarang>
+    <pembeliBarang>
+      <id>56</id>
+      <jenisIdentitasPembeli>NPWP</jenisIdentitasPembeli>
+      <namaPembeli>askjd9223</namaPembeli>
+      <nomorIdentitasPembeli>2178309123</nomorIdentitasPembeli>
+      <alamatPembeli>2139021d</alamatPembeli>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.641Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.641Z</updatedAt>
+    </pembeliBarang>
+    <ppjk>
+      <id>68</id>
+      <jenisIdentitasPpjk>NPWP</jenisIdentitasPpjk>
+      <namaPpjk>qpksjd902</namaPpjk>
+      <nomorIdentitasPpjk>spadfj89qw2</nomorIdentitasPpjk>
+      <alamatPpjk>029i3jeipowq</alamatPpjk>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.657Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.657Z</updatedAt>
+    </ppjk>
+    <mataUang>
+      <id>35</id>
+      <valuta>USD</valuta>
+      <freight>123123</freight>
+      <ndbpmKurs>21389</ndbpmKurs>
+      <cif>28323</cif>
+      <transaksiLainnya>-</transaksiLainnya>
+      <hargaPenyerahan>666666</hargaPenyerahan>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.667Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.667Z</updatedAt>
+    </mataUang>
+    <dataPengangkutan>
+      <id>34</id>
+      <caraAngkut>Laut</caraAngkut>
+      <bendera>LLL</bendera>
+      <namaPengangkut>III</namaPengangkut>
+      <nomorVoyFlightPol>hh82h</nomorVoyFlightPol>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.674Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.674Z</updatedAt>
+    </dataPengangkutan>
+    <beratDanVolume>
+      <id>30</id>
+      <beratMuatan>666</beratMuatan>
+      <beratKapalDenganMuatan>666</beratKapalDenganMuatan>
+      <volume>666</volume>
+      <reportId>90</reportId>
+      <createdAt>2021-12-26T14:02:52.682Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.682Z</updatedAt>
+    </beratDanVolume>
+    <tempatPenimbunan>
+      <id>18</id>
+      <tempatPenimbunan></tempatPenimbunan>
+      <perkiraanTanggalPengeluaran>2020-01-01</perkiraanTanggalPengeluaran>
+      <isTempatPenimbunan>false</isTempatPenimbunan>
+      <reportId>90</reportId>
+      <idKapal>86</idKapal>
+      <createdAt>2021-12-26T14:02:52.689Z</createdAt>
+      <updatedAt>2021-12-26T14:02:52.689Z</updatedAt>
+      <dataKapal>
+        <namaKapal>DSA</namaKapal>
+      </dataKapal>
+    </tempatPenimbunan>
+    <dataBarangs>
+      <id>7</id>
+      <kodeBarang>ABC-123</kodeBarang>
+      <namaBarang>Meja</namaBarang>
+      <uraian>-</uraian>
+      <nettoBruttoVolume>20.2</nettoBruttoVolume>
+      <satuanKemasan>Kilo</satuanKemasan>
+      <stock>102</stock>
+      <posTarif>GGH</posTarif>
+      <bm>100.1</bm>
+      <ppn>21.44</ppn>
+      <ppnbm>99.9</ppnbm>
+      <cukai>11.11</cukai>
+      <nilaiPabeanHargaPenyerahan/>
+      <reportId>90</reportId>
+      <createdAt>2021-11-19T01:49:17.121Z</createdAt>
+      <updatedAt>2021-12-24T03:33:17.676Z</updatedAt>
+    </dataBarangs>
+    <dataBarangs>
+      <id>8</id>
+      <kodeBarang>ALM-009</kodeBarang>
+      <namaBarang>Kursi</namaBarang>
+      <uraian>Kursi Kayu</uraian>
+      <nettoBruttoVolume>20.2</nettoBruttoVolume>
+      <satuanKemasan>Kilo</satuanKemasan>
+      <stock>112</stock>
+      <posTarif>III</posTarif>
+      <bm>100.1</bm>
+      <ppn>21</ppn>
+      <ppnbm>91.99</ppnbm>
+      <cukai>199.11</cukai>
+      <nilaiPabeanHargaPenyerahan/>
+      <reportId>90</reportId>
+      <createdAt>2021-11-19T01:49:17.162Z</createdAt>
+      <updatedAt>2021-12-24T03:33:17.718Z</updatedAt>
+    </dataBarangs>
+  </report>
+</root>
+
