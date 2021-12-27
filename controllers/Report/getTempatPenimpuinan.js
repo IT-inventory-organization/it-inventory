@@ -5,11 +5,14 @@ const authentication = require("../../middlewares/authentication");
 
 const getTempatPenimbunan = async(req, res) => {
     try {
-        
-        return successResponse(res, httpStatus.ok, "", await getTempatPenimbunanAllThatTrueRepo(req), true);
-        
+        const result = await getTempatPenimbunanAllThatTrueRepo(req);
+   
+        return successResponse(res, httpStatus.ok, "", result, false);
     } catch (error) {
-        return errorResponse(res, error.status, error.message);
+        if(!error){
+            return errorResponse(res, httpStatus.internalServerError, "AWSD")
+        }
+        return errorResponse(res, httpStatus.internalServerError, "AWSD");
     }
 }
 

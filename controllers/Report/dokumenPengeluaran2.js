@@ -1,7 +1,11 @@
+
+/**
+ * DI Dokumen Pengeluaran TIdak Membutuhkan Table Tempat Penimbunan Untuk Menyimpan Data
+ */
 const { errorResponse, successResponse } = require('../../helper/Response')
 const Http = require('../../helper/Httplib');
 const { 
-    // formatDataDokumenPengeluaran,
+    formatDataDokumenKeluaran,
     formatDataDokumenMasukan, 
     formatDataDokumenTambahan, 
     formatDataDokumenPelabuhan,
@@ -30,15 +34,17 @@ const {
     vMataUang,
     vDataPengangkutan,
     vBeratDanVolume,
-    vTempatPenimbunan
+    vTempatPenimbunan,
+    vDataPengajuanPengeluaran
 } = require('../../middlewares/dataDokumenMiddleware/validationDataDokumen');
 const { validationResponse } = require('../../middlewares/validationResponse');
-const { saveDataPengajuan, updateDataPengajuan } = require('../../helper/Repository/dataPengajuan');
+const { saveDataPengajuan, updateDataPengajuan, saveDataPengajuanPengeluaran, updateDataPengajuanPengeluaran } = require('../../helper/Repository/dataPengajuan');
 const sequelize = require('../../configs/database');
 const authentication = require('../../middlewares/authentication');
 const { saveDataTambahan, updateDataTambahan } = require('../../helper/Repository/dataTambahan');
 const { saveDataPelabuhan, updateDataPelabuhanRepo } = require('../../helper/Repository/dataPelabuhan');
 const { saveDataKapal, updateDataKapalRepo } = require('../../helper/Repository/dataKapal');
+
 const { saveIdentitasBarang, updateIdentitasBarangRepo } = require('../../helper/Repository/identitasBarang');
 
 const { savePenjualBarang, updatePenjualBarangRepo } = require('../../helper/Repository/penjualBarang');
@@ -55,15 +61,12 @@ const { savePembeliBarang, updatePembeliBarangRepo } = require('../../helper/Rep
 
 const saveDokumenPemasukan = async(req, res) => {
     let transaction;
-    // return;
     try {
         const {ref} = req.body;
-        // console.log(ref);return;
 
         transaction = await sequelize.transaction();
-        // let resultSaved = [];
 
-        const resultDataPemasukan = await saveDataPengajuan(ref.dokumenPemasukan, transaction);
+        const resultDataPemasukan = await saveDataPengajuanPengeluaran(ref.dokumenPengeluaran, transaction);
         const resultDataTambahan = await saveDataTambahan(ref.dokumenTambahan, transaction);
         const resultDataPelabuhan = await saveDataPelabuhan(ref.dataPelabuhan, transaction);
         const resultDataKapal = await saveDataKapal(ref.dataKapal, transaction);
@@ -75,8 +78,7 @@ const saveDokumenPemasukan = async(req, res) => {
         const resultPpjk = await saveDataPpjk(ref.ppjk, transaction);
         const resultMataUang = await saveMataUang(ref.mataUang, transaction);
         const resultDataPengangkutan = await saveDataPengangkutan(ref.dataPengangkutan, transaction);
-        const reusltBeratDanVolume = await saveBeratDanVolume(ref.beratDanVolume, transaction);
-        const resultTempatPenimbunan = await saveTempatPenimbunan(ref.tempatPenimbunan, transaction);
+        const resultBeratDanVolume = await saveBeratDanVolume(ref.beratDanVolume, transaction);
         /**
          * 
          */
@@ -94,12 +96,11 @@ const saveDokumenPemasukan = async(req, res) => {
             ppjk: resultPpjk.id,
             mataUang: resultMataUang.id,
             dataPengangkutan: resultDataPengangkutan.id,
-            beratDanVolume: reusltBeratDanVolume.id,
-            tempatPenimbunan: resultTempatPenimbunan.id
+            beratDanVolume: resultBeratDanVolume.id,
         }
         
         if(req.currentRole !== 'Owner'){
-            saveAktifitas({userId: req.currentUser, reportId: ref.dokumenPemasukan.reportId, aktifitas: "Membuat Dokumen PLB Baru"});
+            saveAktifitas({userId: req.currentUser, reportId: ref.dokumenPengeluaran.reportId, aktifitas: "Membuat Dokumen PLB Baru"});
         }
         await transaction.commit();
         return successResponse(res, Http.created, "Berhasil Menyimpan Data Dokumen", data);
@@ -120,7 +121,7 @@ const updateDokumenPemasukan = async(req,res) => {
         const {ref} = req.body;
         transaction = await sequelize.transaction();
 
-        const updateDokumenPemasukan = await updateDataPengajuan(ref.dokumenPemasukan, idReport, transaction)
+        const updateDokumenPengeluaranData = await updateDataPengajuanPengeluaran(ref.dokumenPengeluaran, idReport, transaction)
         const updateDokumenTambahan = await updateDataTambahan(ref.dokumenTambahan, idReport, transaction);
         const updateDataPelabuhan = await updateDataPelabuhanRepo(ref.dataPelabuhan, idReport, transaction);
         const updateDataKapal = await updateDataKapalRepo(ref.dataKapal, idReport, transaction);
@@ -129,7 +130,6 @@ const updateDokumenPemasukan = async(req,res) => {
         const updatePengirimBarang = await updatePengirimBarangRepo(ref.pengirimBarang, idReport, transaction);
         const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
         const updatePembeliBarang = await updatePembeliBarangRepo(ref.pembeliBarang, idReport, transaction);
-        // const updatePengusahaPLB = await updatePengusahaPLBRepo(ref.pengusahaPLB, idReport, transaction);
         const updateDataPpjk = await updateDataPpjkRepo(ref.ppjk, idReport, transaction);
         const updateMataUang = await updateMataUangRepo(ref.mataUang, idReport, transaction);
         const updateDataPengangkutan = await updateDataPengangkutanRepo(ref.dataPengangkutan, idReport, transaction);
@@ -137,7 +137,7 @@ const updateDokumenPemasukan = async(req,res) => {
         const updateTempatPenimbunan = await updateTempatPenimbunanRepo(ref.tempatPenimbunan, idReport, transaction);
 
         const updatedData = {
-            dokumenPemasukan: updateDokumenPemasukan.id,
+            dokumenPengeluaran: updateDokumenPengeluaranData.id,
             dokumenTambahan: updateDokumenTambahan.id,
             dataPelabuhan: updateDataPelabuhan.id,
             dataKapal: updateDataKapal.id,
@@ -146,7 +146,6 @@ const updateDokumenPemasukan = async(req,res) => {
             pengirimBarang: updatePengirimBarang.id,
             pengusahaPLB: updatePengusahaPLB.id,
             pembeliBarang: updatePembeliBarang.id,
-            pengusahaPLB: updatePengusahaPLB.id,
             ppjk: updateDataPpjk.id,
             mataUang: updateMataUang.id,
             updatePengangkutan: updateDataPengangkutan.id,
@@ -173,8 +172,7 @@ const updateDokumenPemasukan = async(req,res) => {
 module.exports = routes => {
     routes.post('/save/pengeluaran',
         authentication,
-        // formatDataDokumenPengeluaran,
-        formatDataDokumenMasukan,
+        formatDataDokumenKeluaran,
         formatDataDokumenTambahan,
         formatDataDokumenPelabuhan,
         formatDataDokumenKapal,
@@ -187,8 +185,7 @@ module.exports = routes => {
         formatDataDokumenMataUang,
         formatDataDokumenDataPengangkutan,
         formatDataDokumenBeratDanVolume,
-        formatDataDokumenTempatPenimbunan,
-        vDataPengajuan,
+        vDataPengajuanPengeluaran,
         vDataTambahan,
         vDataPelabuhan,
         vDataKapal,
@@ -200,7 +197,6 @@ module.exports = routes => {
         vMataUang,
         vDataPengangkutan,
         vBeratDanVolume,
-        vTempatPenimbunan,
         validationResponse, 
         saveDokumenPemasukan
     );

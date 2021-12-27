@@ -9,6 +9,8 @@ const { authorizationReport } = require('../../helper/authorization');
 const { convertDate } = require('../../helper/convert');
 const httpStatus = require('../../helper/Httplib');
 const { vReport } = require('../../middlewares/reportMiddleware/validationReport');
+const { getOneDocumentPemasukanForCheck } = require('../../helper/Repository/dokumenPemasukan');
+const { NotFoundException, Forbidden } = require('../../middlewares/errHandler');
 
 const tambahReport = async (req, res) => {
     try {
@@ -78,6 +80,30 @@ const getDashboard = async(req, res) => {
     }
 } 
 
+const deleteReportWithUserAccess = async(req, res) => {
+    try {
+        const {id} = req.params;
+        const fetch = await getOneDocumentPemasukanForCheck(req, id);
+        if(!fetch){
+            throw new NotFoundException("Data Pemasukan Tidak Ada", '', req);
+        }
+        const data = fetch.toJSON();
+        
+        if(data.dokumenPengeluaran && data.dokumenPemasukan){
+            throw new Forbidden("Tidak Bisa Di Hapus", '', req);
+        }
+
+        await deleteReport(req, id, req.currentUser);
+
+        return successResponse(res, httpStatus.ok, "Berhasil Di Hapus", "", true);
+    } catch (error) {
+        if(!error.status){
+            return errorResponse(res, httpStatus.internalServerError, "Terjadi Kesalahan Pada Server")    
+        }
+        return errorResponse(res, error.status, error.message)
+    }
+}
+
 const deleteReportUser = async(req, res) => {
     try {
         const {id} = req.params;
@@ -105,5 +131,5 @@ module.exports = routes => {
         // getReport,
         getDashboard
     );
-    routes.delete('/delete/:id', authentication, deleteReportUser);
+    routes.delete('/delete/:id', authentication, deleteReportWithUserAccess);
 }

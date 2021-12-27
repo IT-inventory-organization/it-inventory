@@ -8,8 +8,9 @@ const dataBarang = require('../../database/models/data_barang');
 const httpStatus = require('../../helper/Httplib');
 const po = require('../../database/models/po');
 const Report = require('../../database/models/report');
-const { deleteBCF } = require('../../helper/Repository/bcf3315');
+const { deleteBCF, fetchBCF3315PerIdForBC } = require('../../helper/Repository/bcf3315');
 const STATUS = require('../../helper/Status.const');
+const { NotFoundException } = require('../../middlewares/errHandler');
 
 const list = async(req, res) => {
     try {
@@ -142,19 +143,18 @@ const create = async(req, res) => {
 
 const get = async (req, res) => {
     try{
-        let id = req.params.id;
-        let data = await Form3315.findOne({
-            where: {
-                id: id,
-				        isDelete: false
-            }
-        })
-
-
-		return successResponse(res, Http.ok, "Success", data, true);
+        const {id} = req.params;
+        const data = await fetchBCF3315PerIdForBC(req, id);
+        if(!data){
+          throw new NotFoundException("Data Tidak Ditemukan", '', req);
+        }
+		    return successResponse(res, Http.ok, "Success", data, true);
     } catch (error) {
-        console.error(error);
-        return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
+		console.log(error)
+        if(!error.status){
+			return errorResponse(res, Http.internalServerError, "Terjadi Kesalahan Pada Server"); 
+		}
+        return errorResponse(res, error.status, error.message);
     }
 }
 
@@ -170,7 +170,7 @@ const update = async (req, res) => {
 			}
 		})
 		const result = updateDataPerId.toJSON();
-		if(result.status = STATUS.MENUNGGU){
+		if(result.status == STATUS.MENUNGGU){
 			await Form3315.update(body,{
 				where: {
 					id: id,
@@ -208,10 +208,10 @@ const hapus = async (req, res) => {
 }
 
 module.exports = routes => {
-	routes.get('/list', authentication, list),
-	routes.get('/:id', authentication, get)
-	routes.post('/create', authentication, onCreateValidation, create),
+	routes.get('/list', authentication, list);
+	routes.get('/:id', authentication, get);
+	routes.post('/create', authentication, onCreateValidation, create);
 	// routes.get('/:status', authentication, status),
-	routes.put('/update/:id', authentication, update)
-	routes.delete('/delete/:id', authentication, hapus)
+	routes.put('/update/:id', authentication, update);
+	routes.delete('/delete/:id', authentication, hapus);
 }

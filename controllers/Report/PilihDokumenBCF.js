@@ -19,7 +19,6 @@ const saveDokumenBCF = async(req, res) => {
         }
         return successResponse(res, httpStatus.created, "");
     } catch (error) {
-        console.log(error)
         return errorResponse(res, error.status, error.message);
     }
 }

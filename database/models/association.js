@@ -51,10 +51,11 @@ const setAssociations = function() {
   Report.hasMany(dataBarang, {foreignKey: 'reportId'});
   Report.hasMany(PO, {foreignKey: 'reportId'});
 
+  DokumenPemasukan.hasOne(DokumenPengeluaran, {foreignKey: 'dokumenPemasukanId'});
  
   DokumenPemasukan.belongsTo(Report, {foreignKey: 'reportId'});
   DokumenPengeluaran.belongsTo(Report, {foreignKey: 'reportId'});
-  DokumenPengeluaran.belongsTo(DokumenPemasukan, { foreignKey: 'dokumenPemasukanId' });
+  DokumenPengeluaran.belongsTo(DokumenPemasukan, { foreignKey: 'id' });
   DokumenTambahan.belongsTo(Report, {foreignKey: 'reportId'});
   DataPelabuhan.belongsTo(Report, {foreignKey: 'reportId'});
   DataKapal.belongsTo(Report, {foreignKey: 'reportId'});
@@ -71,6 +72,9 @@ const setAssociations = function() {
   TempatPenimbunan.belongsTo(Report, {foreignKey: 'reportId'});
   dataBarang.belongsTo(Report, {foreignKey: 'reportId'});
   PO.belongsTo(Report, {foreignKey: 'reportId'});
+
+  DataKapal.hasOne(TempatPenimbunan, {foreignKey: 'id'});
+  TempatPenimbunan.belongsTo(DataKapal, {foreignKey: 'idKapal'})
 
   // Purchase Order
   Report.hasMany(PO, {foreignKey: 'reportId'});
@@ -89,7 +93,6 @@ const setAssociations = function() {
  
   InfoPengguna.hasMany(BCF3315, {foreignKey: 'id'});
   BCF3315.belongsTo(InfoPengguna, {foreignKey: 'userId'})
-
 
   /**
    * Realsi PO Dengan InfoPengguna
