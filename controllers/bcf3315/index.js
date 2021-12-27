@@ -117,6 +117,9 @@ const onCreateValidation = [
 		,
 	body('callSign')
 		.notEmpty().withMessage('kolom call sign kosong, perlu di isi')
+		.trim(),
+	body('nomor')
+		.notEmpty().withMessage('kolom nomor kosong, perlu di isi')
 		.trim()
 ];
 
@@ -130,7 +133,6 @@ const create = async(req, res) => {
         const body = matchedData(req);
 
         transaction = await sequelize.transaction();
-
 
         const form3315 = await Form3315.create(body, {transaction});
 
@@ -150,7 +152,7 @@ const get = async (req, res) => {
 		if(!data){
 			throw new NotFoundException("Data Tidak Ditemukan", '', req);
 		}
-		return successResponse(res, Http.ok, "Success", data, true);
+		return successResponse(res, Http.ok, "Success", data, false);
     } catch (error) {
 		console.log(error)
         if(!error.status){
