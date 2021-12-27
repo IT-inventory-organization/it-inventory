@@ -45,6 +45,7 @@ const getAllInventory = async (req, idUser) => {
     }
 }
 
+
 module.exports = {
     getAllInventory
 }

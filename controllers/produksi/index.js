@@ -14,6 +14,10 @@ const httpStatus = require('../../helper/Httplib');
 // const approval = require("../../database/models/approval");
 const { deleteApproval } = require('../../helper/Repository/bcf3315');
 const { deleteProduksi } = require('../../helper/Repository/bcf3315');
+const produksiBarang = require('../../database/models/produksi_barang');
+const { getAllInventory } = require('../../helper/Repository/Inventory');
+const produksiBarangDetail = require('../../database/models/produksi_barang_detail');
+const dataKapal = require('../../database/models/data_kapal')
 
 const list = async(req, res) => {
     try {
@@ -26,29 +30,38 @@ const list = async(req, res) => {
     }
 }
 
-// const list = async(req, res) => {
-//     try{
-//         const produksi = await ProduksiBarang.findCountAll({
-//             where: {
-//                 isDelete: 'false'
-//             },
-//             order: [
-//                 ['tanggal', 'asc']
-//             ],
-//             include: [
-//                 {
-//                     model: xxx,
-//                     require: true,
-//                     attributes: ['zzz'],
-//                 }
-//             ]
-//         })
-//         return successResponse(res, Http.ok, 'Success', produksi, true)
-//     } catch (error) {
-//         console.error(error);
-//         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
-//     }
-// }
+
+const getOne = async(req, res) => {
+    try {
+        let id = req.params.id;
+        let dataProduksi = await dataKapal.findOne({
+            include: [
+                {
+                    where: {
+                        id: id,
+                        isDelelete: false,
+                        attributes: ['voyageKapal', 'namaKapal'],
+                        include: {
+                            model: produksiBarangDetail, as: 'details'
+                        }
+                    }
+                }
+            ]
+            // where: {
+            //     id: id,
+            //     isDelete: false,
+            //     attributes: ['voyageKapal', 'namaKapal', ],
+            //     include: {
+            //         model: produksiBarangDetail, as: 'details'
+            //     }
+            // }
+        })
+        return successResponse(res, Http.ok, 'Success', dataProduksi, false)
+    }catch(error){
+        console.error(error);
+        return errorResponse(res, Http.internalServerError, 'terjadi kesalahan server')
+    }
+}
 
 const onCreateValidation = [
     body('nomorProduksi')
@@ -134,18 +147,6 @@ const create = async(req, res) => {
     }
 }
 
-// const destroy = async(req, res) => {
-//     try {
-//         const produksi = await ProduksiBarang.findByPk(req.params.id);
-//         if (produksi) produksi.destroy();
- 
-//         return successResponse(res, Http.ok, "Success", null, false);
-//     } catch (error) {
-//         console.error(error);
-//         return errorResponse(res, Http.internalServerError, "Something went wrong");
-//     }
-// }
-
 const destroy = async (req, res) => {
     try {
         let id = req.params.id;
@@ -163,10 +164,48 @@ const destroy = async (req, res) => {
     }
 }
 
+const update = async (req, res) => {
+    try{
+        let id = req.params.id;
+        const body = matchedData(req);
+
+        const updateDataPerId = await produksiBarang.findOne({
+            where: {
+                id: id,
+                isDelelete: false
+            }
+        })
+
+        const result = updateDataPerId.toJSON();
+        await ProduksiBarang.update(body, {
+            where: {
+                id: id,
+                isDelelete: false
+            }
+        });
+        return successResponse(res, httpStatus.ok, 'update berhasil', result, false)
+    }catch(error){
+        return errorResponse(res, httpStatus.internalServerError, 'terjadi kesalahan server')
+    }
+}
 
 
 module.exports = routes => {
-    routes.get('/', authentication, list),
+    routes.get('/:id', authentication, list),
     routes.post('/create', authentication, onCreateValidation, create),
-    routes.delete('/:id/delete', authentication, destroy)
+    routes.delete('/:id/delete', authentication, destroy),
+    routes.put('/update/:id', authentication, update),
+    routes.get('/getOne/:id', authentication, getOne)
 }
+
+// const destroy = async(req, res) => {
+//     try {
+//         const produksi = await ProduksiBarang.findByPk(req.params.id);
+//         if (produksi) produksi.destroy();
+ 
+//         return successResponse(res, Http.ok, "Success", null, false);
+//     } catch (error) {
+//         console.error(error);
+//         return errorResponse(res, Http.internalServerError, "Something went wrong");
+//     }
+// }
