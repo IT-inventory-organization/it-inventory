@@ -17,7 +17,7 @@ const formatDataDokumenMasukan = (req, res, next) => {
 
         next();
     } catch (error) {
-        
+        console.log(error);
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }

@@ -116,6 +116,9 @@ const onCreateValidation = [
 		,
 	body('callSign')
 		.notEmpty().withMessage('kolom call sign kosong, perlu di isi')
+		.trim(),
+	body('nomor')
+		.notEmpty().withMessage('kolom nomor kosong, perlu di isi')
 		.trim()
 ];
 
@@ -129,7 +132,6 @@ const create = async(req, res) => {
         const body = matchedData(req);
 
         transaction = await sequelize.transaction();
-
 
         const form3315 = await Form3315.create(body, {transaction});
 
