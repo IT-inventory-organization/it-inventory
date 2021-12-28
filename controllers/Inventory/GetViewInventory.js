@@ -10,7 +10,7 @@ const getViewInventory = async (req, res) => {
         const idUser = req.currentUser;
 
         const inventory = await getAllInventory(req, idUser);
-
+        console.log(inventory);
         return successResponse(res, httpStatus.ok, "", inventory, false);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, "Gagal Mengambil Data", []);

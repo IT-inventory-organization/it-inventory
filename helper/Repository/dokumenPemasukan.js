@@ -18,85 +18,86 @@ const TempatPenimbunan = require("../../database/models/tempat_penimbunan")
 const { ServerFault } = require("../../middlewares/errHandler")
 
 const getOneDocumentPemasukan = async(req, idReport) => {
-    return DokumenPemasukan.findOne({
+    return Report.findOne({
+        where: {
+            id: idReport
+        },
+        attributes: ['jenisPemberitahuan', 'diAjukanDiKantor', 'jenisDokumenBC'],
         include: [
             {
-                model: Report,
-                attributes: ['jenisPemberitahuan', 'diAjukanDiKantor', 'jenisDokumenBC'],
-                where: {
-                    id: idReport
-                },
+                model: DokumenTambahan,
+                attributes: ['nomorBC10', 'tanggalBC10', 'nomorBC11', 'tanggalBC11', 'nomorBL', 'tanggalBL']
+            },
+            {
+                model: DokumenPemasukan,
+                attributes: [['nomorDokumenPemasukan', 'nomorDokumen'], ['tanggalDokumenPemasukan', 'tanggalDokumen']]
+            },
+            {
+                model: DataPelabuhan,
+                attributes: ['pelabuhan'],
+            },
+            {
+                model: DataKapal,
+                attributes: ['voyageKapal', 'benderaKapal', 'tanggalKedatangan', 'namaKapal', 'tanggalKeberangkatan'],
+            },
+            {
+                model: IdentitasBarang,
+                attributes: ['negaraAsal', 'asalBarang', 'jenisBarang', 'jumlahBarang','nilaiBarang', 'jumlahKemasan', 'caraPembayaran']
+            },
+            {
+                model: PenjualBarang,
+                attributes: ['nomorIdentitasPenjual', 'namaPenjual', 'alamatPenjual']
+            },
+            {
+                model: PengusahaPLB,
+                attributes: ['nomorIdentitasPengusahaPLB', 'namaPengusahaPLB', 'alamatPengusahaPLB']
+            },
+            {
+                model: PengirimBarang,
+                attributes: ['nomorIdentitasPengirim', 'namaPengirim', 'alamatPengirim'] 
+            },
+            {
+                model: PembeliBarang,
+                attributes: ['nomorIdentitasPembeli', 'namaPembeli', 'alamatPembeli']
+            },
+            {
+                model: PPJK,
+                attributes: ['nomorIdentitasPpjk', 'namaPpjk', 'alamatPpjk']
+            },
+            {
+                model: MataUang,
+                attributes: ['valuta', 'freight', 'ndbpmKurs', 'cif', 'transaksiLainnya', 'hargaPenyerahan']
+            },
+            {
+                model: DataPengangkutan,
+                attributes: ['caraAngkut', 'namaPengangkut', 'bendera', 'nomorVoyFlightPol']
+            },
+            {
+                model: beratDanVolume,
+                attributes: ['beratMuatan', 'beratKapalDenganMuatan', 'volume']
+            },
+            {
+                model: TempatPenimbunan,
                 include: [
                     {
-                        model: DokumenTambahan,
-                        attributes: ['nomorBC10', 'tanggalBC10', 'nomorBC11', 'tanggalBC11', 'nomorBL', 'tanggalBL']
-                    },
-                    {
-                        model: DataPelabuhan,
-                        attributes: ['pelabuhan'],
-                    },
-                    {
                         model: DataKapal,
-                        attributes: ['voyageKapal', 'benderaKapal', 'tanggalKedatangan', 'namaKapal', 'tanggalKeberangkatan'],
-                    },
-                    {
-                        model: IdentitasBarang,
-                        attributes: ['negaraAsal', 'asalBarang', 'jenisBarang', 'jumlahBarang','nilaiBarang', 'jumlahKemasan', 'caraPembayaran']
-                    },
-                    {
-                        model: PenjualBarang,
-                        attributes: ['nomorIdentitasPenjual', 'namaPenjual', 'alamatPenjual']
-                    },
-                    {
-                        model: PengusahaPLB,
-                        attributes: ['nomorIdentitasPengusahaPLB', 'namaPengusahaPLB', 'alamatPengusahaPLB']
-                    },
-                    {
-                        model: PengirimBarang,
-                        attributes: ['nomorIdentitasPengirim', 'namaPengirim', 'alamatPengirim'] 
-                    },
-                    {
-                        model: PembeliBarang,
-                        attributes: ['nomorIdentitasPembeli', 'namaPembeli', 'alamatPembeli']
-                    },
-                    {
-                        model: PPJK,
-                        attributes: ['nomorIdentitasPpjk', 'namaPpjk', 'alamatPpjk']
-                    },
-                    {
-                        model: MataUang,
-                        attributes: ['valuta', 'freight', 'ndbpmKurs', 'cif', 'transaksiLainnya', 'hargaPenyerahan']
-                    },
-                    {
-                        model: DataPengangkutan,
-                        attributes: ['caraAngkut', 'namaPengangkut', 'bendera', 'nomorVoyFlightPol']
-                    },
-                    {
-                        model: beratDanVolume,
-                        attributes: ['beratMuatan', 'beratKapalDenganMuatan', 'volume']
-                    },
-                    {
-                        model: TempatPenimbunan,
-                        include: [
-                            {
-                                model: DataKapal,
-                                attributes: ['namaKapal']
-                            }
-                        ],
-                        attributes: ['tempatPenimbunan', 'perkiraanTanggalPengeluaran']
-                    },
-                    {
-                        model: dataBarang,
-                        attributes: {
-                            exclude: ['id', 'createdAt', 'updatedAt', 'reportId']
-                        }
+                        attributes: ['namaKapal']
                     }
-                ]
+                ],
+                attributes: ['tempatPenimbunan', 'perkiraanTanggalPengeluaran']
+            },
+            {
+                model: dataBarang,
+                attributes: {
+                    exclude: ['id', 'createdAt', 'updatedAt', 'reportId']
+                }
             }
-        ],
-        attributes: ['nomorDokumenPemasukan', 'tanggalDokumenPemasukan'],
-        // logging: console.log
+        ]
     })
+}
+
+const test = () => {
+    return Report.findOne()
 }
 
 const getOneDocumentPemasukanXML = async(req, idReport) => {

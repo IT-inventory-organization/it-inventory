@@ -13,14 +13,14 @@ const getViewDocument = async(req, res) => {
         
         if(url[2] == 'pemasukan'){
             const result = await getOneDocumentPemasukan(req, id);
-            
+            console.log(result.toJSON());
             if(!result || result.length == 0){
                 throw new NotFoundException("Data Tidak Ada", '', req);
             }
             return successResponse(res, httpStatus.ok, "", result, true)
         }else if(url[2] == 'pengeluaran'){
             const result = await getOneDocumentPengeluaran(req, id);
-            if(!result){
+            if(!result || result.length == 0){
                 throw new NotFoundException('Data Tidak Ada', '', req);
             }
             return successResponse(res, httpStatus.ok, "", result, true)
@@ -28,6 +28,7 @@ const getViewDocument = async(req, res) => {
             throw new ServerFault("Tejadi Kesalahan Pada Server", '', req)
         }
     } catch (error) {
+        console.log(error)
         if(!error.status){
             return errorResponse(res, httpStatus.internalServerError, "Terjadi Kesalahan Pada Server")
         }

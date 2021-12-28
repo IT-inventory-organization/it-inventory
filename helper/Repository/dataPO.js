@@ -157,7 +157,7 @@ const getBarangForBCF3315AfterChoosingNumberPurchaseOrder = async(req, idUser, i
         }; 
 
         
-        return await dataBarang.findAll(query);
+        return dataBarang.findAll(query);
     } catch (error) {
         console.log(error)
         throw error;

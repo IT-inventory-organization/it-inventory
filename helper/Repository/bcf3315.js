@@ -11,13 +11,12 @@ const po = require("../../database/models/po")
 const Report = require("../../database/models/report")
 const { isExist } = require("../checkExistingDataFromTable")
 const { ServerFault } = require("../../middlewares/errHandler");
-const STATUS = require("../Status.const");
+const {STATUS} = require("../Status.const");
 const approval = require("../../database/models/approval");
 const produkiBarang = require('../../database/models/produksi_barang')
 
 const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     try {
-        console.log(idUser);
         return bcf3315.findAll({
             include: [
                 {
@@ -41,7 +40,6 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
                 },
                 status: STATUS.DISETUJUI
             },
-            logging: console.log,
             attributes: [
                [
                     sequelize.fn('CONCAT', 
@@ -58,16 +56,27 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     }
 }
 // 3.3.14
-const fetchBCF3315PerId = async(req, idUser, idBCF) => {
+const fetchBCF3315PerId = async(req, idUser, idBCF, status = false) => {
     try {
+        let where = {};
+        let whereStatus = {};
+        if(req.currentRole == 'User'){
+            where = {
+                userId: idUser
+            }
+        }
+        if(status){
+            whereStatus = {
+                status: STATUS.DISETUJUI
+            }
+        }
         return bcf3315.findOne({
+            ...whereStatus,
             include: [
                 {
                     model: po,
                     attributes: ['id'],
-                    where: {
-                        userId: idUser,
-                    },
+                    ...where,
                     include: [
                         {
                             model: barangPO,
@@ -108,15 +117,22 @@ const fetchBCF3315PerId = async(req, idUser, idBCF) => {
     }
 }
 // 3.3.15
-const fetchBCF3315PerIdForBC = async(req, idBCF) => {
+const fetchBCF3315PerIdForBC = async(req, idBCF, status = null) => {
     try {
         let where = {};
+        let whereStats = {};
         if(req.currentRole == 'User'){
             where = {
                 userId: req.currentUser
             }
         }
+        if(status){
+            whereStats = {
+                status: STATUS.DISETUJUI
+            }
+        }
         return bcf3315.findOne({
+            
             include: [
                 {
                     model: po,
@@ -143,7 +159,8 @@ const fetchBCF3315PerIdForBC = async(req, idBCF) => {
                 }
             ],
             where: {
-                id: idBCF
+                id: idBCF,
+                ...whereStats
             },
             attributes: [
                 'npwp',
@@ -160,10 +177,14 @@ const fetchBCF3315PerIdForBC = async(req, idBCF) => {
                 'penanggungJawab',
                 'namaPengangkutKeLuar',
                 'voyage',
-                'callSign'
+                'callSign',
+                'status',
+                'tanggal'
             ],
+            logging: console.log
         })
     } catch (error) {
+        // console.log(error)
         throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
     }
 }
