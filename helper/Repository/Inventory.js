@@ -1,9 +1,11 @@
+const { Op } = require("sequelize");
 const beratDanVolume = require("../../database/models/berat_dan_volume");
 const dataBarang = require("../../database/models/data_barang");
 const DataKapal = require("../../database/models/data_kapal");
 const DataPelabuhan = require("../../database/models/data_pelabuhan");
 const DataPengangkutan = require("../../database/models/data_pengangkutan");
 const DokumenPemasukan = require("../../database/models/dokumen_pemasukan");
+const DokumenPengeluaran = require("../../database/models/dokumen_pengeluaran");
 const DokumenTambahan = require("../../database/models/dokumen_tambahan");
 const IdentitasBarang = require("../../database/models/identitas_barang");
 const MataUang = require("../../database/models/mata_uang");
@@ -29,6 +31,21 @@ const getAllInventory = async (req, idUser) => {
                     model: dataBarang,
                     attributes: ['id','kodeBarang', 'namaBarang', ['uraian', 'itemDeskripsi'], 'satuanKemasan', ['stock', 'quantity']],
                     required: true
+                },
+                {
+                    model: TempatPenimbunan,
+                    attributes: ['isTempatPenimbunan'],
+                    where: {
+                        isTempatPenimbunan: true
+                    }
+                },
+                {
+                    model: DokumenPemasukan,
+                    include:[
+                        {
+                            model: DokumenPengeluaran
+                        }
+                    ]
                 }
             ],
             where: {
@@ -38,7 +55,7 @@ const getAllInventory = async (req, idUser) => {
             plain: false,
             // logging: console.log
         }
-
+        
         return await Report.findAll(query);
     } catch (error) {
         throw error;
