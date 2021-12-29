@@ -12,19 +12,22 @@ const listDashboard = async(limit, offset, additionalQuery = {}) => {
         const query = {
             where: {
                 isDelete: false,
-                ...additionalQuery
             },
             attributes: ['id'],
             include: [
                 {
                     model: dataKapal,
                     attributes: ['voyageKapal', 'namaKapal', 'benderaKapal'],
-                    required: true
+
                 },
                 {
                     model: dokumenPemasukan,
                     attributes: ['reportId'],
-                    required: true
+                    include: [
+                        {
+                            model: dokumenPengeluaran
+                        }
+                    ]
                 },
                 {
                     model: tempatPenimbunan,
@@ -35,8 +38,6 @@ const listDashboard = async(limit, offset, additionalQuery = {}) => {
                 },
             ]
         }
-
-
         const data = await Report.findAndCountAll(query);
         return data;
     } catch (error) {

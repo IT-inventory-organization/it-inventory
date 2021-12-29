@@ -47,15 +47,15 @@ const list = async(req, res) => {
 }
 
 const onCreateValidation = [
-	body('nomorPO')
-		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
-		// .custom(value => {
-		// 	return Form3315.findOne({ where: {nomorPo: value} })
-		// 	.then((d) => {
-		// 		if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
-		// 	});
-		// })
-		.trim(),
+	// body('nomorPO')
+	// 	.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
+	// 	.custom(value => {
+	// 		return Form3315.findOne({ where: {nomorPo: value} })
+	// 		.then((d) => {
+	// 			if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
+	// 		});
+	// 	})
+	// 	.trim(),
 	body('tanggal')
 		.notEmpty().withMessage('kolom tanggal kosong, perlu di isi')
 		.isDate().withMessage('kolom format tanggal salah, perlu di perbaiki')
