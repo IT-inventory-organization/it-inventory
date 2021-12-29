@@ -5,6 +5,7 @@ const DataKapal = require("../../database/models/data_kapal");
 const DataPelabuhan = require("../../database/models/data_pelabuhan");
 const DataPengangkutan = require("../../database/models/data_pengangkutan");
 const DokumenPemasukan = require("../../database/models/dokumen_pemasukan");
+const DokumenPengeluaran = require("../../database/models/dokumen_pengeluaran");
 const DokumenTambahan = require("../../database/models/dokumen_tambahan");
 const IdentitasBarang = require("../../database/models/identitas_barang");
 const MataUang = require("../../database/models/mata_uang");
@@ -16,6 +17,7 @@ const PPJK = require("../../database/models/ppjk");
 const Report = require("../../database/models/report");
 const TempatPenimbunan = require("../../database/models/tempat_penimbunan");
 const { ServerFault, NotFoundException } = require("../../middlewares/errHandler");
+const { isExist } = require("../checkExistingDataFromTable");
 
 const saveReport = async (data) => {
     try {
@@ -29,8 +31,44 @@ const saveReport = async (data) => {
     }
 }
 
-const getReportPerId = async(id) => {
+const getReportPerId = async(id, type = 'pemasukan', req = null) => {
     try {
+        let include = null;
+        if(type == 'pemasukan'){
+            include = [
+                {
+                    model: DokumenPemasukan,
+                    // required: true,
+                    attributes: {
+                        exclude: ['updatedAt', 'createdAt']
+                    }
+                },
+                {
+                    model: TempatPenimbunan,
+                    attributes: {
+                        exclude: ['updatedAt', 'createdAt']
+                    },
+                    include: [
+                        {
+                            model: DataKapal,
+                            attributes: {
+                                exclude: ['createdAt', 'updatedAt']
+                            }
+                        }
+                    ]
+                },
+            ]
+        }else if(type == 'pengeluaran'){
+            include = [
+                {
+                    model: DokumenPengeluaran,
+                    // required: true,
+                    attributes: {
+                        exclude: ['updatedAt', 'createdAt']
+                    }
+                }
+            ]
+        }
         const query = {
             where: {
                 id: id,
@@ -40,12 +78,7 @@ const getReportPerId = async(id) => {
                 exclude: ['createdAt', 'updatedAt', 'isDelete']
             },
             include: [
-                {
-                    model: DokumenPemasukan,
-                    attributes: {
-                        exclude: ['updatedAt', 'createdAt',]
-                    }
-                },
+                ...include,
                 {
                     model: DokumenTambahan,
                     attributes: {
@@ -119,12 +152,6 @@ const getReportPerId = async(id) => {
                     }
                 },
                 {
-                    model: TempatPenimbunan,
-                    attributes: {
-                        exclude: ['updatedAt', 'createdAt']
-                    }
-                },
-                {
                     model: dataBarang,
                     attributes: {
                         exclude: ['updatedAt', 'createdAt']
@@ -134,13 +161,13 @@ const getReportPerId = async(id) => {
         }
         const resultReportPerId = await Report.findOne(query);
         if(!resultReportPerId){
-            throw new NotFoundException("Data Tidak Ditemukan");
+            throw new NotFoundException("Data Tidak Ditemukan", '', req);
         }
         return resultReportPerId.toJSON();
     } catch (error) {
 
         if(error.name == "ReferenceError"){
-            throw new ServerFault("Terjadi Kesalahan Pada Server")
+            throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
         }else{
             throw error
         }
@@ -154,27 +181,24 @@ const dashboard = async(req) => {
             where: {
                 userId: req.currentUser,
                 isDelete: false
-            },
-            attributes: ['jenisDokumenBC'],
+            },                                                                      
+            attributes: ['jenisDokumenBC', 'jenisPemberitahuan', 'updatedAt', 'id'],
             include: [
                 {
                     model: DataKapal,
-                    attributes:  [
-                            'voyageKapal', 'namaKapal', 'benderaKapal',
-                            'updatedAt', 'createdAt']
-                    
+                    attributes:  ['voyageKapal', 'namaKapal', 'benderaKapal']
                 }
             ]
         }
         const resultDashboard = await Report.findAll(query);
         if(!resultDashboard){
-            throw new NotFoundException("Data Tidak Ditemukan");
+            throw new NotFoundException("Data Tidak Ditemukan", '', req);
         }
         return resultDashboard;
     } catch (error){
 
         if(error.name == "ReferenceError"){
-            throw new ServerFault("Terjadi Kesalahan Pada Server")
+            throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
         }else{
             throw error
         }
@@ -290,10 +314,46 @@ const deleteReport = async (req, idReport, idUser) => {
     }
 }
 
+const getReportForUpdate = async(req, idReport) => {
+    try {
+        return Report.findOne({
+            where: {
+                id: idReport,
+                userId: req.currentUser
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt', 'isDelete']
+            }
+        });
+    } catch (error) {
+        throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
+    }
+}
+
+const updateReportPLB = async(req, idReport, data) => {
+    try {
+        await isExist(Report, {
+            where: {
+                id: idReport,
+                userId: req.currentUser
+            }
+        })
+        return Report.update(data, {
+            where: {
+                id: idReport,
+                userId: req.currentUser
+            }
+        })
+    } catch (error) {
+        throw new ServerFault("Terjadi Kesalahan Padas Server", error, req)
+    }
+}
 module.exports = {
     saveReport,
     getReportPerId,
     dashboard,
     getKapalPenjual,
-    deleteReport
+    deleteReport,
+    getReportForUpdate,
+    updateReportPLB
 }

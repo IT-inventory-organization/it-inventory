@@ -8,7 +8,7 @@ const convertDate = (date) => {
         return null;
     }
     const ISO = new Date(`${date}`);
-    const data = `${addZero(ISO.getUTCDate())}-${addZero(ISO.getUTCMonth()+1)}-${ISO.getUTCFullYear()} }`; 
+    const data = `${ISO.getUTCFullYear()}-${addZero(ISO.getUTCMonth()+1)}-${addZero(ISO.getUTCDate())}`; 
     return data;
 }
 

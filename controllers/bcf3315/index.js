@@ -4,12 +4,11 @@ const Http = require('../../helper/Httplib');
 const Form3315 = require('../../database/models/bcf3315');
 const authentication = require('../../middlewares/authentication');
 const sequelize = require('../../configs/database');
-const dataBarang = require('../../database/models/data_barang');
 const httpStatus = require('../../helper/Httplib');
 const po = require('../../database/models/po');
 const Report = require('../../database/models/report');
 const { deleteBCF, fetchBCF3315PerIdForBC } = require('../../helper/Repository/bcf3315');
-const STATUS = require('../../helper/Status.const');
+const {STATUS} = require('../../helper/Status.const');
 const { NotFoundException } = require('../../middlewares/errHandler');
 
 const list = async(req, res) => {
@@ -116,6 +115,9 @@ const onCreateValidation = [
 		,
 	body('callSign')
 		.notEmpty().withMessage('kolom call sign kosong, perlu di isi')
+		.trim(),
+	body('nomor')
+		.notEmpty().withMessage('kolom nomor kosong, perlu di isi')
 		.trim()
 ];
 
@@ -129,7 +131,6 @@ const create = async(req, res) => {
         const body = matchedData(req);
 
         transaction = await sequelize.transaction();
-
 
         const form3315 = await Form3315.create(body, {transaction});
 

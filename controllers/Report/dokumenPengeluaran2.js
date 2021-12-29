@@ -58,8 +58,9 @@ const { saveBeratDanVolume, updateBeratDanVolumeRepo } = require('../../helper/R
 const { saveAktifitas } = require('../../helper/saveAktifitas');
 const { authorizationReport } = require('../../helper/authorization');
 const { savePembeliBarang, updatePembeliBarangRepo } = require('../../helper/Repository/pembeliBarang');
+const httpStatus = require('../../helper/Httplib');
 
-const saveDokumenPemasukan = async(req, res) => {
+const saveDokumenPengeluaran = async(req, res) => {
     let transaction;
     try {
         const {ref} = req.body;
@@ -114,7 +115,7 @@ const saveDokumenPemasukan = async(req, res) => {
     }
 }
 
-const updateDokumenPemasukan = async(req,res) => {
+const updateDokumenPengeluaran = async(req,res) => {
     const {idReport} = req.params;
     let transaction
     try {
@@ -134,7 +135,6 @@ const updateDokumenPemasukan = async(req,res) => {
         const updateMataUang = await updateMataUangRepo(ref.mataUang, idReport, transaction);
         const updateDataPengangkutan = await updateDataPengangkutanRepo(ref.dataPengangkutan, idReport, transaction);
         const updateBeratDanVolume = await updateBeratDanVolumeRepo(ref.beratDanVolume, idReport, transaction);
-        const updateTempatPenimbunan = await updateTempatPenimbunanRepo(ref.tempatPenimbunan, idReport, transaction);
 
         const updatedData = {
             dokumenPengeluaran: updateDokumenPengeluaranData.id,
@@ -149,8 +149,7 @@ const updateDokumenPemasukan = async(req,res) => {
             ppjk: updateDataPpjk.id,
             mataUang: updateMataUang.id,
             updatePengangkutan: updateDataPengangkutan.id,
-            updateBeratDanVolume: updateBeratDanVolume.id,
-            updateTempatPenimbunan: updateTempatPenimbunan.id
+            updateBeratDanVolume: updateBeratDanVolume.id
         }
 
         if(req.currentRole !== 'Owner'){
@@ -161,9 +160,11 @@ const updateDokumenPemasukan = async(req,res) => {
 
         return successResponse(res, Http.created, "Berhasil Update Report", updatedData)
     } catch (error) {
-        console.log(error)
         if(transaction){
             await transaction.rollback();
+        }
+        if(!error.status){
+            return errorResponse(res, httpStatus.internalServerError, "Terjadi Kesalahan Pada Server")
         }
         return errorResponse(res, error.status, error.message);
     }
@@ -198,13 +199,13 @@ module.exports = routes => {
         vDataPengangkutan,
         vBeratDanVolume,
         validationResponse, 
-        saveDokumenPemasukan
+        saveDokumenPengeluaran
     );
 
-    routes.put('/update/pemasukan/:idReport',
+    routes.put('/update/pengeluaran/:idReport',
         authentication,
         authorizationReport,
-        formatDataDokumenMasukan,
+        formatDataDokumenKeluaran,
         formatDataDokumenTambahan,
         formatDataDokumenPelabuhan,
         formatDataDokumenKapal,
@@ -217,8 +218,7 @@ module.exports = routes => {
         formatDataDokumenMataUang,
         formatDataDokumenDataPengangkutan,
         formatDataDokumenBeratDanVolume,
-        formatDataDokumenTempatPenimbunan,
-        vDataPengajuan,
+        vDataPengajuanPengeluaran,
         vDataTambahan,
         vDataPelabuhan,
         vDataKapal,
@@ -230,8 +230,7 @@ module.exports = routes => {
         vMataUang,
         vDataPengangkutan,
         vBeratDanVolume,
-        vTempatPenimbunan,
         validationResponse, 
-        updateDokumenPemasukan
+        updateDokumenPengeluaran
     );
 }

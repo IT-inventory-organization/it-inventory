@@ -10,10 +10,10 @@ const formatReport = (req, res, next) => {
             ...Decrypt,
             userId: +req.currentUser
         }
-
+        // console.log(Decrypt)
         next();
     } catch (error) {
-
+        // console.log(error)
         return errorResponse(res, Http.badRequest, "Gagal Menyimpan Data");
     }
 }

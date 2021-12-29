@@ -105,6 +105,10 @@ const bcf3315 = db.define('bcf3315', {
         allowNull: true,
         defaultValue: false
     },
+    nomor: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
     reportId: {
         type: Sequelize.INTEGER,
         allowNull: true,

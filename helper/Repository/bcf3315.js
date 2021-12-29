@@ -11,13 +11,12 @@ const po = require("../../database/models/po")
 const Report = require("../../database/models/report")
 const { isExist } = require("../checkExistingDataFromTable")
 const { ServerFault } = require("../../middlewares/errHandler");
-const STATUS = require("../Status.const");
+const {STATUS} = require("../Status.const");
 const approval = require("../../database/models/approval");
 const produkiBarang = require('../../database/models/produksi_barang')
 
 const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     try {
-        console.log(idUser);
         return bcf3315.findAll({
             include: [
                 {
@@ -41,7 +40,6 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
                 },
                 status: STATUS.DISETUJUI
             },
-            logging: console.log,
             attributes: [
                [
                     sequelize.fn('CONCAT', 
@@ -58,9 +56,140 @@ const getBcf3315ThatAlreadyBeenAcceptByBeaCukai = async(req, idUser) => {
     }
 }
 // 3.3.14
-const fetchBCF3315PerId = async(req, idUser, idBCF) => {
+const fetchBCF3315PerId = async(req, idUser, idBCF, status = false) => {
     try {
-        return po.findOne({
+        let where = {};
+        let whereStatus = {};
+        if(req.currentRole == 'User'){
+            where = {
+                userId: idUser
+            }
+        }
+        if(status){
+            whereStatus = {
+                status: STATUS.DISETUJUI
+            }
+        }
+        return bcf3315.findOne({
+            ...whereStatus,
+            include: [
+                {
+                    model: po,
+                    attributes: ['id'],
+                    ...where,
+                    include: [
+                        {
+                            model: barangPO,
+                            include: [
+                                {
+                                    model: dataBarang,
+                                    attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
+                                }
+                            ],
+                            attributes: [
+                                ['jumlah', 'perkiraanJumlah'],
+                                ['hargaSatuan', 'satuan']
+                            ]
+                        }
+                    ]
+                }
+            ],
+            where: {
+                id: idBCF
+            },
+            attributes: [
+                'npwp',
+                'nama',
+                'alamat',
+                'jabatan',
+                'lokasiPLB',
+                'caraPengangkutan',
+                'pelabuhanMuat',
+                'tanggalPerkiraan',
+                'penanggungJawab',
+                'namaPengangkutKeLuar',
+                'voyage',
+                'callSign'
+            ],
+        })
+    } catch (error) {
+        throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
+    }
+}
+// 3.3.15
+const fetchBCF3315PerIdForBC = async(req, idBCF, status = null) => {
+    try {
+        let where = {};
+        let whereStats = {};
+        if(req.currentRole == 'User'){
+            where = {
+                userId: req.currentUser
+            }
+        }
+        if(status){
+            whereStats = {
+                status: STATUS.DISETUJUI
+            }
+        }
+        return bcf3315.findOne({
+            
+            include: [
+                {
+                    model: po,
+                    attributes: ['id'],
+                    where: {
+                        ...where
+                    },
+                    include: [
+                        {
+                            model: barangPO,
+                            include: [
+                                {
+                                    model: dataBarang,
+                                    attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
+                                }
+                            ],
+                            attributes: [
+                                ['jumlah', 'perkiraanJumlah'],
+                                ['hargaSatuan', 'satuan']
+                            ]
+                        }
+                    ],
+                    
+                }
+            ],
+            where: {
+                id: idBCF,
+                ...whereStats
+            },
+            attributes: [
+                'npwp',
+                'nama',
+                'alamat',
+                'jabatan',
+                'lokasiPLB',
+                'nomor',
+                'lampiran',
+                'alasan',
+                'caraPengangkutan',
+                'pelabuhanMuat',
+                'tanggalPerkiraan',
+                'penanggungJawab',
+                'namaPengangkutKeLuar',
+                'voyage',
+                'callSign',
+                'status',
+                'tanggal'
+            ],
+            logging: console.log
+        })
+    } catch (error) {
+        // console.log(error)
+        throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
+    }
+}
+/**
+ *  po.findOne({
             include: [
                 {
                     model: barangPO,
@@ -113,118 +242,6 @@ const fetchBCF3315PerId = async(req, idUser, idBCF) => {
             attributes: [],
             logging: console.log
         })
-    } catch (error) {
-        throw new ServerFault("Terjadi Kesalahan Pada Server", error, req)
-    }
-}
-// 3.3.15
-const fetchBCF3315PerIdForBC = async(req, idBCF) => {
-    try {
-        return bcf3315.findOne({
-            include: [
-                {
-                    model: po,
-                    attributes: ['id'],
-                    include: [
-                        {
-                            model: barangPO,
-                            include: [
-                                {
-                                    model: dataBarang,
-                                    attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
-                                }
-                            ],
-                            attributes: [
-                                ['jumlah', 'perkiraanJumlah'],
-                                ['hargaSatuan', 'satuan']
-                            ]
-                        }
-                    ],
-                    
-                }
-            ],
-            where: {
-                id: idBCF
-            },
-            attributes: [
-                'npwp',
-                'nama',
-                'alamat',
-                'jabatan',
-                'lokasiPLB',
-                'caraPengangkutan',
-                'pelabuhanMuat',
-                'tanggalPerkiraan',
-                'penanggungJawab',
-                'namaPengangkutKeLuar',
-                'voyage',
-                'callSign'
-            ],
-        })
-    } catch (error) {
-        
-        throw new ServerFault('Terjadi Kesalahan Pada Server', error, req);
-    }
-}
-/**
- * let query = {
-            include: [
-                {
-                    model: barangPO,
-                    required: true,
-                    include: [
-                        {
-                            model: dataBarang,
-                            attributes: [['uraian', 'jenisBarang'], ['kodeBarang', 'hsCode']]
-                        }
-                    ],
-                    attributes: [
-                        ['jumlah', 'perkiraanJumlah'],
-                        ['hargaSatuan', 'satuan']
-                    ]
-                },{
-                    model: bcf3315,
-                    required: true,
-                    where: {
-                        id: idBCF
-                    },
-                    attributes: [
-                        'npwp',
-                        'nama',
-                        'alamat',
-                        'lokasiPLB',
-                        'caraPengangkutan',
-                        'pelabuhanMuat',
-                        'tanggalPerkiraan',
-                        'namaPengangkutKeLuar',
-                        'voyage',
-                        'callSign',
-                        'alasan',
-                        'lampiran'
-                    ],
-                    include: [
-                        {
-                            model: infoPengguna,
-                            attributes: [
-                                ['namaPemilik', 'nama'],
-                                'nip'
-                            ]
-                        }
-                    ]
-                }
-            ],
-            attributes: [],
-        }
-
-        if(req.currentRole == 'User'){
-            query.where = {
-                userId: req.currentUser
-            }
-        }
-        return po.findOne({
-            ...query,
-            logging: console.log
-        });
  */
 
 const updateDokumnBCFAfterChoosingForPLB = async(req, idReport, idBCF) => {

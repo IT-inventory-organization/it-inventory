@@ -88,6 +88,7 @@ const fetchBCF3314 = async(req, res) => {
             true
         );
     } catch (error) {
+        console.log(error);
         return errorResponse(res, error.status, "", []);
     }
 }
