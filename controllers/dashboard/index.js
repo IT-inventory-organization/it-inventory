@@ -35,15 +35,15 @@ const getViewDashboard = async (req, res) => {
     try {
         const data = await listDashboard(req, req.currentUser);
         
-        // for(const key in data.rows){
-        //     console.log(data.rows[key]);
-        //     if(Object.hasOwnProperty.call(data.rows, key)){
-        //         const element = data.rows[key].toJSON();
-        //         if(element?.dokumenPemasukan?.dokumenPengeluaran){
-        //             delete data.rows[key];
-        //         }
-        //     }
-        // }
+        for(const key in data.rows){
+            console.log(data.rows[key]);
+            if(Object.hasOwnProperty.call(data.rows, key)){
+                const element = data.rows[key].toJSON();
+                if(element?.dokumenPemasukan?.dokumenPengeluaran){
+                    delete data.rows[key];
+                }
+            }
+        }
         data.rows.flat()
         return successResponse(res, httpStatus.ok, "", data, false);
     } catch (error) {

@@ -20,6 +20,7 @@ const getViewInventory = async (req, res) => {
 
         return successResponse(res, httpStatus.ok, "", inventory.flat(), false);
     } catch (error) {
+        console.log(error);
         return errorResponse(res, httpStatus.internalServerError, "Gagal Mengambil Data", []);
     }
 }

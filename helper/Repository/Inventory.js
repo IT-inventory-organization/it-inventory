@@ -28,6 +28,7 @@ const getAllInventory = async (req, idUser) => {
                 },
                 {
                     model: DokumenPemasukan,
+                    required: true,
                     include:[
                         {
                             model: DokumenPengeluaran
@@ -36,7 +37,8 @@ const getAllInventory = async (req, idUser) => {
                 }
             ],
             where: {
-                userId: idUser
+                userId: idUser,
+                isDelete: false,
             },
             attributes: [['jenisPemberitahuan', 'jenisDokumen'],['id','reportId']],
             plain: false,
