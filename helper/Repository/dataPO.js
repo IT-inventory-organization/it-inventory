@@ -94,15 +94,14 @@ const getAllPurchaseOrderForBCF3315 = async (req, idUser) => {
                 {
                     model: Report,
                     attributes: [],
-                    where: {
-                        userId: idUser
-                    }
+
                 }
             ],
             where: {
                 nomorPO: {
                     [Op.ne]: null
-                }
+                },
+                userId: idUser
             },
             attributes: ['nomorPO', 'id'],
             plain:false,

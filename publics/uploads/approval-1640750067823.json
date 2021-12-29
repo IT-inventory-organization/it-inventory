@@ -1,0 +1,825 @@
+{
+	"info": {
+		"_postman_id": "25c74e50-7eaf-425e-9671-7ca9a37d2d21",
+		"name": "IT Inventory API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user/getInfoPengguna",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"getInfoPengguna"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const configSecurity = {\r",
+									"  mode: CryptoJS.mode.ECB,\r",
+									"  padding: CryptoJS.pad.Pkcs7\r",
+									"};\r",
+									"const keyPromise = CryptoJS.enc.Utf8.parse(\"NPL40i+77do/9/anInPVsVTgQuuuMlHnw+kDO8F5wlq0KisLQLSIvcdmkJRKZjp4lB5z3PYuFQvWfxSIB3eE02vVvqKLJnY5mlHsN/rc87RDfrGYhEsN1Gxy6pwTueQCnitKSA==\");\r",
+									"const AESEncrypt = data => (CryptoJS.AES.encrypt(JSON.stringify(data), keyPromise, configSecurity).toString());\r",
+									"const payload = {\r",
+									"    \"namaPerusahaan\": \"test123\",\r",
+									"    \"npwp\": \"test123\",\r",
+									"    \"alamat\": \"test123test123\",\r",
+									"    \"nomorTelepon\": \"1221212600\",\r",
+									"    \"fax\": \"test123\",\r",
+									"    \"bidangUsaha\": \"test\",\r",
+									"    \"namaPemilik\": \"admin123\",\r",
+									"    \"alamatPemilik\": \"test123\",\r",
+									"    \"email\":\"admin22@example.com\",\r",
+									"    \"username\": \"admin22\"\r",
+									"}\r",
+									"\r",
+									"const hasilEncrypt = AESEncrypt(payload);\r",
+									"pm.globals.set(\"InfoPengguna\", hasilEncrypt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/user/update_info_pengguna2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"update_info_pengguna2"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFobWFkZmUtMTdAZ21haWwuY29tIiwidXNlcl9pZCI6MTcsImlhdCI6MTYzNjM0NzQwMn0.qaEnfEpdM9T7DAyUb__le8_3SEhgJrMk5I9vcDXAZ7A",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const configSecurity = {\r",
+									"  mode: CryptoJS.mode.ECB,\r",
+									"  padding: CryptoJS.pad.Pkcs7\r",
+									"};\r",
+									"const keyPromise = CryptoJS.enc.Utf8.parse(\"NPL40i+77do/9/anInPVsVTgQuuuMlHnw+kDO8F5wlq0KisLQLSIvcdmkJRKZjp4lB5z3PYuFQvWfxSIB3eE02vVvqKLJnY5mlHsN/rc87RDfrGYhEsN1Gxy6pwTueQCnitKSA==\");\r",
+									"const AESEncrypt = data => (CryptoJS.AES.encrypt(JSON.stringify(data), keyPromise, configSecurity).toString());\r",
+									"const payload = {\r",
+									"    \"email\": \"admin@gmail.com\",\r",
+									"    \"password\": \"Admin123\"\r",
+									"}\r",
+									"\r",
+									"const hasilEncrypt = AESEncrypt(payload);\r",
+									"pm.globals.set(\"dataLogin\", hasilEncrypt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "dataLogin",
+									"value": "{{dataLogin}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/login/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const configSecurity = {\r",
+									"  mode: CryptoJS.mode.ECB,\r",
+									"  padding: CryptoJS.pad.Pkcs7\r",
+									"};\r",
+									"const keyPromise = CryptoJS.enc.Utf8.parse(\"NPL40i+77do/9/anInPVsVTgQuuuMlHnw+kDO8F5wlq0KisLQLSIvcdmkJRKZjp4lB5z3PYuFQvWfxSIB3eE02vVvqKLJnY5mlHsN/rc87RDfrGYhEsN1Gxy6pwTueQCnitKSA==\");\r",
+									"const AESEncrypt = data => (CryptoJS.AES.encrypt(JSON.stringify(data), keyPromise, configSecurity).toString());\r",
+									"const payload = {\r",
+									"    \"namaPerusahaan\": \"Anonymous\",\r",
+									"    \"npwp\": \"123.123.123\",\r",
+									"    \"alamat\": \"Anonym Location\",\r",
+									"    \"nomorTelepon\": \"+62 81299028 21\",\r",
+									"    \"bidangUsaha\":\"Software Development\",\r",
+									"    \"namaPemilik\": \"Nop\",\r",
+									"    \"password\": \"Admin123\",\r",
+									"    \"email\": \"admin@gmail.com\",\r",
+									"    \"confirmPassword\": \"Admin123\"\r",
+									"}\r",
+									"const hasilEncrypt = AESEncrypt(payload);\r",
+									"pm.globals.set(\"dataRegister\", hasilEncrypt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "dataRegister",
+									"value": "{{dataRegister}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dokumen",
+			"item": [
+				{
+					"name": "Save Dokumen",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const configSecurity = {\r",
+									"  mode: CryptoJS.mode.ECB,\r",
+									"  padding: CryptoJS.pad.Pkcs7\r",
+									"};\r",
+									"const keyPromise = CryptoJS.enc.Utf8.parse(\"NPL40i+77do/9/anInPVsVTgQuuuMlHnw+kDO8F5wlq0KisLQLSIvcdmkJRKZjp4lB5z3PYuFQvWfxSIB3eE02vVvqKLJnY5mlHsN/rc87RDfrGYhEsN1Gxy6pwTueQCnitKSA==\");\r",
+									"const AESEncrypt = data => (CryptoJS.AES.encrypt(JSON.stringify(data), keyPromise, configSecurity).toString());\r",
+									"const payload = {\r",
+									"    \"reportId\": 1,\r",
+									"    \"dokumenPemasukan\": {\r",
+									"        \"nomorDokumenPemasukan\": \"123/123.78\",\r",
+									"        \"tanggalDokumenPemasukan\": \"12-10-2020\"\r",
+									"    },\r",
+									"    \"dokumenTambahan\": {\r",
+									"        \"nomorBC10\": \"123/123/4\",\r",
+									"        \"nomorBC11\": \"332/223.123\",\r",
+									"        \"nomorBL\": \"\",\r",
+									"        \"tanggalBC10\": \"22-09-2020\",\r",
+									"        \"tanggalBC11\": \"10-05-2020\",\r",
+									"        \"tanggalBL\": \"04-07-2020\"\r",
+									"    },\r",
+									"    \"dataPelabuhan\": {\r",
+									"        \"pelabuhan\": \"Tanjung Pinang --\",\r",
+									"        \"status\": \"masuk\"\r",
+									"    },\r",
+									"    \"dataKapal\": {\r",
+									"        \"voyageKapal\": 'ASD-Kapal',\r",
+									"        'benderaKapal': \"IDN\",\r",
+									"        'namaKapal':\"Boieng\",\r",
+									"        \"tanggalKedatangan\": \"01-01-2020\",\r",
+									"        \"tanggalKeberangkatan\":\"05-11-2019\"\r",
+									"    },\r",
+									"    \"identitasBarang\": {\r",
+									"        \"negaraAsal\": \"IDN\",\r",
+									"        \"jenisBarang\": \"Padat\",\r",
+									"        \"nilaiBarang\": \"123.90\",\r",
+									"        \"caraPembayaran\": \"Transaksi\",\r",
+									"        \"asalBarang\": \"-\",\r",
+									"        \"jumlahBarang\": \"11\",\r",
+									"        \"jumlahKemasan\": \"4\"\r",
+									"    },\r",
+									"    \"penjualBarang\": {\r",
+									"        \"jenisIdentitasPenjual\": \"NPWP\",\r",
+									"        \"namaPenjual\": \"AR\",\r",
+									"        \"nomorIdentitasPenjual\": \"1111.111\",\r",
+									"        \"alamatPenjual\": \"address -- Left\"\r",
+									"    },\r",
+									"    \"pengirimBarang\": {\r",
+									"        \"jenisIdentitasPengirim\": \"NPWP\",\r",
+									"        \"namaPengirim\": \"AR1\",\r",
+									"        \"nomorIdentitasPengirim\": \"111.2..2\",\r",
+									"        \"alamatPengirim\": \"Perfect Binary Tree\"\r",
+									"    },\r",
+									"    \"pengusahaPLB\": {\r",
+									"        \"jenisIdentitasPengusahaPLB\": \"NPWP\",\r",
+									"        \"namaPengusahaPLB\": \"ART\",\r",
+									"        \"nomorIdentitasPengusahaPLB\": \"44.2.3122\",\r",
+									"        \"alamatPengusahaPLB\": \"Bidirectional Graph\"\r",
+									"    },\r",
+									"    \"pembeliBarang\": {\r",
+									"        \"jenisIdentitasPembeli\": \"NPWP\",\r",
+									"        \"namaPembeli\": \"ARTA\",\r",
+									"        \"nomorIdentitasPembeli\": \"11.22.34.1\",\r",
+									"        \"alamatPembeli\": \"Full Binary Tree\"\r",
+									"    },\r",
+									"    \"ppjk\": {\r",
+									"        \"jenisIdentitasPpjk\": \"NPWP\",\r",
+									"        \"namaPpjk\": \"Anonym\",\r",
+									"        \"nomorIdentitasPpjk\": \"123.123/1\",\r",
+									"        \"alamatPpjk\": \"BFS\"\r",
+									"    },\r",
+									"    \"mataUang\": {\r",
+									"        \"valuta\": \"USD\",\r",
+									"        \"freight\": \"4\",\r",
+									"        \"ndbpmKurs\": \"14299.66\",\r",
+									"        \"cif\": \"100000.99\",\r",
+									"        \"transaksiLainnya\": \"-\",\r",
+									"        \"hargaPenyerahan\": \"1111111\"\r",
+									"    },\r",
+									"    \"dataPengangkutan\": {\r",
+									"        \"caraAngkut\": \"luat\",\r",
+									"        \"bendera\": \"merah\",\r",
+									"        \"namaPengangkut\": \"Aing\",\r",
+									"        \"nomorVoyFlightPol\": \"159\"\r",
+									"    },\r",
+									"    \"beratDanVolume\": {\r",
+									"        \"beratMuatan\": 123.12,\r",
+									"        \"beratKapalDenganMuatan\": 123.33,\r",
+									"        \"volume\": 111.22\r",
+									"    },\r",
+									"    \"tempatPenimbunan\": {\r",
+									"        \"tempatPenimbunan\": \"LAU\",\r",
+									"        \"perkiraanTanggalPengeluaran\": \"12-01-2020\",\r",
+									"        \"isTempatPenimbunan\": true\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"const hasilEncrypt = AESEncrypt(payload);\r",
+									"pm.globals.set(\"dataDokumen\", hasilEncrypt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "dataDokumen",
+									"value": "{{dataDokumen}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/report/dokumen/save/pemasukan",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"report",
+								"dokumen",
+								"save",
+								"pemasukan"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Dokumen",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const configSecurity = {\r",
+									"  mode: CryptoJS.mode.ECB,\r",
+									"  padding: CryptoJS.pad.Pkcs7\r",
+									"};\r",
+									"const keyPromise = CryptoJS.enc.Utf8.parse(\"NPL40i+77do/9/anInPVsVTgQuuuMlHnw+kDO8F5wlq0KisLQLSIvcdmkJRKZjp4lB5z3PYuFQvWfxSIB3eE02vVvqKLJnY5mlHsN/rc87RDfrGYhEsN1Gxy6pwTueQCnitKSA==\");\r",
+									"const AESEncrypt = data => (CryptoJS.AES.encrypt(JSON.stringify(data), keyPromise, configSecurity).toString());\r",
+									"const payload = {\r",
+									"    \"reportId\": 1,\r",
+									"    \"dokumenPemasukan\": {\r",
+									"        \"id\": 84,\r",
+									"        \"reportId\": 1,\r",
+									"        \"nomorDokumenPemasukan\": \"123.123.123.999\",\r",
+									"        \"tanggalDokumenPemasukan\": \"10-12-2020\"\r",
+									"    },\r",
+									"    \"dokumenTambahan\": {\r",
+									"        \"id\": 75,\r",
+									"        \"nomorBC10\": \"123.123.4\",\r",
+									"        \"nomorBC11\": \"332.223.123\",\r",
+									"        \"nomorBL\": \"00.00.100\",\r",
+									"        \"tanggalBC10\": \"10-09-2020\",\r",
+									"        \"tanggalBC11\": \"10-05-2020\",\r",
+									"        \"tanggalBL\": \"11-01-2020\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"dataPelabuhan\": {\r",
+									"        \"id\": 59,\r",
+									"        \"pelabuhan\": \"Singapura --\",\r",
+									"        \"status\": \"masuk\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"dataKapal\": {\r",
+									"        \"id\": 58,\r",
+									"        \"voyageKapal\": \"ASD-111\",\r",
+									"        \"benderaKapal\": \"PNM\",\r",
+									"        \"namaKapal\": \"Boieng\",\r",
+									"        \"tanggalKedatangan\": \"01-01-2020\",\r",
+									"        \"tanggalKeberangkatan\": \"11-05-2019\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"identitasBarang\": {\r",
+									"        \"id\": 55,\r",
+									"        \"negaraAsal\": \"SGD\",\r",
+									"        \"jenisBarang\": \"Cair\",\r",
+									"        \"nilaiBarang\": \"123.90\",\r",
+									"        \"caraPembayaran\": \"Cash\",\r",
+									"        \"asalBarang\": \"-\",\r",
+									"        \"jumlahBarang\": 10,\r",
+									"        \"reportId\": 1,\r",
+									"        \"jumlahKemasan\": 10\r",
+									"    },\r",
+									"    \"penjualBarang\": {\r",
+									"        \"id\": 53,\r",
+									"        \"jenisIdentitasPenjual\": \"NPWP\",\r",
+									"        \"namaPenjual\": \"ARET\",\r",
+									"        \"nomorIdentitasPenjual\": \"1111.111\",\r",
+									"        \"alamatPenjual\": \"address -- Left\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"pengirimBarang\": { \r",
+									"        \"id\": 47,\r",
+									"        \"jenisIdentitasPengirim\": \"NPWP\",\r",
+									"        \"namaPengirim\": \"TRIE\",\r",
+									"        \"nomorIdentitasPengirim\": \"111.2..2\",\r",
+									"        \"alamatPengirim\": \"Perfect Binary Tree\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"pengusahaPLB\": {\r",
+									"        \"id\": 19,\r",
+									"        \"jenisIdentitasPengusahaPLB\": \"NPWP\",\r",
+									"        \"namaPengusahaPLB\": \"ART\",\r",
+									"        \"nomorIdentitasPengusahaPLB\": \"44.2.3122\",\r",
+									"        \"alamatPengusahaPLB\": \"Underictional Graph\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"pembeliBarang\": {\r",
+									"        \"id\": 6,\r",
+									"        \"jenisIdentitasPembeli\": \"NPWP\",\r",
+									"        \"namaPembeli\": \"ARTA\",\r",
+									"        \"nomorIdentitasPembeli\": \"11.22.34.1\",\r",
+									"        \"alamatPembeli\": \"Balanced Binary Tree\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"ppjk\": {\r",
+									"        \"id\": 18,\r",
+									"        \"jenisIdentitasPpjk\": \"NPWP\",\r",
+									"        \"namaPpjk\": \"Anonym\",\r",
+									"        \"nomorIdentitasPpjk\": \"123.123/1\",\r",
+									"        \"alamatPpjk\": \"BFS\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"mataUang\": {\r",
+									"        \"id\": 16,\r",
+									"        \"valuta\": \"USD\",\r",
+									"        \"freight\": 4,\r",
+									"        \"ndbpmKurs\": \"14299.66\",\r",
+									"        \"cif\": \"100000.99\",\r",
+									"        \"transaksiLainnya\": \"-\",\r",
+									"        \"hargaPenyerahan\": \"1111111\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"dataPengangkutan\": {\r",
+									"        \"id\": 15,\r",
+									"        \"caraAngkut\": \"luat\",\r",
+									"        \"bendera\": \"merah\",\r",
+									"        \"namaPengangkut\": \"Aing\",\r",
+									"        \"nomorVoyFlightPol\": \"159\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"beratDanVolume\": {\r",
+									"        \"id\": 11,\r",
+									"        \"beratMuatan\": \"123.12\",\r",
+									"        \"beratKapalDenganMuatan\": \"123.33\",\r",
+									"        \"volume\": \"111.22\",\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"    \"tempatPenimbunan\": {\r",
+									"        \"id\": 9,\r",
+									"        \"tempatPenimbunan\": \"LAU\",\r",
+									"        \"perkiraanTanggalPengeluaran\": \"01-12-2020\",\r",
+									"        \"isTempatPenimbunan\": true,\r",
+									"        \"reportId\": 1\r",
+									"    },\r",
+									"}\r",
+									"\r",
+									"const hasilEncrypt = AESEncrypt(payload);\r",
+									"pm.globals.set(\"dataDokumen\", hasilEncrypt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "dataDokumen",
+									"value": "{{dataDokumen}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/report/dokumen/update/pemasukan/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"report",
+								"dokumen",
+								"update",
+								"pemasukan",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Report",
+			"item": [
+				{
+					"name": "Save Report",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const configSecurity = {\r",
+									"  mode: CryptoJS.mode.ECB,\r",
+									"  padding: CryptoJS.pad.Pkcs7\r",
+									"};\r",
+									"const keyPromise = CryptoJS.enc.Utf8.parse(\"NPL40i+77do/9/anInPVsVTgQuuuMlHnw+kDO8F5wlq0KisLQLSIvcdmkJRKZjp4lB5z3PYuFQvWfxSIB3eE02vVvqKLJnY5mlHsN/rc87RDfrGYhEsN1Gxy6pwTueQCnitKSA==\");\r",
+									"const AESEncrypt = data => (CryptoJS.AES.encrypt(JSON.stringify(data), keyPromise, configSecurity).toString());\r",
+									"const payload = {\r",
+									"    \"jenisPemberitahuan\": \"Pemasukan\",\r",
+									"    \"diAjukanDiKantor\": \"Tanjungpinang\",\r",
+									"    \"jenisDokumenBC\": \"BC 1.6\"\r",
+									"}\r",
+									"\r",
+									"const hasilEncrypt = AESEncrypt(payload);\r",
+									"pm.globals.set(\"dataReport\", hasilEncrypt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "dataReport",
+									"value": "{{dataReport}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/report/save",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"report",
+								"save"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Report",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/report/get/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"report",
+								"get",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Barang",
+			"item": [
+				{
+					"name": "Save Barang",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const configSecurity = {\r",
+									"  mode: CryptoJS.mode.ECB,\r",
+									"  padding: CryptoJS.pad.Pkcs7\r",
+									"};\r",
+									"const keyPromise = CryptoJS.enc.Utf8.parse(\"NPL40i+77do/9/anInPVsVTgQuuuMlHnw+kDO8F5wlq0KisLQLSIvcdmkJRKZjp4lB5z3PYuFQvWfxSIB3eE02vVvqKLJnY5mlHsN/rc87RDfrGYhEsN1Gxy6pwTueQCnitKSA==\");\r",
+									"const AESEncrypt = data => (CryptoJS.AES.encrypt(JSON.stringify(data), keyPromise, configSecurity).toString());\r",
+									"const payload = {\r",
+									"    \"reportId\": 1,\r",
+									"    \"listDataBarang\": [\r",
+									"        {\r",
+									"            \"kodeBarang\": \"ABC-123\",\r",
+									"            \"namaBarang\": \"Meja\",\r",
+									"            \"satuanKemasan\": \"Kilo\",\r",
+									"            \"stock\": 100,\r",
+									"            \"posTarif\": \"GGH\",\r",
+									"            \"uraian\": \"-\",\r",
+									"            \"nettoBruttoVolume\": 20.2,\r",
+									"            \"bm\": 100.10,\r",
+									"            \"ppn\": 21.44,\r",
+									"            \"ppnbm\": 99.9,\r",
+									"            \"cukai\": 11.11\r",
+									"        },\r",
+									"        {\r",
+									"            \"kodeBarang\": \"ALM-009\",\r",
+									"            \"namaBarang\": \"Kursi\",\r",
+									"            \"satuanKemasan\": \"Kilo\",\r",
+									"            \"stock\": 54,\r",
+									"            \"posTarif\": \"III\",\r",
+									"            \"uraian\": \"Kursi Kayu \",\r",
+									"            \"nettoBruttoVolume\": 20.20,\r",
+									"            \"bm\": 100.100,\r",
+									"            \"ppn\": 21.00,\r",
+									"            \"ppnbm\": 91.99,\r",
+									"            \"cukai\": 199.11\r",
+									"        },\r",
+									"    ]\r",
+									"}\r",
+									"\r",
+									"const hasilEncrypt = AESEncrypt(payload);\r",
+									"pm.globals.set(\"dataBarang\", hasilEncrypt);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "dataBarang",
+									"value": "{{dataBarang}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/report/barang/save",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"report",
+								"barang",
+								"save"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Utility",
+			"item": [
+				{
+					"name": "Decrypt",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "data",
+									"value": "6zY9xkRHMloWL2yKnzOg1O3ziFKNXkh6JFdWs9T72ieTw99ILQZtbozCWH74g4GNvcs9ccwGWsRRpI21TiiTlgysuDfVbnsU+AiYnYmpsXkhRDwwwZ0zUW0yKVu3oIzjxxdllrPgnJuqLnOo4ROgaCkByRb0rFVtsGFDfuJHsrTEdzj3pY4fvJGkCcP4SJYD",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/ping/decrypt",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"ping",
+								"decrypt"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Decrypt",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "data",
+											"value": "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",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/ping/decrypt",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"ping",
+										"decrypt"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "3155"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"c53-w8yPUS1H+7k2Pl26QKw74KWOwuo\""
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 15 Nov 2021 07:40:35 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"jenisPemberitahuan\": \"Import\",\n    \"diAjukanDiKantor\": \"Tanjungpinang\",\n    \"jenisDokumenBC\": \"BC 1.6\",\n    \"userId\": 2,\n    \"dokumenPemasukan\": {\n        \"id\": 68,\n        \"reportId\": 1,\n        \"nomorDokumenPemasukan\": \"123/123.78\",\n        \"tanggalDokumenPemasukan\": \"2020-12-09T17:00:00.000Z\"\n    },\n    \"dokumenTambahan\": {\n        \"id\": 67,\n        \"nomorBC10\": \"123/123/4\",\n        \"nomorBC11\": \"332/223.123\",\n        \"nomorBL\": \"\",\n        \"tanggalBC10\": \"22-09-2020\",\n        \"tanggalBC11\": \"10-05-2020\",\n        \"tanggalBL\": \"04-07-2020\",\n        \"reportId\": 1\n    },\n    \"dataPelabuhan\": {\n        \"id\": 55,\n        \"pelabuhan\": \"Tanjung Pinang --\",\n        \"status\": \"masuk\",\n        \"reportId\": 1\n    },\n    \"dataKapal\": {\n        \"id\": 54,\n        \"voyageKapal\": \"ASD-Kapal\",\n        \"benderaKapal\": \"IDN\",\n        \"namaKapal\": \"Boieng\",\n        \"tanggalKedatangan\": \"2019-12-31T17:00:00.000Z\",\n        \"tanggalKeberangkatan\": \"2019-05-10T17:00:00.000Z\",\n        \"reportId\": 1\n    },\n    \"identitasBarang\": {\n        \"id\": 47,\n        \"negaraAsal\": \"IDN\",\n        \"jenisBarang\": \"Padat\",\n        \"nilaiBarang\": \"123.90\",\n        \"caraPembayaran\": \"Transaksi\",\n        \"asalBarang\": \"-\",\n        \"jumlahBarang\": 11,\n        \"reportId\": 1,\n        \"jumlahKemasan\": 4\n    },\n    \"penjualBarang\": {\n        \"id\": 44,\n        \"jenisIdentitasPenjual\": \"NPWP\",\n        \"namaPenjual\": \"AR\",\n        \"nomorIdentitasPenjual\": \"1111.111\",\n        \"alamatPenjual\": \"address -- Left\",\n        \"reportId\": 1\n    },\n    \"pengirimBarang\": {\n        \"id\": 43,\n        \"jenisIdentitasPengirim\": \"NPWP\",\n        \"namaPengirim\": \"AR1\",\n        \"nomorIdentitasPengirim\": \"111.2..2\",\n        \"alamatPengirim\": \"Perfect Binary Tree\",\n        \"reportId\": 1\n    },\n    \"pengusahaPLB\": {\n        \"id\": 15,\n        \"jenisIdentitasPengusahaPLB\": \"NPWP\",\n        \"namaPengusahaPLB\": \"ART\",\n        \"nomorIdentitasPengusahaPLB\": \"44.2.3122\",\n        \"alamatPengusahaPLB\": \"Bidirectional Graph\",\n        \"reportId\": 1\n    },\n    \"pembeliBarang\": {\n        \"id\": 2,\n        \"jenisIdentitasPembeli\": \"NPWP\",\n        \"namaPembeli\": \"ARTA\",\n        \"nomorIdentitasPembeli\": \"11.22.34.1\",\n        \"alamatPembeli\": \"Full Binary Tree\",\n        \"reportId\": 1\n    },\n    \"ppjk\": {\n        \"id\": 14,\n        \"jenisIdentitasPpjk\": \"NPWP\",\n        \"namaPpjk\": \"Anonym\",\n        \"nomorIdentitasPpjk\": \"123.123/1\",\n        \"alamatPpjk\": \"BFS\",\n        \"reportId\": 1\n    },\n    \"mataUang\": {\n        \"id\": 12,\n        \"valuta\": \"USD\",\n        \"freight\": 4,\n        \"ndbpmKurs\": \"14299.66\",\n        \"cif\": \"100000.99\",\n        \"transaksiLainnya\": \"-\",\n        \"hargaPenyerahan\": \"1111111\",\n        \"reportId\": 1\n    },\n    \"dataPengangkutan\": {\n        \"id\": 11,\n        \"caraAngkut\": \"luat\",\n        \"bendera\": \"merah\",\n        \"namaPengangkut\": \"Aing\",\n        \"nomorVoyFlightPol\": \"159\",\n        \"reportId\": 1\n    },\n    \"beratDanVolume\": {\n        \"id\": 7,\n        \"beratMuatan\": \"123.12\",\n        \"beratKapalDenganMuatan\": \"123.33\",\n        \"volume\": \"111.22\",\n        \"reportId\": 1\n    },\n    \"tempatPenimbunan\": {\n        \"id\": 5,\n        \"tempatPenimbunan\": \"LAU\",\n        \"perkiraanTanggalPengeluaran\": \"2020-11-30T17:00:00.000Z\",\n        \"isTempatPenimbunan\": true,\n        \"reportId\": 1\n    },\n    \"dataBarangs\": [\n        {\n            \"id\": 1,\n            \"kodeBarang\": null,\n            \"namaBarang\": null,\n            \"uraian\": \"asdasdasdasd\",\n            \"nettoBruttoVolume\": \"1\",\n            \"satuanKemasan\": null,\n            \"stock\": null,\n            \"posTarif\": \"posTarif\",\n            \"bm\": \"12121212\",\n            \"ppn\": \"12212\",\n            \"ppnbm\": \"121212\",\n            \"cukai\": \"12121\",\n            \"reportId\": 1\n        },\n        {\n            \"id\": 2,\n            \"kodeBarang\": null,\n            \"namaBarang\": null,\n            \"uraian\": \"asdasdasdasd\",\n            \"nettoBruttoVolume\": \"1\",\n            \"satuanKemasan\": null,\n            \"stock\": null,\n            \"posTarif\": \"posTarif\",\n            \"bm\": \"12121212\",\n            \"ppn\": \"12212\",\n            \"ppnbm\": \"121212\",\n            \"cukai\": \"12121\",\n            \"reportId\": 1\n        },\n        {\n            \"id\": 3,\n            \"kodeBarang\": \"ABC-123\",\n            \"namaBarang\": \"Meja\",\n            \"uraian\": \"-\",\n            \"nettoBruttoVolume\": \"20.2\",\n            \"satuanKemasan\": \"Kilo\",\n            \"stock\": \"100\",\n            \"posTarif\": \"GGH\",\n            \"bm\": \"100.1\",\n            \"ppn\": \"21.44\",\n            \"ppnbm\": \"99.9\",\n            \"cukai\": \"11.11\",\n            \"reportId\": 1\n        },\n        {\n            \"id\": 4,\n            \"kodeBarang\": \"ALM-009\",\n            \"namaBarang\": \"Kursi\",\n            \"uraian\": \"Kursi Kayu\",\n            \"nettoBruttoVolume\": \"20.2\",\n            \"satuanKemasan\": \"Kilo\",\n            \"stock\": \"54\",\n            \"posTarif\": \"III\",\n            \"bm\": \"100.1\",\n            \"ppn\": \"21\",\n            \"ppnbm\": \"91.99\",\n            \"cukai\": \"199.11\",\n            \"reportId\": 1\n        }\n    ]\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGdtYWlsLmNvbSIsInVzZXJfaWQiOjIsImlhdCI6MTYzNjYwMzk1OH0.6gtI77D58XUfkZy5O5wP4xz-hu_9lkarvCXv1YgBPQc",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:3000"
+		}
+	]
+}

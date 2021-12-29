@@ -84,7 +84,7 @@ const setAssociations = function() {
   barangPO.belongsTo(PO);
 
   // BCF Relation With Purchase Order
-  PO.hasMany(BCF3315, {foreignKey: 'poId'});
+  PO.hasOne(BCF3315, {foreignKey: 'poId'});
   BCF3315.belongsTo(PO, {foreignKey: 'poId'});
 
   // Relation Barang Purchase Order With Data Barang

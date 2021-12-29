@@ -3,15 +3,22 @@ const authentication = require('../../middlewares/authentication');
 
 const { getAllInventory } = require('../../helper/Repository/Inventory');
 const httpStatus = require('../../helper/Httplib');
-const sequelize = require('../../configs/database');
 
 const getViewInventory = async (req, res) => {
     try {
-        const idUser = req.currentUser;
+        
+        const inventory = await getAllInventory(req, req.currentUser);
+        
+        for (const key in inventory) {
+            if (Object.hasOwnProperty.call(inventory, key)) {
+                const element = inventory[key].toJSON();
+                if(element?.dokumenPemasukan?.dokumenPengeluaran){
+                    delete inventory[key];
+                }
+            }
+        }
 
-        const inventory = await getAllInventory(req, idUser);
-        console.log(inventory);
-        return successResponse(res, httpStatus.ok, "", inventory, false);
+        return successResponse(res, httpStatus.ok, "", inventory.flat(), false);
     } catch (error) {
         return errorResponse(res, httpStatus.internalServerError, "Gagal Mengambil Data", []);
     }

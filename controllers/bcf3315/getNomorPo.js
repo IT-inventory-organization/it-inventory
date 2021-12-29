@@ -11,7 +11,7 @@ const getNomorPurchaseOrderBasedUserInfo = async (req, res) => {
 
         const result = await getAllPurchaseOrderForBCF3315(res, isUser, true);
     
-        return successResponse(res, httpStatus.ok, "", result, true);
+        return successResponse(res, httpStatus.ok, "", result.flat(), true);
     } catch (error) {
         console.log(error);
         return errorResponse(res, error.status, "Gagal Mengambil Kapal Penjual");
