@@ -46,6 +46,7 @@ const list = async(req, res) => {
 }
 
 const onCreateValidation = [
+<<<<<<< HEAD
 	body('poId')
 		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
 		.custom(value => {
@@ -55,6 +56,17 @@ const onCreateValidation = [
 			});
 		})
 		.trim(),
+=======
+	// body('nomorPO')
+	// 	.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
+	// 	.custom(value => {
+	// 		return Form3315.findOne({ where: {nomorPo: value} })
+	// 		.then((d) => {
+	// 			if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
+	// 		});
+	// 	})
+	// 	.trim(),
+>>>>>>> 42e9216913a528910152f5b077589bce1a429c4d
 	body('tanggal')
 		.notEmpty().withMessage('kolom tanggal kosong, perlu di isi')
 		.isDate().withMessage('kolom format tanggal salah, perlu di perbaiki')
