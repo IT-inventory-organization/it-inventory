@@ -55,7 +55,7 @@ const listPLB = async(limit, offset, additionalQuery = {}) => {
         // if (!data) throw new NotFoundException("Data Tidak Ditemukan");
         return data;
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         if (error.name == "ReferenceError") {
             throw new ServerFault("Terjadi Kesalahan Pada Server")
         } else {
