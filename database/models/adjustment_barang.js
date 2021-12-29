@@ -27,6 +27,10 @@ const adjustmentBarang = db.define('adjustmentBarang', {
     },
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE'
+  },
+  approval: {
+    type: Sequelize.STRING,
+    allowNull: true,
   }
 
 }, {
