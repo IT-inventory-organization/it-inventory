@@ -94,16 +94,9 @@ const create = async(req, res) => {
         }
 
         const adjustment = await AdjustmentBarang.create(adjustmentItem, { transaction });
-        // const barang = await DataBarang.update({
-        //     stock: sequelize.literal(`stock + ${body.quantity}`)
-        // }, {
-        //     where: {
-        //         id: body.dataBarangId
-        //     }
-        // });
 
         if (transaction) await transaction.commit();
-        return successResponse(res, Http.ok, "Success", 'asd', false);
+        return successResponse(res, Http.ok, "Success", adjustment, false);
     } catch (error) {
         const {file} = req;
         

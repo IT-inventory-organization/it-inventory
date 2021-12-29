@@ -41,20 +41,19 @@ const list = async(req, res) => {
 		});
 		return successResponse(res, Http.ok, "Success", form3315, true);
     } catch (error) {
-        console.error(error);
         return errorResponse(res, Http.internalServerError, "terjadi kesalahan server");
     }
 }
 
 const onCreateValidation = [
-	body('nomorPO')
+	body('poId')
 		.notEmpty().withMessage('kolom nomor PO kosong, perlu di isi')
-		// .custom(value => {
-		// 	return Form3315.findOne({ where: {nomorPo: value} })
-		// 	.then((d) => {
-		// 		if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
-		// 	});
-		// })
+		.custom(value => {
+			return Form3315.findOne({ where: {poId: value} })
+			.then((d) => {
+				if(d) return Promise.reject('kolom nomor po duplikat, perlu perbaikan');
+			});
+		})
 		.trim(),
 	body('tanggal')
 		.notEmpty().withMessage('kolom tanggal kosong, perlu di isi')
@@ -115,9 +114,6 @@ const onCreateValidation = [
 		,
 	body('callSign')
 		.notEmpty().withMessage('kolom call sign kosong, perlu di isi')
-		.trim(),
-	body('nomor')
-		.notEmpty().withMessage('kolom nomor kosong, perlu di isi')
 		.trim()
 ];
 
