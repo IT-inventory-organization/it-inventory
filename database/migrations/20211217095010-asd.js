@@ -20,6 +20,11 @@ module.exports = {
       // await queryInterface.removeColumn('bcf3315', 'perkiraanJUmlah'),
       // await queryInterface.removeColumn('bcf3315', 'satuan'),
       await queryInterface.changeColumn('bcf3315', 'nomorbcf3314', {
+        type: Sequelize.STRING
+        // defaultValue: 'menunggu',
+        // allowNull: true
+      }),
+      await queryInterface.changeColumn('bcf3315', 'nomorbcf3314', {
         type: Sequelize.STRING,
         defaultValue: 'menunggu',
         allowNull: false

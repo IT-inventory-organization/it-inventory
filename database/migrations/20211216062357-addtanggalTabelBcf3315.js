@@ -11,9 +11,9 @@ module.exports = {
      */
     const promises = [
       await queryInterface.addColumn('bcf3315', 'status', {type: Sequelize.STRING}),
-      await queryInterface.addColumn('bcf3315', 'nomorbcf3314', {
-        type: Sequelize.DATE
-      })
+      // await queryInterface.addColumn('bcf3315', 'nomorbcf3314', {
+      //   type: Sequelize.STRING
+      // })
     ]
     return Promise.all(promises)
   },

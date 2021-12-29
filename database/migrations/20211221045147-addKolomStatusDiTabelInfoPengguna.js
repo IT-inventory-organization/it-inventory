@@ -9,10 +9,10 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
      const promises = [
-      await queryInterface.addColumn('infoPengguna', 'status', {
-        type: Sequelize.ENUM('ACTIVE', 'INACTIVE'),
-        defaultValue: 'ACTIVE'
-      })
+      // await queryInterface.addColumn('infoPengguna', 'status', {
+      //   type: Sequelize.ENUM('ACTIVE', 'INACTIVE'),
+      //   defaultValue: 'ACTIVE'
+      // })
     ];
     return Promise.all(promises)
   },

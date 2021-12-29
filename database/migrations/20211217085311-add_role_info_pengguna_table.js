@@ -9,14 +9,14 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
      const promises = [
-      await queryInterface.addColumn('infoPengguna', 'roleEnum', {
-        type: Sequelize.ENUM('SUPER_USER', 'ADMIN', 'BC', 'PLB'),
-        defaultValue: 'ADMIN'
-      }),
-      await queryInterface.addColumn('infoPengguna', 'status', {
-        type: Sequelize.ENUM('active', 'inactive'),
-        defaultValue: 'active'
-      })
+      // await queryInterface.addColumn('infoPengguna', 'roleEnum', {
+      //   type: Sequelize.ENUM('SUPER_USER', 'ADMIN', 'BC', 'PLB'),
+      //   defaultValue: 'ADMIN'
+      // }),
+      // await queryInterface.addColumn('infoPengguna', 'status', {
+      //   type: Sequelize.ENUM('active', 'inactive'),
+      //   defaultValue: 'active'
+      // })
     ];
     return Promise.all(promises)
   },
