@@ -1,6 +1,19 @@
+const { BPurchaseOrder } = require("../../helper/bundlePurchaseORder");
 const authentication = require("../../middlewares/authentication");
-const { addPurchaseOrder } = require("./post");
+const VPurchaseOrder = require("../../middlewares/validationPurchaseOrder");
+const { validationResponse } = require("../../middlewares/validationResponse");
+const { addPurchaseOrder } = require("./create");
+const { viewPurchaseOrder, viewOnePurchaseOrder } = require("./view");
 
 module.exports = (routes) => {
-  routes.post("/", authentication, addPurchaseOrder);
+  routes.get("/", authentication, viewPurchaseOrder);
+  routes.get("/:idPo", authentication, viewOnePurchaseOrder);
+  routes.post(
+    "/",
+    authentication,
+    BPurchaseOrder,
+    VPurchaseOrder,
+    validationResponse,
+    addPurchaseOrder
+  );
 };

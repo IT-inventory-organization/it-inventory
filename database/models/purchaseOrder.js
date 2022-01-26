@@ -13,7 +13,7 @@ const PurchaseOrder = db.define(
       type: Sequelize.DATEONLY,
       allowNull: false,
     },
-    kapalPenjual: {
+    supplier: {
       type: Sequelize.STRING,
       allowNull: false,
     },
@@ -25,16 +25,20 @@ const PurchaseOrder = db.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
-    // reportId: {
-    //   allowNull: false,
-    //   type: Sequelize.INTEGER,
-    //   references: {
-    //     model: "Reports",
-    //     key: "id",
-    //   },
-    //   onDelete: "cascade",
-    //   onUpdate: "cascade",
-    // },
+    isDelete: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    userId: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      onDelete: "no action",
+      onUpdate: "cascade",
+      allowNull: false,
+    },
   },
   {
     tableName: "PurchaseOrder",

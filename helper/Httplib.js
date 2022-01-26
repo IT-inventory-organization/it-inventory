@@ -8,6 +8,7 @@ const httpStatus = {
   accepted: 202,
   unauthorized: 403,
   noContent: 204,
-}
+  conflict: 409,
+};
 
-module.exports = httpStatus
+module.exports = httpStatus;

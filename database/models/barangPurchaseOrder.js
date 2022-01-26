@@ -14,6 +14,7 @@ const BarangPurchaseOrder = db.define(
       },
       onDelete: "no action",
       onUpdate: "cascade",
+      allowNull: false,
     },
     quantity: {
       type: Sequelize.DECIMAL,
@@ -33,8 +34,13 @@ const BarangPurchaseOrder = db.define(
         model: "PurchaseOrder",
         key: "id",
       },
-      onUpdate: "cascade",
+      onUpdate: "no action",
       onDelete: "cascade",
+      allowNull: false,
+    },
+    isDelete: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
     },
   },
   {

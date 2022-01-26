@@ -101,6 +101,9 @@ const setAssociations = function () {
 
   PurchaseOrder.hasMany(BarangPurchaseOrder, { foreignKey: "idPo" });
   BarangPurchaseOrder.belongsTo(PurchaseOrder, { foreignKey: "id" });
+
+  User.hasMany(PurchaseOrder, { foreignKey: "userId" });
+  PurchaseOrder.belongsTo(User, { foreignKey: "id" });
 };
 
 module.exports = setAssociations;

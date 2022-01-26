@@ -97,7 +97,6 @@ const updateReport = async (id, data, req) => {
     //     if(resultToCheck.length !== listBarangOfExistingData.length){
     //         throw new Error('Failed To Update Report')
     //     }
-
     // }
 
     const checkForExistingReport = await Report.findOne({
@@ -197,7 +196,7 @@ const deleteReport = async (idType, req) => {
     if (!foundExistingReport) {
       throw new Error(`Data Not Found, Delete failed`);
     }
-
+    /**
     const jenisPemberitahuan = foundExistingReport.toJSON().jenisPemberitahuan;
 
     const foundlistBarang = await reportListBarang.findAll({
@@ -208,7 +207,7 @@ const deleteReport = async (idType, req) => {
     if (!foundlistBarang) {
       throw new Error(`Data Not Found, Delete Failed`);
     }
-    let resultsChange = [];
+    const resultsChange = [];
 
     if (jenisPemberitahuan === "Export") {
       for (let i = 0; i < foundlistBarang.length; i++) {
@@ -226,6 +225,7 @@ const deleteReport = async (idType, req) => {
     } else if (jenisPemberitahuan === "Import") {
       for (let i = 0; i < foundlistBarang.length; i++) {
         const listBarang = foundlistBarang[i].toJSON();
+        console.log(listBarang, "before");
         const Dec = await Barang.decrement("stock", {
           by: listBarang.quantity,
           where: {
@@ -234,6 +234,7 @@ const deleteReport = async (idType, req) => {
           },
           transaction,
         });
+        console.log(Dec[0][0][0], "after");
         if (Dec[0][0][0].stock < 0) {
           throw new Error("Stock Reach Minus, Delete Failed");
         }
@@ -244,7 +245,7 @@ const deleteReport = async (idType, req) => {
     if (resultsChange.length !== foundlistBarang.length) {
       throw new Error("Failed Delete Report");
     }
-
+    */
     const result = await Report.update(
       {
         isDelete: true,
