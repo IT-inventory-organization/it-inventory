@@ -9,9 +9,7 @@ const checkFormat = (value) => {
 };
 
 const dateFormat = (value) => {
-  const regex = new RegExp(
-    /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d{2}|3[01])$/
-  );
+  const regex = new RegExp(/^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/);
 
   if (!regex.test(value)) {
     throw Error(`Date Format is Incorrect, Format Exmaple: yyyy-mm-dd`);

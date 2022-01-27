@@ -1,3 +1,4 @@
+const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
 const PurchaseOrder = require("../../database/models/purchaseOrder");
 const httpStatus = require("../Httplib");
 const { errorResponse } = require("../Response");
@@ -55,6 +56,7 @@ const deletePurchaseOrder = async (
       {
         where: {
           id: idPurchaseOrder,
+          userId: req.currentUser,
         },
         transaction: transaction,
         returning: true,

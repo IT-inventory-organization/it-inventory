@@ -7,6 +7,9 @@ const VPurchaseOrder = [
     .notEmpty()
     .withMessage(`"No. Purchase Order" Is Required`)
     .custom((value, { req }) => {
+      if (req.method === "PUT") {
+        return Promise.resolve();
+      }
       return PurchaseOrder.findOne({ where: { nomorPO: value } }).then((d) => {
         if (d) {
           return Promise.reject(`No. Purchase Order Already Exists`);

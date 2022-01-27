@@ -10,12 +10,11 @@ const addPurchaseOrder = async (req, res) => {
   let transaction = null;
   try {
     const { BarangPo, ...data } = req.body.DataToInput;
-    // console.log(data, "asd");
-    // return;
+
     transaction = await sequelize.transaction();
 
     const result = await createPurchaseOrder(req, res, data, transaction);
-    console.log(result);
+
     if (!result) {
       await transaction.rollback();
       return errorResponse(

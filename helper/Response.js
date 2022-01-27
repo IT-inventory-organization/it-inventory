@@ -1,30 +1,28 @@
-const Encryption = require('./encription');
+const Encryption = require("./encription");
 
 const errorResponse = (res, status, message, data) => {
   return res.status(status).json({
-    success: false, 
+    success: false,
     message,
-    data: data || null
-  })
-}
+    data: data || null,
+  });
+};
 /**
- * TODO: Create Encrypt Data 
+ * TODO: Create Encrypt Data
  */
-const successResponse = async (res, status, message, data) => {
-  let EncyptData = null; 
-  if(data != null){
+const successResponse = async (res, status, message, data, encrypt = true) => {
+  let EncyptData = null;
+  if (data != null && encrypt) {
     EncyptData = await Encryption.AESEncrypt(data);
   }
   return res.status(status).json({
-    success: true, 
-    message, 
-    data: EncyptData
-  })
-}
-
-
+    success: true,
+    message,
+    data: encrypt ? EncyptData : data,
+  });
+};
 
 module.exports = {
   errorResponse,
-  successResponse
-}
+  successResponse,
+};

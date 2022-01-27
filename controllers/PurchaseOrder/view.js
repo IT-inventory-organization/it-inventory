@@ -1,3 +1,9 @@
+const { Op } = require("sequelize");
+const Barang = require("../../database/models/barang");
+const {
+  getBarangBaseNoPurchaseOrder,
+  getBarang,
+} = require("../../helper/Barang/view");
 const httpStatus = require("../../helper/Httplib");
 const {
   ViewPurchaseOrder,
@@ -33,7 +39,21 @@ const viewOnePurchaseOrder = async (req, res) => {
   }
 };
 
+const getAllBarang = async (req, res) => {
+  try {
+    const result = await getBarang(req, res);
+    return successResponse(res, httpStatus.ok, "", result);
+  } catch (error) {
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Something's Wrong"
+    );
+  }
+};
+
 module.exports = {
   viewPurchaseOrder,
   viewOnePurchaseOrder,
+  getAllBarang,
 };

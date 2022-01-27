@@ -21,6 +21,8 @@ const Histories = require("./history");
 const reportIdentitasPPJK = require("./identitasppjk");
 const PurchaseOrder = require("./purchaseOrder");
 const BarangPurchaseOrder = require("./barangPurchaseOrder");
+const ReceiveItems = require("./receivedItems");
+const ReceivedItemsQty = require("./receivedItemsQty");
 
 const setAssociations = function () {
   Report.hasOne(reportIdentitasPenerima, { foreignKey: "reportId" });
@@ -104,6 +106,16 @@ const setAssociations = function () {
 
   User.hasMany(PurchaseOrder, { foreignKey: "userId" });
   PurchaseOrder.belongsTo(User, { foreignKey: "id" });
+
+  // Success
+  Barang.hasMany(BarangPurchaseOrder, { foreignKey: "id" });
+  BarangPurchaseOrder.belongsTo(Barang, { foreignKey: "idBarang" });
+
+  PurchaseOrder.hasOne(ReceiveItems, { foreignKey: "idPo" });
+  ReceiveItems.belongsTo(PurchaseOrder, { foreignKey: "id" });
+
+  ReceiveItems.hasOne(ReceivedItemsQty, { foreignKey: "idReceive" });
+  ReceivedItemsQty.belongsTo(ReceiveItems, { foreignKey: "id" });
 };
 
 module.exports = setAssociations;

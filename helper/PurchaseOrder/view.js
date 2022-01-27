@@ -1,3 +1,4 @@
+const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
 const PurchaseOrder = require("../../database/models/purchaseOrder");
 const httpStatus = require("../Httplib");
@@ -30,12 +31,44 @@ const ViewPurchaseOrder = async (req, res) => {
   }
 };
 
-const OnePurchaseOrder = async (req, res, idPo) => {
+const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
   try {
+    if (forUpdate) {
+      return PurchaseOrder.findOne({
+        where: {
+          id: idPo,
+          isDelete: false,
+        },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+        include: [
+          {
+            model: BarangPurchaseOrder,
+            where: {
+              isDelete: false,
+            },
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+            include: [
+              {
+                model: Barang,
+                attributes: ["name", "satuanKemasan"],
+              },
+            ],
+          },
+        ],
+      });
+    }
     return PurchaseOrder.findOne({
+      // logging: console.log,
       where: {
         id: idPo,
         isDelete: false,
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
       },
       include: [
         {
@@ -43,10 +76,25 @@ const OnePurchaseOrder = async (req, res, idPo) => {
           where: {
             isDelete: false,
           },
+          attributes: [
+            "quantity",
+            "hargaSatuan",
+            "jumlah",
+            "id",
+            "idPo",
+            "idBarang",
+          ],
+          include: [
+            {
+              model: Barang,
+              attributes: ["name", "satuanKemasan"],
+            },
+          ],
         },
       ],
     });
   } catch (error) {
+    // console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -55,7 +103,28 @@ const OnePurchaseOrder = async (req, res, idPo) => {
   }
 };
 
+const checkExistingPo = async (req, res, idPo) => {
+  try {
+    const fetch = await PurchaseOrder.findOne({
+      where: {
+        id: idPo,
+        isDelete: false,
+        userId: req.currentUser,
+      },
+    });
+
+    if (fetch) {
+      return;
+    }
+
+    throw new Error("Data Didn't Exist");
+  } catch (error) {
+    return errorResponse(res, httpStatus.notFound, error.message);
+  }
+};
+
 module.exports = {
   ViewPurchaseOrder,
   OnePurchaseOrder,
+  checkExistingPo,
 };
