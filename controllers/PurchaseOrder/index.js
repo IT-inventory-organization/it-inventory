@@ -9,6 +9,7 @@ const {
   viewPurchaseOrder,
   viewOnePurchaseOrder,
   getAllBarang,
+  listPurchaseOrder,
 } = require("./view");
 
 module.exports = (routes) => {
@@ -32,4 +33,6 @@ module.exports = (routes) => {
     validationResponse,
     updatePo
   );
+  routes.get("/get/list/:idPo?", authentication, listPurchaseOrder);
+  // routes.get("/get/list/:idPo", authentication, listPurchaseOrder);
 };

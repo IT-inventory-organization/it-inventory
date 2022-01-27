@@ -111,11 +111,14 @@ const setAssociations = function () {
   Barang.hasMany(BarangPurchaseOrder, { foreignKey: "id" });
   BarangPurchaseOrder.belongsTo(Barang, { foreignKey: "idBarang" });
 
-  PurchaseOrder.hasOne(ReceiveItems, { foreignKey: "idPo" });
-  ReceiveItems.belongsTo(PurchaseOrder, { foreignKey: "id" });
+  PurchaseOrder.hasOne(ReceiveItems, { foreignKey: "id" });
+  ReceiveItems.belongsTo(PurchaseOrder, { foreignKey: "idPo" });
 
-  ReceiveItems.hasOne(ReceivedItemsQty, { foreignKey: "idReceive" });
+  ReceiveItems.hasMany(ReceivedItemsQty, { foreignKey: "idReceive" });
   ReceivedItemsQty.belongsTo(ReceiveItems, { foreignKey: "id" });
+
+  BarangPurchaseOrder.hasOne(ReceivedItemsQty, { foreignKey: "id" });
+  ReceivedItemsQty.belongsTo(BarangPurchaseOrder, { foreignKey: "idBarangPo" });
 };
 
 module.exports = setAssociations;

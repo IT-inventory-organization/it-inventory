@@ -1,13 +1,10 @@
-const { Op } = require("sequelize");
-const Barang = require("../../database/models/barang");
-const {
-  getBarangBaseNoPurchaseOrder,
-  getBarang,
-} = require("../../helper/Barang/view");
+const { getBarang } = require("../../helper/Barang/view");
 const httpStatus = require("../../helper/Httplib");
 const {
   ViewPurchaseOrder,
   OnePurchaseOrder,
+  listOfPurchaseOrder,
+  fetchForReceiveItem,
 } = require("../../helper/PurchaseOrder/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
 
@@ -52,8 +49,57 @@ const getAllBarang = async (req, res) => {
   }
 };
 
+const listPurchaseOrder = async (req, res) => {
+  try {
+    const result = await listOfPurchaseOrder(req, res);
+
+    const listPurchaseOrderMap = result.map((x) => {
+      const iterator = x.toJSON();
+      console.log(iterator);
+      if (iterator.id === req.params.idPo || !iterator?.ReceiveItem) {
+        return {
+          nomorPO: iterator.nomorPO,
+          id: iterator.id,
+        };
+      }
+    });
+
+    return successResponse(
+      res,
+      httpStatus.ok,
+      "",
+      listPurchaseOrderMap.flat(),
+      false
+    );
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Ferhc List Of Purchase Order"
+    );
+  }
+};
+
+const fetchPoForReceiveItem = async (req, res) => {
+  try {
+    const { idPo } = req.params;
+    const result = await fetchForReceiveItem(req, res, idPo);
+
+    return successResponse(res, httpStatus.ok, "", result);
+  } catch (error) {
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed Fetching Po"
+    );
+  }
+};
+
 module.exports = {
   viewPurchaseOrder,
   viewOnePurchaseOrder,
   getAllBarang,
+  listPurchaseOrder,
+  fetchPoForReceiveItem,
 };

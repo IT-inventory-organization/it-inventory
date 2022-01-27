@@ -1,6 +1,7 @@
 const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
 const PurchaseOrder = require("../../database/models/purchaseOrder");
+const ReceiveItems = require("../../database/models/receivedItems");
 const httpStatus = require("../Httplib");
 const { errorResponse } = require("../Response");
 
@@ -54,6 +55,9 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
             include: [
               {
                 model: Barang,
+                where: {
+                  isDelete: false,
+                },
                 attributes: ["name", "satuanKemasan"],
               },
             ],
@@ -123,8 +127,79 @@ const checkExistingPo = async (req, res, idPo) => {
   }
 };
 
+const fetchForReceiveItem = async (req, res, idPo) => {
+  try {
+    return PurchaseOrder.findOne({
+      where: {
+        id: idPo,
+        isDelete: false,
+      },
+      attributes: ["idPo", "supplier", "nomorPO"],
+      include: [
+        {
+          model: BarangPurchaseOrder,
+          where: {
+            isDelete: false,
+          },
+          attributes: ["id", "hargaSatuan", "quantity"],
+          include: [
+            {
+              model: Barang,
+              attributes: ["name", "satuanKemasan"],
+            },
+          ],
+        },
+      ],
+    });
+  } catch (error) {
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Fetch Purchase Order"
+    );
+  }
+};
+
+const listOfPurchaseOrder = async (req, res) => {
+  try {
+    return PurchaseOrder.findAll({
+      where: {
+        userId: req.currentUser,
+        isDelete: false,
+      },
+      attributes: ["nomorPO", "id"],
+      include: [
+        {
+          model: BarangPurchaseOrder,
+          where: {
+            isDelete: false,
+          },
+          attributes: [],
+        },
+        {
+          model: ReceiveItems,
+          where: {
+            isDelete: false,
+          },
+          required: false,
+        },
+      ],
+    });
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Fetch List Purchase Order"
+      // error
+    );
+  }
+};
+
 module.exports = {
   ViewPurchaseOrder,
   OnePurchaseOrder,
   checkExistingPo,
+  fetchForReceiveItem,
+  listOfPurchaseOrder,
 };

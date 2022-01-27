@@ -19,6 +19,20 @@ const ReceivedItemsQty = db.define(
       type: Sequelize.DECIMAL,
       allowNull: false,
     },
+    idBarangPo: {
+      type: Sequelize.INTEGER,
+      references: {
+        model: "BarangPurchaseOrder",
+        key: "id",
+      },
+      onUpdate: "cascade",
+      onDelete: "cascade",
+      allowNull: false,
+    },
+    isDelete: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     tableName: "ReceivedItemsQty",

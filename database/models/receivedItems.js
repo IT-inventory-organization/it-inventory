@@ -33,6 +33,14 @@ const ReceiveItems = db.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
+    noReceive: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    isDelete: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     tableName: "ReceiveItems",
