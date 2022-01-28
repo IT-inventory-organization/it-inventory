@@ -658,17 +658,13 @@ const getPerTableBarangDokumen = async (
 
 const getOneSpecificReport = async (req, id) => {
   try {
-    if (!(await authorization(Report, id, req, false))) {
-      throw new Error(`Users Is Not Authorized`);
-    }
-    const result = await Report.findOne({
+    return Report.findOne({
       where: {
         id: id,
         isDelete: false,
         userId: req.currentUser,
       },
     });
-    return result;
   } catch (error) {
     throw error;
   }

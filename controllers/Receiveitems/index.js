@@ -5,9 +5,10 @@ const { validationResponse } = require("../../middlewares/validationResponse");
 const { addReceiveItems } = require("./create");
 const { deleteReceiveItem } = require("./delete");
 const { updateReceiveItem } = require("./update");
-const { fetchReceiveItemForUpdate } = require("./view");
+const { fetchReceiveItemForUpdate, listReceiveItem } = require("./view");
 
 module.exports = (routes) => {
+  routes.get("/", authentication, listReceiveItem);
   routes.post(
     "/",
     authentication,

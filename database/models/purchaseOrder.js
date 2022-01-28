@@ -15,7 +15,7 @@ const PurchaseOrder = db.define(
     },
     supplier: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     total: {
       type: Sequelize.DECIMAL,
@@ -38,6 +38,16 @@ const PurchaseOrder = db.define(
       onDelete: "no action",
       onUpdate: "cascade",
       allowNull: false,
+    },
+    idContactCard: {
+      type: Sequelize.STRING,
+      allowNull: true,
+      references: {
+        model: "CardList",
+        key: "ID",
+      },
+      onDelete: "no action",
+      onUpdate: "cascade",
     },
   },
   {

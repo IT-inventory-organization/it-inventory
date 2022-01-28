@@ -23,6 +23,7 @@ const PurchaseOrder = require("./purchaseOrder");
 const BarangPurchaseOrder = require("./barangPurchaseOrder");
 const ReceiveItems = require("./receivedItems");
 const ReceivedItemsQty = require("./receivedItemsQty");
+const CardList = require("./cardList");
 
 const setAssociations = function () {
   Report.hasOne(reportIdentitasPenerima, { foreignKey: "reportId" });
@@ -113,6 +114,9 @@ const setAssociations = function () {
 
   PurchaseOrder.hasOne(ReceiveItems, { foreignKey: "id" });
   ReceiveItems.belongsTo(PurchaseOrder, { foreignKey: "idPo" });
+
+  CardList.hasOne(PurchaseOrder, { foreignKey: "idContactCard" });
+  PurchaseOrder.belongsTo(CardList, { foreignKey: "idContactCard" });
 
   ReceiveItems.hasMany(ReceivedItemsQty, { foreignKey: "idReceive" });
   ReceivedItemsQty.belongsTo(ReceiveItems, { foreignKey: "id" });

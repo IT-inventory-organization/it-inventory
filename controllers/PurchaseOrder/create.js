@@ -28,7 +28,11 @@ const addPurchaseOrder = async (req, res) => {
 
     for (const iterator of BarangPo) {
       iterator.idPo = result.id;
-      // console.log(iterator);
+
+      if (iterator.id) {
+        delete iterator.id;
+      }
+
       const resultItemPo = await createBarangPurchaseOrder(
         req,
         res,

@@ -3,51 +3,52 @@ const reportListBarang = require("../../database/models/listbarang");
 const Report = require("../../database/models/report");
 const authorization = require("../authorization");
 const Barang = require("../../database/models/barang");
+const { errorResponse } = require("../Response");
+const { Op } = require("sequelize");
 
 const createListBarang = async (data, transaction = null, reportId = null) => {
   try {
-    const found = await Barang.findOne({
-      where: {
-        id: data.idBarang,
-      },
-    });
+    // const found = await Barang.findOne({
+    //   where: {
+    //     id: data.idBarang,
+    //   },
+    // });
 
-    if (!found) {
-      throw new Error(`Data Not Found`);
-    }
+    // if (!found) {
+    //   throw new Error(`Data Not Found`);
+    // }
 
-    const foundR = await Report.findOne({
-      where: {
-        id: reportId,
-      },
-    });
+    // const foundR = await Report.findOne({
+    //   where: {
+    //     id: reportId,
+    //   },
+    // });
 
-    if (!foundR) {
-      throw new Error(`Data Not Found`);
-    }
+    // if (!foundR) {
+    //   throw new Error(`Data Not Found`);
+    // }
 
-    const jenisPemberitahuan = foundR.toJSON().jenisPemberitahuan;
+    // const jenisPemberitahuan = foundR.toJSON().jenisPemberitahuan;
 
-    const qty = found.toJSON().stock;
+    // const qty = found.toJSON().stock;
 
-    if (/(export)/gi.test(jenisPemberitahuan)) {
-      if (data.quantity > qty) {
-        return {
-          error: `Stock ${found.name} Cannot Lower Then Quantity`,
-        };
-      }
-    }
+    // if (/(export)/gi.test(jenisPemberitahuan)) {
+    //   if (data.quantity > qty) {
+    //     return {
+    //       error: `Stock ${found.name} Cannot Lower Then Quantity`,
+    //     };
+    //   }
+    // }
 
-    const result = await reportListBarang.create(data, {
+    return reportListBarang.create(data, {
       transaction: transaction,
       returning: true,
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
     });
-
-    return result;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
@@ -77,37 +78,39 @@ const updateListBarang = async (
   transaction = null
 ) => {
   try {
-    const result = await reportListBarang.update(data, {
+    return reportListBarang.update(data, {
       where: {
         id: idToUpdate,
       },
       returning: returning,
       transaction: transaction,
     });
-    return result;
   } catch (error) {
     throw error;
   }
 };
 
-const softDeleteListBarang = async (idReport, req, transaction = null) => {
+const softDeleteListBarang = async (
+  idReport,
+  req,
+  transaction = null,
+  exception = []
+) => {
   try {
-    if (!(await authorization(reportListBarang, idReport, req, true))) {
-      throw new Error(`User Is Not Authorized To Access Data`);
-    }
-    // return;
-    const result = await reportListBarang.update(
+    return reportListBarang.update(
       {
         isDelete: true,
       },
       {
         where: {
           reportId: idReport,
+          id: {
+            [Op.notIn]: exception,
+          },
         },
         transaction: transaction,
       }
     );
-    return result;
   } catch (error) {
     throw error;
   }

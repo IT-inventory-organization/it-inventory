@@ -2,6 +2,24 @@ const { body } = require("express-validator");
 const PurchaseOrder = require("../database/models/purchaseOrder");
 const { dateFormat } = require("../helper/checkDateFormat");
 const VPurchaseOrder = [
+  body("DataToInput.idContactCard")
+    .trim()
+    .notEmpty()
+    .withMessage("Select A Supplier From this Purchase Order")
+    .custom((value, { req }) => {
+      if (req.method === "PUT") {
+        return Promise.resolve();
+      }
+      return PurchaseOrder.findOne({ where: { idContactCard: value } }).then(
+        (d) => {
+          if (d) {
+            return Promise.reject(
+              "Some of Purchase Order Has Selected This Supplier, Please Choose Another One"
+            );
+          }
+        }
+      );
+    }),
   body("DataToInput.nomorPO")
     .trim()
     .notEmpty()
@@ -22,6 +40,7 @@ const VPurchaseOrder = [
     .withMessage(`"Tanggal" Is Required`)
     .custom(dateFormat),
   body("DataToInput.supplier")
+    .optional()
     .trim()
     .notEmpty()
     .withMessage(`"Supplier" Is Required`),

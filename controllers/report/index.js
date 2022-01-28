@@ -79,6 +79,13 @@ const { createUserActivity } = require("../../helper/UserActivity");
 const { bundleReport } = require("../../helper/bundleReport");
 const { createDataLartas } = require("../../helper/DataLartas");
 const { createPPJK } = require("../../helper/PPJK");
+const { insertHistoryBarang } = require("../../helper/Histories/barang");
+const {
+  InfoReport,
+  Description,
+  StatsItem,
+  ActivityUser,
+} = require("../../helper/Activity.interface");
 
 /**
  * Complete
@@ -308,20 +315,40 @@ const addDataBarang = async (req, res) => {
       return errorResponse(res, Http.badRequest, "Report Not Found");
     }
 
+    const ReportInfo = found.toJSON().jenisPemberitahuan;
+
     // Loop Dengan Async
     for (let index = 0; index < listDataBarang.length; index++) {
-      let res = await createListBarang(
+      const result = await createListBarang(
         listDataBarang[index],
         transaction,
         reportId
       );
 
-      if (res.error) {
-        return errorResponse(res, Http.badRequest, res.error);
+      if (result.error) {
+        return errorResponse(res, Http.badRequest, result.error);
       }
 
-      // await updateStockItem(req, listDataBarang[index].idBarang, null, listDataBarang[index].quantity, typeNotification, transaction);
-      promises.push(res);
+      const desc =
+        ReportInfo === InfoReport.IN ? Description.ADD : Description.MINUS;
+      const stats =
+        ReportInfo === InfoReport.IN ? StatsItem.INC : StatsItem.DEC;
+      const type =
+        ReportInfo === InfoReport.IN
+          ? ActivityUser.PPFTZ_IN
+          : ActivityUser.PPFTZ_OUT;
+
+      await insertHistoryBarang(req, res, {
+        idBarang: result.id,
+        desc: desc,
+        quantityItem: listDataBarang[index].quantity,
+        status: stats,
+        sourceId: reportId,
+        sourceType: type,
+        userId: req.currentUser,
+      });
+
+      promises.push(result);
     }
     // return;
 

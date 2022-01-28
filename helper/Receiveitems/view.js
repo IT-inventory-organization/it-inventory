@@ -23,7 +23,7 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
           where: {
             isDelete: false,
           },
-          attributes: ["supplier", "id"],
+          attributes: ["supplier", "id", "nomorPO"],
           include: [
             {
               model: BarangPurchaseOrder,
@@ -51,6 +51,15 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
               attributes: {
                 exclude: ["createdAt", "updatedAt", "isDelete"],
               },
+              include: [
+                {
+                  model: Barang,
+                  attributes: ["satuanKemasan", "name"],
+                  where: {
+                    isDelete: false,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -67,6 +76,70 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
   }
 };
 
+const listOfReceiveItem = async (req, res) => {
+  try {
+    return ReceiveItems.findAll({
+      where: {
+        userId: req.currentUser,
+        isDelete: false,
+      },
+      attributes: ["id", "noReceive", "tanggal"],
+      include: [
+        {
+          model: ReceivedItemsQty,
+          // limit: 1,
+          where: {
+            isDelete: false,
+          },
+          attributes: ["quantityReceived"],
+          include: [
+            {
+              model: BarangPurchaseOrder,
+              attributes: ["quantity", "hargaSatuan"],
+              where: {
+                isDelete: false,
+              },
+              include: [
+                {
+                  model: Barang,
+                  attributes: ["name"],
+                  where: {
+                    isDelete: false,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: PurchaseOrder,
+          attributes: ["nomorPO"],
+          where: {
+            isDelete: false,
+          },
+          include: [
+            {
+              model: BarangPurchaseOrder,
+              where: {
+                isDelete: false,
+              },
+              attributes: [],
+            },
+          ],
+        },
+      ],
+    });
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Fetch List Received Items"
+    );
+  }
+};
+
 module.exports = {
   viewOneReceive,
+  listOfReceiveItem,
 };

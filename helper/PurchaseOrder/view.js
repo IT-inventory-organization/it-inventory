@@ -1,5 +1,6 @@
 const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
+const CardList = require("../../database/models/cardList");
 const PurchaseOrder = require("../../database/models/purchaseOrder");
 const ReceiveItems = require("../../database/models/receivedItems");
 const httpStatus = require("../Httplib");
@@ -45,6 +46,10 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
         },
         include: [
           {
+            model: CardList,
+            attributes: [["name", "supplier"], "ID"],
+          },
+          {
             model: BarangPurchaseOrder,
             where: {
               isDelete: false,
@@ -75,6 +80,10 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
         exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
       },
       include: [
+        {
+          model: CardList,
+          attributes: [["name", "supplier"], "ID"],
+        },
         {
           model: BarangPurchaseOrder,
           where: {

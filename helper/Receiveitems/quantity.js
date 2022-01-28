@@ -38,6 +38,7 @@ const updateQtyReceiveItem = async (res, idRcQty, data, transaction = null) => {
 
 const softDeleteQtyReceiveItem = async (
   res,
+  idReceive,
   exception = [],
   transaction = null
 ) => {
@@ -51,6 +52,7 @@ const softDeleteQtyReceiveItem = async (
           id: {
             [Op.notIn]: exception,
           },
+          idReceive: idReceive,
         },
         transaction: transaction,
         returning: true,

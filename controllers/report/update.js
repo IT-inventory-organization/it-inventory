@@ -53,7 +53,12 @@ const {
 const {
   updatePerkiraanTanggalPengeluaran,
 } = require("../../helper/DataPerkiraanTanggalPengeluaran");
-const { createListBarang, fullDelete } = require("../../helper/ListBarang");
+const {
+  createListBarang,
+  fullDelete,
+  updateListBarang,
+  softDeleteListBarang,
+} = require("../../helper/ListBarang");
 const {
   softDeleteListDokumen,
   createListDokumen,
@@ -80,11 +85,18 @@ const {
 const validationReport = require("../../middlewares/validationDataReport");
 const { bundleReport } = require("../../helper/bundleReport");
 const { updateDataLartas } = require("../../helper/DataLartas");
-const { updateStockItem } = require("../../helper/Barang");
+const { updateStockItem, softDeleteListItem } = require("../../helper/Barang");
 const { insertHistory } = require("../../helper/Histories");
 const { isExist } = require("../../helper/checkExistingDataFromTable");
 const Report = require("../../database/models/report");
 const { updatePPJK } = require("../../helper/PPJK");
+const { insertHistoryBarang } = require("../../helper/Histories/barang");
+const {
+  InfoReport,
+  Description,
+  StatsItem,
+  ActivityUser,
+} = require("../../helper/Activity.interface");
 
 const updateDataHeader = async (req, res) => {
   let transaction;
@@ -265,23 +277,37 @@ const updateDataBarang = async (req, res) => {
       DataToInput: { listDataBarang },
     } = req.body;
 
-    await isExist(Report, { where: { id: idReport, userId: req.currentUser } });
+    const found = await getOneSpecificReport(req, reportId);
+
+    if (!found) {
+      return errorResponse(res, Http.badRequest, "Report Not Found");
+    }
+
+    const ReportInfo = found.toJSON().jenisPemberitahuan;
 
     transaction = await sequelize.transaction();
 
-    let resultsListBarang = [];
+    const exception = [];
+
+    const desc =
+      ReportInfo === InfoReport.IN ? Description.ADD : Description.MINUS;
+    const stats = ReportInfo === InfoReport.IN ? StatsItem.INC : StatsItem.DEC;
+    const type =
+      ReportInfo === InfoReport.IN
+        ? ActivityUser.PPFTZ_IN
+        : ActivityUser.PPFTZ_OUT;
     /**
-     * Membuat List Barang Baru Dengan Quantity Yang Berbeda
+     * 1. Membuat Baru
      */
-    await fullDelete(req, null, idReport, transaction);
     for (let i = 0; i < listDataBarang.length; i++) {
-      if (listDataBarang[i].id || typeof listDataBarang[i].id !== "undefined") {
-        delete listDataBarang[i].id;
+      // if (listDataBarang[i].id || typeof listDataBarang[i].id !== "undefined") {
+      //   delete listDataBarang[i].id;
+      // }
+      if (listDataBarang[i].id) {
+        continue;
       }
-      /**
-       * Membuat List Barang Baru Dengan Quantity Yang Berbeda
-       */
-      let result = await createListBarang(
+
+      const result = await createListBarang(
         listDataBarang[i],
         transaction,
         idReport
@@ -290,12 +316,61 @@ const updateDataBarang = async (req, res) => {
       if (result.error) {
         return errorResponse(res, Http.badRequest, result.error);
       }
-      resultsListBarang.push(result);
+
+      await insertHistoryBarang(
+        req,
+        res,
+        {
+          idBarang: result.id,
+          desc: desc,
+          quantityItem: listDataBarang[index].quantity,
+          status: stats,
+          sourceId: idReport,
+          sourceType: type,
+          userId: req.currentUser,
+        },
+        transaction
+      );
+
+      exception.push(result.id);
+    }
+    /**
+     * 2. Update
+     */
+    for (const iterator of listDataBarang) {
+      if (listDataBarang[i].id.length !== 0) {
+        continue;
+      }
+      const { id, ...restOfData } = iterator;
+      const result = await updateListBarang(
+        restOfData,
+        iterator,
+        true,
+        transaction
+      );
+
+      await insertHistoryBarang(
+        req,
+        res,
+        {
+          idBarang: result.id,
+          desc: desc,
+          quantityItem: iterator.quantity,
+          status: stats,
+          sourceId: idReport,
+          sourceType: type,
+          userId: req.currentUser,
+        },
+        transaction
+      );
+
+      exception.push(result[1][0].toJSON().id);
     }
 
+    await softDeleteListBarang(idReport, req, transaction, exception);
+
     const dataToReturn = {
-      listDataBarang: resultsListBarang.map((el) => el.id),
-      reportId: resultsListBarang[0].id,
+      listDataBarang: exception,
     };
 
     await createUserActivity(
