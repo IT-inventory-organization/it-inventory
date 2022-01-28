@@ -2,11 +2,14 @@ const { AESDecrypt } = require("./encription");
 const httpStatus = require("./Httplib");
 const { errorResponse } = require("./Response");
 
-const BCardList = async (req, res, next) => {
+const BBill = async (req, res, next) => {
   try {
-    const Decrypt = AESDecrypt(req.body.dataCard);
+    const Decrypt = AESDecrypt(req.body.dataBill);
 
-    req.body.DataToInput = Decrypt;
+    req.body.DataToInput = {
+      ...Decrypt,
+      userId: req.currentUser,
+    };
 
     next();
   } catch (error) {
@@ -19,5 +22,5 @@ const BCardList = async (req, res, next) => {
 };
 
 module.exports = {
-  BCardList,
+  BBill,
 };
