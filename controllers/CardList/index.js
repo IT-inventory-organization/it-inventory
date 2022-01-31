@@ -14,11 +14,6 @@ const {
 module.exports = (routes) => {
   routes.get("/", authentication, viewAllCardList);
   routes.get("/:idContact", authentication, FetchOneList);
-  routes.get(
-    "/get/supplier/:idPo?",
-    authentication,
-    fetchSupplierForPurchaseOrder
-  );
 
   routes.post(
     "/",
@@ -39,4 +34,19 @@ module.exports = (routes) => {
   );
 
   routes.delete("/:idContact", authentication, deleteCardList);
+
+  // API For Purchase Order
+
+  /**
+   * * Get Supplier For Purchase Order
+   * * Checking If Supplier is Already Have
+   * * A Relation With Purhcase Order
+   */
+  routes.get(
+    "/get/supplier/:idPo?",
+    authentication,
+    fetchSupplierForPurchaseOrder
+  );
+
+  // End Api For Purchase Order
 };

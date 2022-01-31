@@ -73,7 +73,7 @@ const fetchOneDataOfReceiveItem = async (req, res) => {
     const { idReceive } = req.params;
 
     const result = await ViewOneReceivedItemForBill(req, res, idReceive);
-    return successResponse(res, httpStatus.ok, "", result, false);
+    return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
     console.log(error);
     return errorResponse(
