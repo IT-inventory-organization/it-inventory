@@ -1,6 +1,7 @@
 const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
 const Bill = require("../../database/models/bill");
+const CardList = require("../../database/models/cardList");
 const PurchaseOrder = require("../../database/models/purchaseOrder");
 const ReceiveItems = require("../../database/models/receivedItems");
 const ReceivedItemsQty = require("../../database/models/receivedItemsQty");
@@ -100,6 +101,14 @@ const ViewOneReceivedItemForBill = async (req, res, idReceive) => {
             model: BarangPurchaseOrder,
             attributes: [],
             required: true,
+          },
+          {
+            model: CardList,
+            attributes: ["name"],
+            where: {
+              isDelete: false,
+            },
+            required: false,
           },
         ],
       },
