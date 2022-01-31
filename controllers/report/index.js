@@ -79,7 +79,10 @@ const { createUserActivity } = require("../../helper/UserActivity");
 const { bundleReport } = require("../../helper/bundleReport");
 const { createDataLartas } = require("../../helper/DataLartas");
 const { createPPJK } = require("../../helper/PPJK");
-const { insertHistoryBarang } = require("../../helper/Histories/barang");
+const {
+  insertHistoryBarang,
+  removeHistories,
+} = require("../../helper/Histories/barang");
 const {
   InfoReport,
   Description,
@@ -317,6 +320,24 @@ const addDataBarang = async (req, res) => {
 
     const ReportInfo = found.toJSON().jenisPemberitahuan;
 
+    const desc =
+      ReportInfo === InfoReport.IN ? Description.ADD : Description.MINUS;
+    const stats = ReportInfo === InfoReport.IN ? StatsItem.INC : StatsItem.DEC;
+    const type =
+      ReportInfo === InfoReport.IN
+        ? ActivityUser.PPFTZ_IN
+        : ActivityUser.PPFTZ_OUT;
+
+    await removeHistories(
+      req,
+      res,
+      {
+        sourceId: reportId,
+        sourceType: type,
+      },
+      transaction
+    );
+
     // Loop Dengan Async
     for (let index = 0; index < listDataBarang.length; index++) {
       const result = await createListBarang(
@@ -329,24 +350,20 @@ const addDataBarang = async (req, res) => {
         return errorResponse(res, Http.badRequest, result.error);
       }
 
-      const desc =
-        ReportInfo === InfoReport.IN ? Description.ADD : Description.MINUS;
-      const stats =
-        ReportInfo === InfoReport.IN ? StatsItem.INC : StatsItem.DEC;
-      const type =
-        ReportInfo === InfoReport.IN
-          ? ActivityUser.PPFTZ_IN
-          : ActivityUser.PPFTZ_OUT;
-
-      await insertHistoryBarang(req, res, {
-        idBarang: result.id,
-        desc: desc,
-        quantityItem: listDataBarang[index].quantity,
-        status: stats,
-        sourceId: reportId,
-        sourceType: type,
-        userId: req.currentUser,
-      });
+      await insertHistoryBarang(
+        req,
+        res,
+        {
+          idBarang: listDataBarang[index].idBarang,
+          desc: desc,
+          quantityItem: listDataBarang[index].quantity,
+          status: stats,
+          sourceId: reportId,
+          sourceType: type,
+          userId: req.currentUser,
+        },
+        transaction
+      );
 
       promises.push(result);
     }

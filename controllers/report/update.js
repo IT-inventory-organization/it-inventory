@@ -90,7 +90,10 @@ const { insertHistory } = require("../../helper/Histories");
 const { isExist } = require("../../helper/checkExistingDataFromTable");
 const Report = require("../../database/models/report");
 const { updatePPJK } = require("../../helper/PPJK");
-const { insertHistoryBarang } = require("../../helper/Histories/barang");
+const {
+  insertHistoryBarang,
+  removeHistories,
+} = require("../../helper/Histories/barang");
 const {
   InfoReport,
   Description,
@@ -277,7 +280,7 @@ const updateDataBarang = async (req, res) => {
       DataToInput: { listDataBarang },
     } = req.body;
 
-    const found = await getOneSpecificReport(req, reportId);
+    const found = await getOneSpecificReport(req, idReport);
 
     if (!found) {
       return errorResponse(res, Http.badRequest, "Report Not Found");
@@ -296,6 +299,17 @@ const updateDataBarang = async (req, res) => {
       ReportInfo === InfoReport.IN
         ? ActivityUser.PPFTZ_IN
         : ActivityUser.PPFTZ_OUT;
+
+    await removeHistories(
+      req,
+      res,
+      {
+        sourceId: idReport,
+        sourceType: type,
+      },
+      transaction
+    );
+
     /**
      * 1. Membuat Baru
      */
@@ -321,9 +335,9 @@ const updateDataBarang = async (req, res) => {
         req,
         res,
         {
-          idBarang: result.id,
+          idBarang: listDataBarang[i].idBarang,
           desc: desc,
-          quantityItem: listDataBarang[index].quantity,
+          quantityItem: listDataBarang[i].quantity,
           status: stats,
           sourceId: idReport,
           sourceType: type,
@@ -338,7 +352,7 @@ const updateDataBarang = async (req, res) => {
      * 2. Update
      */
     for (const iterator of listDataBarang) {
-      if (listDataBarang[i].id.length !== 0) {
+      if (iterator.id !== "") {
         continue;
       }
       const { id, ...restOfData } = iterator;
@@ -353,7 +367,7 @@ const updateDataBarang = async (req, res) => {
         req,
         res,
         {
-          idBarang: result.id,
+          idBarang: iterator.idBarang,
           desc: desc,
           quantityItem: iterator.quantity,
           status: stats,
@@ -387,6 +401,7 @@ const updateDataBarang = async (req, res) => {
       dataToReturn
     );
   } catch (error) {
+    console.log(error);
     if (transaction) {
       await transaction.rollback();
     }

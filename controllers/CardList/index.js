@@ -15,7 +15,7 @@ module.exports = (routes) => {
   routes.get("/", authentication, viewAllCardList);
   routes.get("/:idContact", authentication, FetchOneList);
   routes.get(
-    "/get/supplier/:idContact?",
+    "/get/supplier/:idPo?",
     authentication,
     fetchSupplierForPurchaseOrder
   );

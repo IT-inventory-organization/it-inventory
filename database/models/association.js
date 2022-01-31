@@ -24,6 +24,8 @@ const BarangPurchaseOrder = require("./barangPurchaseOrder");
 const ReceiveItems = require("./receivedItems");
 const ReceivedItemsQty = require("./receivedItemsQty");
 const CardList = require("./cardList");
+const Bill = require("./bill");
+const BillPriceItem = require("./billPriceItem");
 
 const setAssociations = function () {
   Report.hasOne(reportIdentitasPenerima, { foreignKey: "reportId" });
@@ -112,7 +114,7 @@ const setAssociations = function () {
   Barang.hasMany(BarangPurchaseOrder, { foreignKey: "id" });
   BarangPurchaseOrder.belongsTo(Barang, { foreignKey: "idBarang" });
 
-  PurchaseOrder.hasOne(ReceiveItems, { foreignKey: "id" });
+  PurchaseOrder.hasOne(ReceiveItems, { foreignKey: "idPo" });
   ReceiveItems.belongsTo(PurchaseOrder, { foreignKey: "idPo" });
 
   CardList.hasOne(PurchaseOrder, { foreignKey: "idContactCard" });
@@ -123,6 +125,15 @@ const setAssociations = function () {
 
   BarangPurchaseOrder.hasOne(ReceivedItemsQty, { foreignKey: "id" });
   ReceivedItemsQty.belongsTo(BarangPurchaseOrder, { foreignKey: "idBarangPo" });
+
+  ReceivedItemsQty.hasOne(BillPriceItem, { foreignKey: "id" });
+  BillPriceItem.belongsTo(ReceivedItemsQty, { foreignKey: "idReceiveQtyItem" });
+
+  ReceiveItems.hasOne(Bill, { foreignKey: "idReceive" });
+  Bill.belongsTo(ReceiveItems, { foreignKey: "idReceive" });
+
+  Bill.hasMany(BillPriceItem, { foreignKey: "idBill" });
+  BillPriceItem.belongsTo(Bill, { foreignKey: "id" });
 };
 
 module.exports = setAssociations;

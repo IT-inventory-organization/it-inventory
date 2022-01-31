@@ -19,9 +19,22 @@ const BillPriceItem = db.define(
       type: Sequelize.DECIMAL,
       allowNull: false,
     },
+    jumlah: {
+      type: Sequelize.DECIMAL,
+      allowNull: false,
+      defaultValue: 0,
+    },
     isDelete: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
+    },
+    idReceiveQtyItem: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: "ReceivedItemsQty",
+        key: "id",
+      },
     },
   },
   {

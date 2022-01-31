@@ -6,9 +6,15 @@ const VCardList = [
     .notEmpty()
     .withMessage(`ID Is Required`)
     .custom((value, { req }) => {
+      if (req.method === "POST") {
+        return CardList.findOne({ where: { ID: value } }).then((d) => {
+          if (d) {
+            return Promise.reject("ID Is Duplicate");
+          }
+        });
+      }
       const ID = req.params.idContact;
       return CardList.findOne({ where: { ID: ID } }).then((d) => {
-        console.log(req.params, value, d.toJSON().ID);
         if (req.method === "PUT" && d.toJSON().ID === value) {
           return Promise.resolve();
         } else if (req.method === "PUT" && d.toJSON().ID !== value) {

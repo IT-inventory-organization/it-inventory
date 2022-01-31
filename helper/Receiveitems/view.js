@@ -1,5 +1,6 @@
 const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
+const Bill = require("../../database/models/bill");
 const PurchaseOrder = require("../../database/models/purchaseOrder");
 const ReceiveItems = require("../../database/models/receivedItems");
 const ReceivedItemsQty = require("../../database/models/receivedItemsQty");
@@ -76,6 +77,55 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
   }
 };
 
+const ViewOneReceivedItemForBill = async (req, res, idReceive) => {
+  return ReceiveItems.findOne({
+    where: {
+      userId: req.currentUser,
+      isDelete: false,
+      id: idReceive,
+    },
+    attributes: {
+      exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
+    },
+    include: [
+      {
+        model: PurchaseOrder,
+        required: true,
+        where: {
+          isDelete: false,
+        },
+        attributes: ["supplier", "id"],
+        include: [
+          {
+            model: BarangPurchaseOrder,
+            attributes: [],
+            required: true,
+          },
+        ],
+      },
+      {
+        model: ReceivedItemsQty,
+        attributes: [["id", "idReceiveQtyItem"], "quantityReceived"],
+        required: true, // Memastikan Data Sudah di isi semua
+        where: { isDelete: false },
+        include: [
+          {
+            model: BarangPurchaseOrder,
+            attributes: ["hargaSatuan", "quantity"],
+            include: [
+              {
+                model: Barang,
+                attributes: ["name", "satuanKemasan"],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    // logging: console.log,
+  });
+};
+
 const listOfReceiveItem = async (req, res) => {
   try {
     return ReceiveItems.findAll({
@@ -92,6 +142,7 @@ const listOfReceiveItem = async (req, res) => {
             isDelete: false,
           },
           attributes: ["quantityReceived"],
+          required: false,
           include: [
             {
               model: BarangPurchaseOrder,
@@ -99,6 +150,7 @@ const listOfReceiveItem = async (req, res) => {
               where: {
                 isDelete: false,
               },
+              required: false,
               include: [
                 {
                   model: Barang,
@@ -106,6 +158,7 @@ const listOfReceiveItem = async (req, res) => {
                   where: {
                     isDelete: false,
                   },
+                  required: true,
                 },
               ],
             },
@@ -117,6 +170,7 @@ const listOfReceiveItem = async (req, res) => {
           where: {
             isDelete: false,
           },
+          required: false,
           include: [
             {
               model: BarangPurchaseOrder,
@@ -124,10 +178,12 @@ const listOfReceiveItem = async (req, res) => {
                 isDelete: false,
               },
               attributes: [],
+              required: true,
             },
           ],
         },
       ],
+      // logging: console.log,
     });
   } catch (error) {
     console.log(error);
@@ -139,7 +195,29 @@ const listOfReceiveItem = async (req, res) => {
   }
 };
 
+const viewListNoReceive = async (req, res, transaction = null) => {
+  return ReceiveItems.findAll({
+    where: {
+      userId: req.currentUser,
+      isDelete: false,
+    },
+    include: [
+      {
+        model: Bill,
+        required: false,
+        where: {
+          isDelete: false,
+        },
+      },
+    ],
+    attributes: ["noReceive", "id"],
+    transaction: transaction,
+  });
+};
+
 module.exports = {
   viewOneReceive,
   listOfReceiveItem,
+  viewListNoReceive,
+  ViewOneReceivedItemForBill,
 };

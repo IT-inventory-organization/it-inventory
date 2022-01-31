@@ -42,6 +42,14 @@ const Bill = db.define(
       onUpdate: "cascade",
       allowNull: false,
     },
+    tanggal: {
+      type: Sequelize.DATEONLY,
+      allowNull: false,
+    },
+    supplier: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
   },
   {
     tableName: "Bill",

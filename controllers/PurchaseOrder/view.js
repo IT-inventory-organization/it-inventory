@@ -26,7 +26,7 @@ const viewOnePurchaseOrder = async (req, res) => {
   try {
     const { idPo } = req.params;
     const result = await OnePurchaseOrder(req, res, idPo);
-    return successResponse(res, httpStatus.ok, "", result, false);
+    return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
     return errorResponse(
       res,
@@ -49,22 +49,28 @@ const getAllBarang = async (req, res) => {
   }
 };
 
-const listPurchaseOrder = async (req, res) => {
+const listPurchaseOrderForReceiveItem = async (req, res) => {
   try {
+    const { idReceive } = req.params;
     const result = await listOfPurchaseOrder(req, res);
 
     const listPurchaseOrderMap = result.map((x) => {
       const iterator = x.toJSON();
-
-      if (iterator.id === req.params.idPo || !iterator?.ReceiveItem) {
+      console.log(iterator);
+      if (iterator?.ReceiveItem?.id == idReceive || !iterator?.ReceiveItem) {
         return {
           nomorPO: iterator.nomorPO,
           id: iterator.id,
         };
       }
     });
-
-    return successResponse(res, httpStatus.ok, "", listPurchaseOrderMap.flat());
+    // console.log(result);
+    return successResponse(
+      res,
+      httpStatus.ok,
+      "",
+      listPurchaseOrderMap.filter((x) => x != null)
+    );
   } catch (error) {
     console.log(error);
     return errorResponse(
@@ -94,6 +100,6 @@ module.exports = {
   viewPurchaseOrder,
   viewOnePurchaseOrder,
   getAllBarang,
-  listPurchaseOrder,
+  listPurchaseOrderForReceiveItem,
   fetchPoForReceiveItem,
 };

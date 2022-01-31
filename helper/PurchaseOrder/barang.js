@@ -24,6 +24,20 @@ const createBarangPurchaseOrder = async (
   }
 };
 
+const getOneBarangPurchaseOrder = async (
+  req,
+  res,
+  idBarangPo,
+  transaction = null
+) => {
+  return BarangPurchaseOrder.findOne({
+    where: {
+      id: idBarangPo,
+    },
+    transaction: transaction,
+  });
+};
+
 const updateBarangPurchaseOrder = async (
   res,
   data,
@@ -83,4 +97,5 @@ module.exports = {
   createBarangPurchaseOrder,
   updateBarangPurchaseOrder,
   softDeleteBarangPurchaeOrder,
+  getOneBarangPurchaseOrder,
 };

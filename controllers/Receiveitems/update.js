@@ -4,8 +4,14 @@ const {
   ActivityUser,
   StatsItem,
 } = require("../../helper/Activity.interface");
-const { insertHistoryBarang } = require("../../helper/Histories/barang");
+const {
+  insertHistoryBarang,
+  removeHistories,
+} = require("../../helper/Histories/barang");
 const httpStatus = require("../../helper/Httplib");
+const {
+  getOneBarangPurchaseOrder,
+} = require("../../helper/PurchaseOrder/barang");
 const { updateDataReceiveItem } = require("../../helper/Receiveitems");
 const {
   addQtyReceiveItem,
@@ -30,7 +36,12 @@ const updateReceiveItem = async (req, res) => {
     );
 
     const exception = [];
-
+    await removeHistories(
+      req,
+      res,
+      { sourceId: idReceive, sourceType: ActivityUser.ReceiveItem },
+      t
+    );
     /**
      * 1. Create New
      */
@@ -41,13 +52,19 @@ const updateReceiveItem = async (req, res) => {
       const { id, ...rest } = iterator;
       const result = await addQtyReceiveItem(res, rest, t);
 
+      const resultBPo = await getOneBarangPurchaseOrder(
+        req,
+        res,
+        rest.idBarangPo
+      );
+
       await insertHistoryBarang(
         req,
         res,
         {
           userId: req.currentUser,
           desc: Description.MINUS,
-          idBarang: iterator.idBarangPo,
+          idBarang: resultBPo.toJSON().idBarang,
           quantityItem: iterator.quantityReceived,
           sourceId: idReceive,
           sourceType: ActivityUser.ReceiveItem,
@@ -59,6 +76,7 @@ const updateReceiveItem = async (req, res) => {
       exception.push(result.id);
     }
 
+    // Update
     for (const iterator of ReceivedItemsQty) {
       if (!iterator.id) {
         continue;
@@ -67,13 +85,19 @@ const updateReceiveItem = async (req, res) => {
       const { id, ...rest } = iterator;
       const result = await updateQtyReceiveItem(res, id, rest, t);
 
+      const resultBPo = await getOneBarangPurchaseOrder(
+        req,
+        res,
+        rest.idBarangPo
+      );
+
       await insertHistoryBarang(
         req,
         res,
         {
           userId: req.currentUser,
           desc: Description.MINUS,
-          idBarang: iterator.idBarangPo,
+          idBarang: resultBPo.toJSON().idBarang,
           quantityItem: iterator.quantityReceived,
           sourceId: idReceive,
           sourceType: ActivityUser.ReceiveItem,
@@ -81,7 +105,7 @@ const updateReceiveItem = async (req, res) => {
         },
         t
       );
-      console.log(result[1][0], "ASD");
+
       exception.push(result[1][0].toJSON().id);
     }
     console.log(exception);
@@ -95,6 +119,7 @@ const updateReceiveItem = async (req, res) => {
       "Success Update Receive Item"
     );
   } catch (error) {
+    console.log(error);
     if (t) {
       await t.rollback();
     }

@@ -27,6 +27,22 @@ const insertHistoryBarang = async (
   }
 };
 
+const removeHistories = async (
+  req,
+  res,
+  data = { sourceId: "", sourceType: "" },
+  transaction = null
+) => {
+  return Histories.destroy({
+    where: {
+      sourceId: data.sourceId,
+      sourceType: data.sourceType,
+    },
+    transaction: transaction,
+    returning: true,
+  });
+};
 module.exports = {
   insertHistoryBarang,
+  removeHistories,
 };

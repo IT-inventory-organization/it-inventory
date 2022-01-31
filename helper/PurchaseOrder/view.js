@@ -176,7 +176,7 @@ const listOfPurchaseOrder = async (req, res) => {
         userId: req.currentUser,
         isDelete: false,
       },
-      attributes: ["nomorPO", "id"],
+      // attributes: ["nomorPO", "id"],
       include: [
         {
           model: BarangPurchaseOrder,
@@ -193,6 +193,7 @@ const listOfPurchaseOrder = async (req, res) => {
           required: false,
         },
       ],
+      logging: console.log,
     });
   } catch (error) {
     console.log(error);

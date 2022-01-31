@@ -39,7 +39,10 @@ const updatePo = async (req, res) => {
     // Update (T0(N))
     for (const iterator of BarangPo) {
       iterator.idPo = idPo;
-      if (iterator.id.length == 0) continue;
+      if (!iterator.id || iterator.id == "") {
+        continue;
+      }
+
       const { id, ...restOfDataBarang } = iterator;
       const resultBrPo = await updateBarangPurchaseOrder(
         res,
@@ -54,7 +57,9 @@ const updatePo = async (req, res) => {
     // Create (T0(N))
     for (const iterator of BarangPo) {
       iterator.idPo = idPo;
-      if (iterator.id.length != 0) continue;
+      if (iterator.id) {
+        continue;
+      }
       const { id, ...restOfDataBarang } = iterator;
       const resultBrPo = await createBarangPurchaseOrder(
         req,

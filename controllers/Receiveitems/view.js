@@ -2,6 +2,8 @@ const httpStatus = require("../../helper/Httplib");
 const {
   viewOneReceive,
   listOfReceiveItem,
+  viewListNoReceive,
+  ViewOneReceivedItemForBill,
 } = require("../../helper/Receiveitems/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
 
@@ -34,7 +36,57 @@ const listReceiveItem = async (req, res) => {
   }
 };
 
+const fetchListNoReceiveForBill = async (req, res) => {
+  try {
+    const { idBill } = req.params;
+    const result = await viewListNoReceive(req, res);
+
+    const RECEIVE_ITEMMAP = result.map((x) => {
+      const iterator = x.toJSON();
+
+      if (iterator?.Bill?.id === idBill || !iterator?.Bill) {
+        return {
+          noReceive: iterator.noReceive,
+          id: iterator.id,
+        };
+      }
+    });
+
+    return successResponse(
+      res,
+      httpStatus.accepted,
+      "",
+      RECEIVE_ITEMMAP.filter((x) => x != null)
+    );
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Fetch No Receive"
+    );
+  }
+};
+
+const fetchOneDataOfReceiveItem = async (req, res) => {
+  try {
+    const { idReceive } = req.params;
+
+    const result = await ViewOneReceivedItemForBill(req, res, idReceive);
+    return successResponse(res, httpStatus.ok, "", result, false);
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Fetch Data Of Receive Item"
+    );
+  }
+};
+
 module.exports = {
   fetchReceiveItemForUpdate,
   listReceiveItem,
+  fetchListNoReceiveForBill,
+  fetchOneDataOfReceiveItem,
 };

@@ -4,7 +4,10 @@ const {
   ActivityUser,
   StatsItem,
 } = require("../../helper/Activity.interface");
-const { insertHistoryBarang } = require("../../helper/Histories/barang");
+const {
+  insertHistoryBarang,
+  removeHistories,
+} = require("../../helper/Histories/barang");
 const httpStatus = require("../../helper/Httplib");
 const { addDataReceiveItem } = require("../../helper/Receiveitems");
 const { addQtyReceiveItem } = require("../../helper/Receiveitems/quantity");
@@ -20,6 +23,19 @@ const addReceiveItems = async (req, res) => {
     const resultReceive = await addDataReceiveItem(res, restOfData, t);
 
     const ResultQtyReceive = [];
+
+    /**
+     * Membuang History Barang Receive Item
+     */
+    await removeHistories(
+      req,
+      res,
+      {
+        sourceId: resultReceive.toJSON().id,
+        sourceType: ActivityUser.ReceiveItem,
+      },
+      t
+    );
 
     for (const iterator of ReceivedItemsQty) {
       iterator.idReceive = resultReceive.id;
@@ -58,7 +74,6 @@ const addReceiveItems = async (req, res) => {
       "Success Create New Receive Item"
     );
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

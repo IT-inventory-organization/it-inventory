@@ -42,7 +42,7 @@ const FetchOneList = async (req, res) => {
 
 const fetchSupplierForPurchaseOrder = async (req, res) => {
   try {
-    const { idContact } = req.params;
+    const { idPo } = req.params;
     const result = await ViewAllSupplier(res);
 
     const ContactMap = [];
@@ -50,7 +50,7 @@ const fetchSupplierForPurchaseOrder = async (req, res) => {
     for (const iterator of result) {
       const contact = iterator.toJSON();
 
-      if (contact.ID === idContact || !contact?.PurchaseOrder) {
+      if (contact?.PurchaseOrder.id === idPo || !contact?.PurchaseOrder) {
         ContactMap.push(contact);
       }
     }
