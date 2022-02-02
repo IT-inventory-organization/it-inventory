@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
 const CardList = require("../../database/models/cardList");
@@ -40,6 +41,9 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
         where: {
           id: idPo,
           isDelete: false,
+          idContactCard: {
+            [Op.not]: null,
+          },
         },
         attributes: {
           exclude: ["createdAt", "updatedAt"],
@@ -47,7 +51,10 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
         include: [
           {
             model: CardList,
-            attributes: [["name", "supplier"], "ID"],
+            attributes: [
+              ["name", "supplier"],
+              ["_ID", "ID"],
+            ],
           },
           {
             model: BarangPurchaseOrder,
@@ -82,7 +89,10 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
       include: [
         {
           model: CardList,
-          attributes: [["name", "supplier"], "ID"],
+          attributes: [
+            ["name", "supplier"],
+            ["_ID", "ID"],
+          ],
         },
         {
           model: BarangPurchaseOrder,

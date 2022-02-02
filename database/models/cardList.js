@@ -5,8 +5,7 @@ const db = require("../../configs/database");
 const CardList = db.define(
   "CardList",
   {
-    ID: {
-      primaryKey: true,
+    _ID: {
       type: Sequelize.STRING,
       unique: true,
       allowNull: false,

@@ -9,6 +9,9 @@ const {
   removeHistories,
 } = require("../../helper/Histories/barang");
 const httpStatus = require("../../helper/Httplib");
+const {
+  getOneBarangPurchaseOrder,
+} = require("../../helper/PurchaseOrder/barang");
 const { addDataReceiveItem } = require("../../helper/Receiveitems");
 const { addQtyReceiveItem } = require("../../helper/Receiveitems/quantity");
 const { errorResponse, successResponse } = require("../../helper/Response");
@@ -45,18 +48,18 @@ const addReceiveItems = async (req, res) => {
       }
 
       const result = await addQtyReceiveItem(res, iterator, t);
-
+      const getId = await getOneBarangPurchaseOrder(iterator.idBarangPo, t);
       await insertHistoryBarang(
         req,
         res,
         {
           userId: req.currentUser,
-          idBarang: iterator.idBarangPo,
-          desc: Description.MINUS,
+          idBarang: getId.toJSON().idBarang,
+          desc: Description.ADD,
           quantityItem: iterator.quantityReceived,
           sourceId: iterator.idReceive,
           sourceType: ActivityUser.ReceiveItem,
-          status: StatsItem.DEC,
+          status: StatsItem.INC,
         },
         t
       );

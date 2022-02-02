@@ -2,24 +2,27 @@
 const Sequelize = require("sequelize");
 const db = require("../../configs/database");
 
-const PurchaseOrder = db.define(
-  "PurchaseOrder",
+const DeliveryOrder = db.define(
+  "DeliveryOrder",
   {
-    nomorPO: {
+    nomorDO: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true,
     },
     tanggal: {
       type: Sequelize.DATEONLY,
       allowNull: false,
     },
-    supplier: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    total: {
-      type: Sequelize.DECIMAL,
+    idSo: {
+      type: Sequelize.INTEGER,
       allowNull: false,
+      references: {
+        model: "SalesOrder",
+        key: "id",
+      },
+      onUpdate: "cascade",
+      onDelete: "no action",
     },
     remarks: {
       type: Sequelize.STRING,
@@ -39,21 +42,11 @@ const PurchaseOrder = db.define(
       onUpdate: "cascade",
       allowNull: false,
     },
-    idContactCard: {
-      type: Sequelize.STRING,
-      allowNull: true,
-      references: {
-        model: "CardList",
-        key: "id",
-      },
-      onDelete: "no action",
-      onUpdate: "cascade",
-    },
   },
   {
-    tableName: "PurchaseOrder",
+    tableName: "DeliveryOrder",
     freezeTableName: true,
   }
 );
 
-module.exports = PurchaseOrder;
+module.exports = DeliveryOrder;

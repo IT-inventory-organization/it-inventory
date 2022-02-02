@@ -1,11 +1,10 @@
-const CardList = require("../../database/models/cardList");
+const SalesOrder = require("../../database/models/salesOrder");
 const httpStatus = require("../Httplib");
 const { errorResponse } = require("../Response");
 
-const AddContact = async (res, data, transaction = null) => {
+const AddSalesOrder = async (res, data, transaction = null) => {
   try {
-    data._ID = data.ID;
-    return CardList.create(data, {
+    return SalesOrder.create(data, {
       transaction: transaction,
       returning: true,
     });
@@ -13,57 +12,57 @@ const AddContact = async (res, data, transaction = null) => {
     return errorResponse(
       res,
       httpStatus.internalServerError,
-      "Failed To Create New Contact"
+      "Failed To Add Sales Order"
     );
   }
 };
 
-const UpdateContact = async (req, res, idContact, data, transaction = null) => {
+const UpdateSalesOrder = async (req, res, idSo, data, transaction = null) => {
   try {
-    data._ID = data.ID;
-    console.log(data, idContact);
-    return CardList.update(data, {
+    return SalesOrder.update(data, {
       where: {
-        id: idContact,
+        id: idSo,
         isDelete: false,
+        userId: req.currentUser,
       },
-      returning: true,
       transaction: transaction,
+      returning: true,
     });
   } catch (error) {
     return errorResponse(
       res,
       httpStatus.internalServerError,
-      "Failed To Update List"
+      "Failed To Update Sales Order"
     );
   }
 };
 
-const DeleteContact = async (res, idContact, transaction = null) => {
+const DeleteSalesOrder = async (res, idSo, transaction = null) => {
   try {
-    return CardList.update(
+    return SalesOrder.update(
       {
         isDelete: true,
       },
       {
         where: {
-          id: idContact,
+          id: idSo,
+          isDelete: false,
         },
         transaction: transaction,
         returning: true,
       }
     );
   } catch (error) {
-    //
     return errorResponse(
       res,
       httpStatus.internalServerError,
-      "Failed To Delete List"
+      "Failed To Delete Sales Order"
     );
   }
 };
+
 module.exports = {
-  AddContact,
-  UpdateContact,
-  DeleteContact,
+  AddSalesOrder,
+  UpdateSalesOrder,
+  DeleteSalesOrder,
 };

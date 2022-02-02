@@ -9,6 +9,7 @@ const {
   viewAllCardList,
   FetchOneList,
   fetchSupplierForPurchaseOrder,
+  fetchCustomerForSalesOrder,
 } = require("./view");
 
 module.exports = (routes) => {
@@ -40,7 +41,7 @@ module.exports = (routes) => {
   /**
    * * Get Supplier For Purchase Order
    * * Checking If Supplier is Already Have
-   * * A Relation With Purhcase Order
+   * * A Relation With Purchase Order
    */
   routes.get(
     "/get/supplier/:idPo?",
@@ -49,4 +50,20 @@ module.exports = (routes) => {
   );
 
   // End Api For Purchase Order
+
+  // Api For Sales Order
+
+  /**
+   * * Get Customer List For
+   * * Sales Order, And Checking
+   * * Customer is Already Been Used By
+   * * Other Sales Order, Or Not
+   */
+  routes.get(
+    "/get/customer/:idSo?",
+    authentication,
+    fetchCustomerForSalesOrder
+  );
+
+  // End Api For Sales Order
 };

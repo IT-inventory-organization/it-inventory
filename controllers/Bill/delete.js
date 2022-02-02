@@ -8,11 +8,7 @@ const deleteBill = async (req, res) => {
 
     await DeleteBill(idBill);
 
-    return successResponse(
-      res,
-      httpStatus.internalServerError,
-      "Success Delete Bill"
-    );
+    return successResponse(res, httpStatus.ok, "Success Delete Bill");
   } catch (error) {
     return errorResponse(
       res,

@@ -14,7 +14,7 @@ const validationResponse = (req, res, next) => {
   if (!validation.isEmpty()) {
     return errorResponse(res, Http.badRequest, validation.array()[0].msg);
   }
-
+  // console.log(req.body.DataToInput, "Validate");
   // return;
   next();
 };

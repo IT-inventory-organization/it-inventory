@@ -10,15 +10,15 @@ const VPurchaseOrder = [
       if (req.method === "PUT") {
         return Promise.resolve();
       }
-      return PurchaseOrder.findOne({ where: { idContactCard: value } }).then(
-        (d) => {
-          if (d) {
-            return Promise.reject(
-              "Some of Purchase Order Has Selected This Supplier, Please Choose Another One"
-            );
-          }
+      return PurchaseOrder.findOne({
+        where: { idContactCard: value, isDelete: false },
+      }).then((d) => {
+        if (d) {
+          return Promise.reject(
+            "Some of Purchase Order Has Selected This Supplier, Please Choose Another One"
+          );
         }
-      );
+      });
     }),
   body("DataToInput.nomorPO")
     .trim()

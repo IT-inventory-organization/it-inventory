@@ -26,6 +26,10 @@ const ReceivedItemsQty = require("./receivedItemsQty");
 const CardList = require("./cardList");
 const Bill = require("./bill");
 const BillPriceItem = require("./billPriceItem");
+const SalesOrder = require("./salesOrder");
+const SalesOrderBarang = require("./salesOrderBarang");
+const DeliveryOrder = require("./deliveryOrder");
+const DeliveryOrderBarang = require("./deliveryOrderBarang");
 
 const setAssociations = function () {
   Report.hasOne(reportIdentitasPenerima, { foreignKey: "reportId" });
@@ -134,6 +138,24 @@ const setAssociations = function () {
 
   Bill.hasMany(BillPriceItem, { foreignKey: "idBill" });
   BillPriceItem.belongsTo(Bill, { foreignKey: "id" });
+
+  SalesOrder.hasMany(SalesOrderBarang, { foreignKey: "idSo" });
+  SalesOrderBarang.belongsTo(SalesOrder, { foreignKey: "id" });
+
+  CardList.hasOne(SalesOrder, { foreignKey: "idContact" });
+  SalesOrder.belongsTo(CardList, { foreignKey: "idContact" });
+
+  Barang.hasMany(SalesOrderBarang, { foreignKey: "id" });
+  SalesOrderBarang.belongsTo(Barang, { foreignKey: "idBarang" });
+
+  SalesOrder.hasOne(DeliveryOrder, { foreignKey: "id" });
+  DeliveryOrder.belongsTo(SalesOrder, { foreignKey: "idSo" });
+
+  DeliveryOrder.hasMany(DeliveryOrderBarang, { foreignKey: "idDo" });
+  DeliveryOrderBarang.belongsTo(DeliveryOrder, { foreignKey: "id" });
+
+  SalesOrderBarang.hasOne(DeliveryOrderBarang, { foreignKey: "id" });
+  DeliveryOrderBarang.belongsTo(SalesOrderBarang, { foreignKey: "idSOBarang" });
 };
 
 module.exports = setAssociations;

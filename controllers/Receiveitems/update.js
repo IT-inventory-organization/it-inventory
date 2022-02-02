@@ -52,23 +52,19 @@ const updateReceiveItem = async (req, res) => {
       const { id, ...rest } = iterator;
       const result = await addQtyReceiveItem(res, rest, t);
 
-      const resultBPo = await getOneBarangPurchaseOrder(
-        req,
-        res,
-        rest.idBarangPo
-      );
+      const resultBPo = await getOneBarangPurchaseOrder(rest.idBarangPo, t);
 
       await insertHistoryBarang(
         req,
         res,
         {
           userId: req.currentUser,
-          desc: Description.MINUS,
+          desc: Description.ADD,
           idBarang: resultBPo.toJSON().idBarang,
           quantityItem: iterator.quantityReceived,
           sourceId: idReceive,
           sourceType: ActivityUser.ReceiveItem,
-          status: StatsItem.DEC,
+          status: StatsItem.INC,
         },
         t
       );
@@ -85,23 +81,19 @@ const updateReceiveItem = async (req, res) => {
       const { id, ...rest } = iterator;
       const result = await updateQtyReceiveItem(res, id, rest, t);
 
-      const resultBPo = await getOneBarangPurchaseOrder(
-        req,
-        res,
-        rest.idBarangPo
-      );
+      const resultBPo = await getOneBarangPurchaseOrder(rest.idBarangPo, t);
 
       await insertHistoryBarang(
         req,
         res,
         {
           userId: req.currentUser,
-          desc: Description.MINUS,
+          desc: Description.ADD,
           idBarang: resultBPo.toJSON().idBarang,
           quantityItem: iterator.quantityReceived,
           sourceId: idReceive,
           sourceType: ActivityUser.ReceiveItem,
-          status: StatsItem.DEC,
+          status: StatsItem.INC,
         },
         t
       );

@@ -24,16 +24,13 @@ const createBarangPurchaseOrder = async (
   }
 };
 
-const getOneBarangPurchaseOrder = async (
-  req,
-  res,
-  idBarangPo,
-  transaction = null
-) => {
+const getOneBarangPurchaseOrder = async (idBarangPo, transaction = null) => {
   return BarangPurchaseOrder.findOne({
     where: {
       id: idBarangPo,
+      isDelete: false,
     },
+    attributes: ["idBarang"],
     transaction: transaction,
   });
 };

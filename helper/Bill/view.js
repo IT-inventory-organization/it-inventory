@@ -41,7 +41,7 @@ const ViewOneBill = async (req, idBill, transaction = null) => {
         include: [
           {
             model: ReceivedItemsQty,
-            attributes: ["quantityReceived"],
+            attributes: ["quantityReceived", ["id", "idReceiveQtyItem"]],
             where: {
               isDelete: false,
             },
@@ -72,6 +72,7 @@ const ViewListOfBill = async (req, transaction = null) => {
   return Bill.findAll({
     where: {
       userId: req.currentUser,
+      isDelete: false,
     },
     transaction: transaction,
     attributes: ["tanggal", "supplier", "id"],
