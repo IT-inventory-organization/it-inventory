@@ -30,6 +30,7 @@ const DeleteDeliveryOrder = async (req, idDo, transaction = null) => {
         userId: req.currentUser,
         isDelete: false,
       },
+      transaction: transaction,
     }
   );
 };
