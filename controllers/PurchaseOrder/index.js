@@ -40,4 +40,10 @@ module.exports = (routes) => {
     listPurchaseOrderForReceiveItem
   );
   // routes.get("/get/list/:idPo", authentication, listPurchaseOrder);
+
+  // API For Sales Order
+
+  routes.get("/get/po/:idSalesOrder?", authentication);
+
+  // End API Sales Order
 };

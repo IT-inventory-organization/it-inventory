@@ -48,7 +48,6 @@ const createListBarang = async (data, transaction = null, reportId = null) => {
       },
     });
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };

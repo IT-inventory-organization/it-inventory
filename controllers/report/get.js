@@ -198,7 +198,6 @@ const getXMLReport = async (req, res) => {
     let xml = ``;
     const result = found.toJSON();
     const listBarang = result.listBarangs;
-    console.log(result.TransaksiPerdagangan.cif);
 
     for (let i = 0; i < listBarang.length; i++) {
       xml += `<HEADER>`;

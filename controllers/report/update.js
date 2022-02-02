@@ -211,7 +211,6 @@ const updateDataHeader = async (req, res) => {
       perkiraanTanggalPengeluaranUpdate
     );
   } catch (error) {
-    console.log(error);
     if (transaction) {
       await transaction.rollback();
     }
@@ -401,7 +400,6 @@ const updateDataBarang = async (req, res) => {
       dataToReturn
     );
   } catch (error) {
-    console.log(error);
     if (transaction) {
       await transaction.rollback();
     }

@@ -24,7 +24,6 @@ const fetchAllBill = async (req, res) => {
 
     return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
-    console.log(error);
     return errorResponse(res, httpStatus.internalServerError, "", error);
   }
 };

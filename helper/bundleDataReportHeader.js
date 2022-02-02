@@ -6,7 +6,7 @@ const Encryption = require("./encription");
 const dataPengajuan = (req, res, next) => {
   try {
     const Decrypt = Encryption.AESDecrypt(req.body.dataHeader);
-    console.log(Decrypt);
+
     const dataToInputPengajuan = {
       ...Decrypt.dataPengajuan,
       reportId: Decrypt.reportId,

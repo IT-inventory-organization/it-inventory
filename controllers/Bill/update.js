@@ -57,7 +57,6 @@ const updateBill = async (req, res) => {
 
     return successResponse(res, httpStatus.accepted, "Success Update Bill");
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

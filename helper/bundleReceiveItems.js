@@ -9,7 +9,7 @@ const BReceiveItems = (req, res, next) => {
     }
 
     const Decrypt = Encryption.AESDecrypt(req.body.dataReceive);
-    console.log(Decrypt, "de");
+
     req.body.DataToInput = {
       ...Decrypt,
       userId: req.currentUser,

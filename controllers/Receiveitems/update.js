@@ -108,7 +108,7 @@ const updateReceiveItem = async (req, res) => {
 
       exception.push(result[1][0].toJSON().id);
     }
-    console.log(exception);
+
     await softDeleteQtyReceiveItem(res, idReceive, exception, t);
 
     await t.commit();
@@ -119,7 +119,6 @@ const updateReceiveItem = async (req, res) => {
       "Success Update Receive Item"
     );
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

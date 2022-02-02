@@ -10,7 +10,6 @@ const updateCardList = async (req, res) => {
 
     return successResponse(res, httpStatus.accepted, "Success Update List");
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

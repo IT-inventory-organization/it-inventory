@@ -225,7 +225,7 @@ const deleteReport = async (idType, req) => {
     } else if (jenisPemberitahuan === "Import") {
       for (let i = 0; i < foundlistBarang.length; i++) {
         const listBarang = foundlistBarang[i].toJSON();
-        console.log(listBarang, "before");
+        
         const Dec = await Barang.decrement("stock", {
           by: listBarang.quantity,
           where: {
@@ -234,7 +234,7 @@ const deleteReport = async (idType, req) => {
           },
           transaction,
         });
-        console.log(Dec[0][0][0], "after");
+        
         if (Dec[0][0][0].stock < 0) {
           throw new Error("Stock Reach Minus, Delete Failed");
         }

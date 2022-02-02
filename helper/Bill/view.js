@@ -65,7 +65,6 @@ const ViewOneBill = async (req, idBill, transaction = null) => {
       },
     ],
     transaction: transaction,
-    logging: console.log,
   });
 };
 

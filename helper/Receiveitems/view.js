@@ -66,10 +66,9 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
           ],
         },
       ],
-      //   logging: console.log,
+      //   logging:
     });
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -131,7 +130,7 @@ const ViewOneReceivedItemForBill = async (req, res, idReceive) => {
         ],
       },
     ],
-    // logging: console.log,
+    // logging:
   });
 };
 
@@ -192,10 +191,9 @@ const listOfReceiveItem = async (req, res) => {
           ],
         },
       ],
-      // logging: console.log,
+      // logging:
     });
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

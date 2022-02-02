@@ -71,7 +71,7 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
       });
     }
     return PurchaseOrder.findOne({
-      // logging: console.log,
+      // logging:
       where: {
         id: idPo,
         isDelete: false,
@@ -107,7 +107,7 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
       ],
     });
   } catch (error) {
-    // console.log(error);
+    //
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -193,10 +193,8 @@ const listOfPurchaseOrder = async (req, res) => {
           required: false,
         },
       ],
-      logging: console.log,
     });
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

@@ -59,7 +59,6 @@ const fetchListNoReceiveForBill = async (req, res) => {
       RECEIVE_ITEMMAP.filter((x) => x != null)
     );
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -75,7 +74,6 @@ const fetchOneDataOfReceiveItem = async (req, res) => {
     const result = await ViewOneReceivedItemForBill(req, res, idReceive);
     return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

@@ -51,7 +51,7 @@ const DeleteContact = async (res, idContact, transaction = null) => {
       }
     );
   } catch (error) {
-    // console.log(error);
+    //
     return errorResponse(
       res,
       httpStatus.internalServerError,

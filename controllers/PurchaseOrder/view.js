@@ -56,7 +56,7 @@ const listPurchaseOrderForReceiveItem = async (req, res) => {
 
     const listPurchaseOrderMap = result.map((x) => {
       const iterator = x.toJSON();
-      console.log(iterator);
+
       if (iterator?.ReceiveItem?.id == idReceive || !iterator?.ReceiveItem) {
         return {
           nomorPO: iterator.nomorPO,
@@ -64,7 +64,7 @@ const listPurchaseOrderForReceiveItem = async (req, res) => {
         };
       }
     });
-    // console.log(result);
+
     return successResponse(
       res,
       httpStatus.ok,
@@ -72,7 +72,6 @@ const listPurchaseOrderForReceiveItem = async (req, res) => {
       listPurchaseOrderMap.filter((x) => x != null)
     );
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -92,6 +91,18 @@ const fetchPoForReceiveItem = async (req, res) => {
       res,
       httpStatus.internalServerError,
       "Failed Fetching Po"
+    );
+  }
+};
+
+const listPurchaseOrderForSalesOrder = async (req, res) => {
+  try {
+    const { idSalesOrder } = req.params;
+  } catch (error) {
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed TO Fethc lIst Of Purchase Order"
     );
   }
 };

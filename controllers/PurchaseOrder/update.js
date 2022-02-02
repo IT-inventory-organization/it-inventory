@@ -87,7 +87,6 @@ const updatePo = async (req, res) => {
       ""
     );
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

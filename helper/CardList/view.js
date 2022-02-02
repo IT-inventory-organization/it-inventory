@@ -64,7 +64,6 @@ const ViewAllSupplier = async (res, transaction = null) => {
       attributes: ["name", "ID"],
     });
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

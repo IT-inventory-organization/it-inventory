@@ -59,7 +59,6 @@ const addPurchaseOrder = async (req, res) => {
       "Success Creating New Purchase Order"
     );
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

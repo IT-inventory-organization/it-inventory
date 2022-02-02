@@ -116,7 +116,6 @@ const addReport = async (req, res) => {
       dataReturn
     );
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       Http.internalServerError,
@@ -235,7 +234,6 @@ const addDataHeader = async (req, res) => {
       dataToReturn
     );
   } catch (error) {
-    console.log(error);
     if (transaction) {
       await transaction.rollback();
     }

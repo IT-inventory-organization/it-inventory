@@ -5,7 +5,7 @@ const httpStatus = require("../helper/Httplib");
 const Role = require("../database/models/role");
 
 const authentication = async (req, res, next) => {
-  // console.log(req.method);
+  //
   const bearerToken = req.headers.authorization;
   if (!bearerToken) {
     return errorResponse(res, httpStatus.badRequest, "Please login first");
