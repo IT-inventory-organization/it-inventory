@@ -84,10 +84,12 @@ const ViewListOfBill = async (req, transaction = null) => {
         where: {
           isDelete: false,
         },
+        required: false,
         include: [
           {
             model: ReceivedItemsQty,
             attributes: ["quantityReceived"],
+            required: false,
             where: {
               isDelete: false,
             },
@@ -95,6 +97,7 @@ const ViewListOfBill = async (req, transaction = null) => {
               {
                 model: BarangPurchaseOrder,
                 attributes: ["quantity"],
+                required: false,
                 where: {
                   isDelete: false,
                 },
@@ -102,6 +105,7 @@ const ViewListOfBill = async (req, transaction = null) => {
                   {
                     model: Barang,
                     attributes: ["name"],
+                    required: false,
                     where: {
                       isDelete: false,
                     },
@@ -115,13 +119,16 @@ const ViewListOfBill = async (req, transaction = null) => {
       {
         model: ReceiveItems,
         attributes: ["noReceive"],
+        required: false,
         include: [
           {
             model: PurchaseOrder,
             attributes: ["supplier", "nomorPO"],
+            required: false,
             include: [
               {
                 model: CardList,
+                required: false,
                 attributes: ["name"],
               },
             ],

@@ -75,7 +75,6 @@ const ViewOneSalesOrder = async (req, idSo, transaction = null) => {
         },
       ],
       transaction: transaction,
-      logging: console.log,
     });
   } catch (error) {
     return errorResponse(
@@ -104,7 +103,7 @@ const FetchListOfSalesOrder = async (req, transaction) => {
 };
 
 const FetchingDataForDeliveryOrder = async (req, idSo, transaction = null) => {
-  return SalesOrder.findAll({
+  return SalesOrder.findOne({
     where: {
       isDelete: false,
       userId: req.currentUser,
@@ -125,7 +124,7 @@ const FetchingDataForDeliveryOrder = async (req, idSo, transaction = null) => {
         where: {
           isDelete: false,
         },
-        attributes: ["quantity"],
+        attributes: ["quantity", ["id", "idSOBarang"]],
         include: [
           {
             model: Barang,

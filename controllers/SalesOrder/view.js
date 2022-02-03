@@ -49,7 +49,7 @@ const fetchOneSalesOrder = async (req, res) => {
 
 const ListOfSalesOrderThatNotBeenUsedYet = async (req, res) => {
   try {
-    const { idSo } = req.params;
+    const { idDo } = req.params;
     const result = await FetchListOfSalesOrder(req);
 
     const ResultMap = [];
@@ -57,14 +57,13 @@ const ListOfSalesOrderThatNotBeenUsedYet = async (req, res) => {
     for (const iterator of result) {
       const json = iterator.toJSON();
 
-      if (json?.DeliveryOrder?.id == idSo || !json?.DeliveryOrder) {
+      if (json?.DeliveryOrder?.id == idDo || !json?.DeliveryOrder) {
         ResultMap.push(json);
       }
     }
 
     return successResponse(res, httpStatus.ok, "", ResultMap);
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -78,7 +77,7 @@ const fetchDataForDeliveryOrderAutoComplete = async (req, res) => {
     const { idSo } = req.params;
     const result = await FetchingDataForDeliveryOrder(req, idSo);
 
-    return successResponse(res, httpStatus.ok, "", result, false);
+    return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
     return errorResponse(
       res,

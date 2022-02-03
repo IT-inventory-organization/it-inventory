@@ -2,6 +2,7 @@ const Barang = require("../../database/models/barang");
 const CardList = require("../../database/models/cardList");
 const DeliveryOrder = require("../../database/models/deliveryOrder");
 const DeliveryOrderBarang = require("../../database/models/deliveryOrderBarang");
+const Invoice = require("../../database/models/invoice");
 const SalesOrder = require("../../database/models/salesOrder");
 const SalesOrderBarang = require("../../database/models/salesOrderBarang");
 
@@ -11,7 +12,7 @@ const ViewList = async (req, transaction = null) => {
       userId: req.currentUser,
       isDelete: false,
     },
-    attributes: ["nomorDO", "tanggal"],
+    attributes: ["nomorDO", "tanggal", "id"],
     include: [
       {
         model: SalesOrder,
@@ -39,7 +40,6 @@ const ViewList = async (req, transaction = null) => {
       },
     ],
     transaction: transaction,
-    // logging: console.log,
   });
 };
 
@@ -59,7 +59,7 @@ const ViewOneList = async (req, idDo, transaction = null) => {
         where: {
           isDelete: false,
         },
-        attributes: ["noSalesOrder", "id"],
+        attributes: ["noSalesOrder", "id", "tanggalOrder"],
         include: [
           {
             model: CardList,
@@ -95,7 +95,80 @@ const ViewOneList = async (req, idDo, transaction = null) => {
   });
 };
 
+const ViewListNoDeliveryOrder = async (req, transaction = null) => {
+  return DeliveryOrder.findAll({
+    where: {
+      userId: req.currentUser,
+      isDelete: false,
+    },
+    attributes: ["nomorDO", "id"],
+    include: [
+      {
+        model: Invoice,
+        required: false,
+        where: {
+          isDelete: false,
+        },
+        attributes: ["id"],
+      },
+    ],
+  });
+};
+
+const ViewListAutoComplete = async (req, idDo, transaction = null) => {
+  return DeliveryOrder.findOne({
+    where: {
+      userId: req.currentUser,
+      id: idDo,
+      isDelete: false,
+    },
+    attributes: ["nomorDO", "id"],
+    include: [
+      {
+        model: DeliveryOrderBarang,
+        where: {
+          isDelete: false,
+        },
+        required: false,
+        attributes: ["quantityReceived", "id"],
+        include: [
+          {
+            model: SalesOrderBarang,
+            where: {
+              isDelete: false,
+            },
+            attributes: ["quantity", "hargaSatuan", "jumlah", "id"],
+            include: [
+              {
+                model: Barang,
+                attributes: ["satuanKemasan", "name"],
+                where: {
+                  isDelete: false,
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        model: SalesOrder,
+        where: { isDelete: false },
+        attributes: ["idContact", "id"],
+        include: [
+          {
+            model: CardList,
+            where: { isDelete: false },
+            attributes: ["name", "id"],
+          },
+        ],
+      },
+    ],
+  });
+};
+
 module.exports = {
   ViewList,
   ViewOneList,
+  ViewListNoDeliveryOrder,
+  ViewListAutoComplete,
 };

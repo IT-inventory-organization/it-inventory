@@ -70,7 +70,6 @@ const ViewAllSupplier = async (res, transaction = null) => {
       ],
       transaction: transaction,
       attributes: ["name", "_ID", "id"],
-      logging: console.log,
     });
   } catch (error) {
     return errorResponse(

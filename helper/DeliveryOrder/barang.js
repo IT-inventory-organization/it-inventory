@@ -18,7 +18,6 @@ const UpdateDeliveryOrderBarang = async (
   return DeliveryOrderBarang.update(data, {
     where: {
       id: idDeliveryBarang,
-      userId: req.currentUser,
       isDelete: false,
     },
     transaction: transaction,
@@ -40,7 +39,6 @@ const SoftDeleteDeliveryOrderBarang = async (
         id: {
           [Op.notIn]: exception,
         },
-        userId: req.currentUser,
       },
       transaction: transaction,
       returning: true,

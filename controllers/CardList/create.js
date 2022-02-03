@@ -14,7 +14,6 @@ const addContactCardList = async (req, res) => {
       "Success Create New Contact"
     );
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

@@ -21,7 +21,7 @@ const AddContact = async (res, data, transaction = null) => {
 const UpdateContact = async (req, res, idContact, data, transaction = null) => {
   try {
     data._ID = data.ID;
-    console.log(data, idContact);
+
     return CardList.update(data, {
       where: {
         id: idContact,
