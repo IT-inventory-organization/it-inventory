@@ -264,7 +264,6 @@ const updateDataLanjutan = async (req, res) => {
       reportId: promises[0].reportId,
     });
   } catch (error) {
-    console.error(error);
     await transaction.rollback();
     return errorResponse(res, Http.internalServerError, error.message);
   }

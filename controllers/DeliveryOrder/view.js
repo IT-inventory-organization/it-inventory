@@ -65,7 +65,7 @@ const FetchListOfNoDeliveryOrderThatNotBeenUsedYet = async (req, res) => {
       }
     }
 
-    return successResponse(res, httpStatus.ok, "", NoDoMap, false);
+    return successResponse(res, httpStatus.ok, "", NoDoMap);
   } catch (error) {
     return errorResponse(
       res,
@@ -81,7 +81,7 @@ const FetcOneDeliveryOrderAutoCompleteInvoice = async (req, res) => {
 
     const result = await ViewListAutoComplete(req, idDo);
 
-    return successResponse(res, httpStatus.ok, "", result, false);
+    return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
     console.log(error);
     return errorResponse(

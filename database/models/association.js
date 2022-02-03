@@ -162,14 +162,14 @@ const setAssociations = function () {
   DeliveryOrder.hasOne(Invoice, { foreignKey: "id" });
   Invoice.belongsTo(DeliveryOrder, { foreignKey: "idDo" });
 
-  Invoice.hasMany(InvoiceDetail, { foreignKey: "id" });
-  InvoiceDetail.belongsTo(Invoice, { foreignKey: "idInv" });
+  Invoice.hasMany(InvoiceDetail, { foreignKey: "idInv" });
+  InvoiceDetail.belongsTo(Invoice, { foreignKey: "id" });
 
   DeliveryOrderBarang.hasOne(InvoiceDetail, { foreignKey: "id" });
   InvoiceDetail.belongsTo(DeliveryOrderBarang, { foreignKey: "idDOBarang" });
 
-  Invoice.hasOne(CardList, { foreignKey: "idContact" });
-  CardList.belongsTo(Invoice, { foreignKey: "id" });
+  CardList.hasOne(Invoice, { foreignKey: "id" });
+  Invoice.belongsTo(CardList, { foreignKey: "idContact" });
 };
 
 module.exports = setAssociations;

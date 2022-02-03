@@ -12,7 +12,6 @@ const UpdateDetailInvoice = async (req, idDetInv, data, transaction = null) => {
   return InvoiceDetail.update(data, {
     where: {
       id: idDetInv,
-      userId: req.currentUser,
       isDelete: false,
     },
     transaction: transaction,

@@ -47,4 +47,5 @@ const addZero = (val) => {
 module.exports = {
   convertStrignToDateUTC,
   convertDate,
+  addZero,
 };

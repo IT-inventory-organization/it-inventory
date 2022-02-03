@@ -2,23 +2,32 @@
 const Sequelize = require("sequelize");
 const db = require("../../configs/database");
 
-const Bill = db.define(
-  "Bill",
+const BillPayment = db.define(
+  "BillPayment",
   {
-    idReceive: {
+    idBill: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
-        model: "ReceiveItems",
+        model: "Bill",
         key: "id",
       },
       onDelete: "no action",
       onUpdate: "cascade",
     },
-    noTransaksi: {
-      type: Sequelize.STRING,
+    tanggal: {
+      type: Sequelize.DATEONLY,
       allowNull: false,
-      unique: true,
+    },
+    idContact: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: "CardList",
+        key: "id",
+      },
+      onUpdate: "cascade",
+      onDelete: "no action",
     },
     remarks: {
       type: Sequelize.STRING,
@@ -42,19 +51,11 @@ const Bill = db.define(
       onUpdate: "cascade",
       allowNull: false,
     },
-    tanggal: {
-      type: Sequelize.DATEONLY,
-      allowNull: false,
-    },
-    supplier: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
   },
   {
-    tableName: "Bill",
+    tableName: "BillPayment",
     freezeTableName: true,
   }
 );
 
-module.exports = Bill;
+module.exports = BillPayment;
