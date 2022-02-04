@@ -1,11 +1,13 @@
 const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
 const Bill = require("../../database/models/bill");
+const BillPayment = require("../../database/models/billPayment");
 const BillPriceItem = require("../../database/models/billPriceItem");
 const CardList = require("../../database/models/cardList");
 const PurchaseOrder = require("../../database/models/purchaseOrder");
 const ReceiveItems = require("../../database/models/receivedItems");
 const ReceivedItemsQty = require("../../database/models/receivedItemsQty");
+const SalesOrder = require("../../database/models/salesOrder");
 const { CardUserType } = require("../cardUserType.enum");
 
 const ViewOneBill = async (req, idBill, transaction = null) => {
@@ -139,7 +141,95 @@ const ViewListOfBill = async (req, transaction = null) => {
   });
 };
 
+const fetchNoTransaksiForBillPayment = async (req, transaction = null) => {
+  return Bill.findAll({
+    where: {
+      userId: req.currentUser,
+      isDelete: false,
+    },
+    attributes: ["noTransaksi", "id"],
+    transaction: transaction,
+    include: [
+      {
+        model: BillPayment,
+        required: false,
+        where: {
+          isDelete: false,
+        },
+      },
+    ],
+  });
+};
+
+const fetchBillForBillPaymentAutoComplete = async (
+  req,
+  idBill,
+  transaction = null
+) => {
+  return Bill.findOne({
+    where: {
+      id: idBill,
+      userId: req.currentUser,
+      isDelete: false,
+    },
+    attributes: ["noTransaksi", "id"],
+    transaction: transaction,
+    include: [
+      // Get Supplier
+      {
+        model: ReceiveItems,
+        attributes: ["id"],
+        include: [
+          {
+            model: PurchaseOrder,
+            attributes: ["idContactCard", "supplier"],
+            where: { isDelete: false },
+            include: [
+              {
+                model: CardList,
+                where: { isDelete: false },
+                attributes: ["name", "id"],
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+      // Get Barang
+      {
+        model: BillPriceItem,
+        attributes: ["hargaSatuan", "jumlah", "id"],
+        where: { isDelete: false },
+        include: [
+          {
+            model: ReceivedItemsQty,
+            attributes: ["quantityReceived", "id"],
+            where: { isDelete: false },
+            include: [
+              {
+                model: BarangPurchaseOrder,
+                where: { isDelete: false },
+                attributes: ["id"],
+                include: [
+                  {
+                    model: Barang,
+                    attributes: [["satuanKemasan", "item"], "name", "id"],
+                    // where: { isDelete: false }, // Double Check
+                    required: false,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+};
+
 module.exports = {
   ViewOneBill,
   ViewListOfBill,
+  fetchNoTransaksiForBillPayment,
+  fetchBillForBillPaymentAutoComplete,
 };

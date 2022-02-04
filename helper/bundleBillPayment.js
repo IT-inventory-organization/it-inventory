@@ -16,7 +16,7 @@ const BBillPayment = async (req, res, next) => {
     return errorResponse(
       res,
       httpStatus.badRequest,
-      "Failed To Create Card List"
+      "Failed To Create Bill Payment"
     );
   }
 };

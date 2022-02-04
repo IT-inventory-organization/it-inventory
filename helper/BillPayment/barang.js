@@ -34,7 +34,7 @@ const SoftDeleteBillPaymentItems = async (
     },
     {
       where: {
-        idBill: idBillPayment,
+        idBillPayment: idBillPayment,
         id: {
           [Op.notIn]: exception,
         },

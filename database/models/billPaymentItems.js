@@ -20,6 +20,16 @@ const BillPaymentItems = db.define(
       type: Sequelize.BOOLEAN,
       defaultValue: false,
     },
+    idBillItem: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: "BillPriceItem",
+        key: "id",
+      },
+      onUpdate: "cascade",
+      onDelete: "no action",
+    },
   },
   {
     tableName: "BillPaymentItems",

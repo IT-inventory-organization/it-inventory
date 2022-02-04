@@ -32,6 +32,8 @@ const DeliveryOrder = require("./deliveryOrder");
 const DeliveryOrderBarang = require("./deliveryOrderBarang");
 const Invoice = require("./invoice");
 const InvoiceDetail = require("./invoiceDetail");
+const BillPayment = require("./billPayment");
+const BillPaymentItems = require("./billPaymentItems");
 
 const setAssociations = function () {
   Report.hasOne(reportIdentitasPenerima, { foreignKey: "reportId" });
@@ -170,6 +172,18 @@ const setAssociations = function () {
 
   CardList.hasOne(Invoice, { foreignKey: "id" });
   Invoice.belongsTo(CardList, { foreignKey: "idContact" });
+
+  Bill.hasOne(BillPayment, { foreignKey: "id" });
+  BillPayment.belongsTo(Bill, { foreignKey: "idBill" });
+
+  CardList.hasOne(BillPayment, { foreignKey: "id" });
+  BillPayment.belongsTo(CardList, { foreignKey: "idContact" });
+
+  BillPayment.hasMany(BillPaymentItems, { foreignKey: "idBillPayment" });
+  BillPaymentItems.belongsTo(BillPayment, { foreignKey: "id" });
+
+  BillPriceItem.hasOne(BillPaymentItems, { foreignKey: "id" });
+  BillPaymentItems.belongsTo(BillPriceItem, { foreignKey: "idBillItem" });
 };
 
 module.exports = setAssociations;
