@@ -22,7 +22,6 @@ const addInvoice = async (req, res) => {
     await t.commit();
     return successResponse(res, httpStatus.created, "Success Create Invoice");
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

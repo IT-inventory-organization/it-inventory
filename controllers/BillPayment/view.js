@@ -38,7 +38,6 @@ const viewOneList = async (req, res) => {
 
     return successResponse(res, httpStatus.ok, "", OneMap);
   } catch (error) {
-    console.log(error);
     return errorResponse(res, httpStatus.internalServerError, "");
   }
 };

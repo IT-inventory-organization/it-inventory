@@ -5,21 +5,7 @@ const VPurchaseOrder = [
   body("DataToInput.idContactCard")
     .trim()
     .notEmpty()
-    .withMessage("Select A Supplier From this Purchase Order")
-    .custom((value, { req }) => {
-      if (req.method === "PUT") {
-        return Promise.resolve();
-      }
-      return PurchaseOrder.findOne({
-        where: { idContactCard: value, isDelete: false },
-      }).then((d) => {
-        if (d) {
-          return Promise.reject(
-            "Some of Purchase Order Has Selected This Supplier, Please Choose Another One"
-          );
-        }
-      });
-    }),
+    .withMessage("Select A Supplier From this Purchase Order"),
   body("DataToInput.nomorPO")
     .trim()
     .notEmpty()

@@ -68,6 +68,10 @@ const Invoice = db.define(
       onUpdate: "cascade",
       allowNull: false,
     },
+    status: {
+      type: Sequelize.STRING,
+      defaultValue: "DRAFT",
+    },
   },
   {
     tableName: "Invoice",

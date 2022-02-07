@@ -81,9 +81,6 @@ const ViewOneList = async (req, idDo, transaction = null) => {
             include: [
               {
                 model: Barang,
-                where: {
-                  isDelete: false,
-                },
                 attributes: ["name", "satuanKemasan"],
               },
             ],
@@ -142,9 +139,6 @@ const ViewListAutoComplete = async (req, idDo, transaction = null) => {
               {
                 model: Barang,
                 attributes: ["satuanKemasan", "name"],
-                where: {
-                  isDelete: false,
-                },
               },
             ],
           },

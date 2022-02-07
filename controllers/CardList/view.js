@@ -48,9 +48,9 @@ const fetchSupplierForPurchaseOrder = async (req, res) => {
     for (const iterator of result) {
       const contact = iterator.toJSON();
 
-      if (contact?.PurchaseOrder?.id === idPo || !contact?.PurchaseOrder) {
-        ContactMap.push(contact);
-      }
+      // if (contact?.PurchaseOrder?.id === idPo || !contact?.PurchaseOrder) {
+      ContactMap.push(contact);
+      // }
     }
 
     return successResponse(

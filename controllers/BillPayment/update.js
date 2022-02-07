@@ -59,7 +59,6 @@ const updateBillPaymentItem = async (req, res) => {
       "Success Update Bill Payment"
     );
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

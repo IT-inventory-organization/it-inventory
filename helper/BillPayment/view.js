@@ -102,9 +102,6 @@ const ViewOne = async (req, idBillPayment, transaction = null) => {
                       {
                         model: Barang,
                         attributes: [["satuanKemasan", "item"], "name"],
-                        where: {
-                          isDelete: false,
-                        },
                       },
                     ],
                   },
@@ -150,7 +147,10 @@ const ViewOneQuery = async (req, idBillPayment, transaction = null) => {
 
 const ViewItemQuery = async (req, idBillPayment, transaction = null) => {
   return sequelize.query(`
-    SELECT b."name", b."satuanKemasan", bpit."hargaSatuan", riq."quantityReceived", bpit.jumlah  FROM "BillPaymentItems"  as bpi
+    SELECT 
+      bpi."id", bpi."idBillItem", b."name", b."satuanKemasan", bpit."hargaSatuan", 
+      riq."quantityReceived", bpit.jumlah  
+    FROM "BillPaymentItems"  as bpi
     INNER JOIN "BillPriceItem" as bpit ON bpi."idBillItem" = bpit."id" AND bpi."isDelete" = false
     INNER JOIN "ReceivedItemsQty" as riq ON bpit."idReceiveQtyItem" = riq."id" AND riq."isDelete" = false
     INNER JOIN "BarangPurchaseOrder" as bpo ON riq."idBarangPo" = bpo."id" AND bpo."isDelete" = false

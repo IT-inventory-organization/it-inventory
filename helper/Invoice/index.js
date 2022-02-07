@@ -1,4 +1,5 @@
 const Invoice = require("../../database/models/invoice");
+const { StatsInvoice } = require("../Activity.interface");
 
 const AddInvoice = async (data, transaction = null) => {
   return Invoice.create(data, {
@@ -35,8 +36,24 @@ const DeleteInvoice = async (req, idInv, transaction = null) => {
   );
 };
 
+const changeStatus = async (req, idInv, transaction = null) => {
+  return Invoice.update(
+    {
+      status: StatsInvoice.DONE,
+    },
+    {
+      where: {
+        id: idInv,
+      },
+      transaction: transaction,
+      returning: true,
+    }
+  );
+};
+
 module.exports = {
   AddInvoice,
   UpdateInvoice,
   DeleteInvoice,
+  changeStatus,
 };

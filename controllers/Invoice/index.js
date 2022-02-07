@@ -5,7 +5,12 @@ const { validationResponse } = require("../../middlewares/validationResponse");
 const { addInvoice } = require("./create");
 const { deleteInvoice } = require("./delete");
 const { updateInvoice } = require("./update");
-const { ViewOne, ViewAll } = require("./view");
+const {
+  ViewOne,
+  ViewAll,
+  fetchAllInvoiceThatNotBeenUsedYet,
+  fetchInvoiceForAutoComplete,
+} = require("./view");
 
 module.exports = (routes) => {
   routes.get("/", authentication, ViewAll);
@@ -30,4 +35,19 @@ module.exports = (routes) => {
   );
 
   routes.delete("/:idInv", authentication, deleteInvoice);
+
+  // Api For Receive Payment
+
+  routes.get(
+    "/get/inv/:idReceivePayment?",
+    authentication,
+    fetchAllInvoiceThatNotBeenUsedYet
+  );
+
+  routes.get(
+    "/get/invData/:idInv",
+    authentication,
+    fetchInvoiceForAutoComplete
+  );
+  // Api For Receive Payment
 };

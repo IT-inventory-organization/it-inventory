@@ -67,9 +67,6 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
             include: [
               {
                 model: Barang,
-                where: {
-                  isDelete: false,
-                },
                 attributes: ["name", "satuanKemasan"],
               },
             ],
@@ -78,7 +75,6 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
       });
     }
     return PurchaseOrder.findOne({
-      // logging:
       where: {
         id: idPo,
         isDelete: false,

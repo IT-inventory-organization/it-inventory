@@ -57,16 +57,12 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
                 {
                   model: Barang,
                   attributes: ["satuanKemasan", "name"],
-                  where: {
-                    isDelete: false,
-                  },
                 },
               ],
             },
           ],
         },
       ],
-      //   logging:
     });
   } catch (error) {
     return errorResponse(
@@ -98,7 +94,7 @@ const ViewOneReceivedItemForBill = async (req, res, idReceive) => {
         include: [
           {
             model: BarangPurchaseOrder,
-            attributes: [],
+            attributes: ["quantity"],
             required: true,
           },
           {
@@ -130,7 +126,6 @@ const ViewOneReceivedItemForBill = async (req, res, idReceive) => {
         ],
       },
     ],
-    // logging:
   });
 };
 
@@ -149,8 +144,8 @@ const listOfReceiveItem = async (req, res) => {
           where: {
             isDelete: false,
           },
-          attributes: ["quantityReceived"],
-          required: false,
+          attributes: ["quantityReceived", "id", "idBarangPo"],
+          required: true,
           include: [
             {
               model: BarangPurchaseOrder,
@@ -158,14 +153,11 @@ const listOfReceiveItem = async (req, res) => {
               where: {
                 isDelete: false,
               },
-              required: false,
+              required: true,
               include: [
                 {
                   model: Barang,
                   attributes: ["name"],
-                  where: {
-                    isDelete: false,
-                  },
                   required: true,
                 },
               ],
@@ -178,7 +170,7 @@ const listOfReceiveItem = async (req, res) => {
           where: {
             isDelete: false,
           },
-          required: false,
+          required: true,
           include: [
             {
               model: BarangPurchaseOrder,
@@ -191,7 +183,6 @@ const listOfReceiveItem = async (req, res) => {
           ],
         },
       ],
-      // logging:
     });
   } catch (error) {
     return errorResponse(

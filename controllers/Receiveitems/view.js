@@ -27,7 +27,6 @@ const listReceiveItem = async (req, res) => {
     const result = await listOfReceiveItem(req, res);
     return successResponse(res, httpStatus.accepted, "", result);
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

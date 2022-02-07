@@ -108,9 +108,6 @@ const ViewListOfBill = async (req, transaction = null) => {
                     model: Barang,
                     attributes: ["name"],
                     required: false,
-                    where: {
-                      isDelete: false,
-                    },
                   },
                 ],
               },
@@ -158,6 +155,7 @@ const fetchNoTransaksiForBillPayment = async (req, transaction = null) => {
         },
       },
     ],
+    logging: console.log,
   });
 };
 
@@ -209,7 +207,7 @@ const fetchBillForBillPaymentAutoComplete = async (
               {
                 model: BarangPurchaseOrder,
                 where: { isDelete: false },
-                attributes: ["id"],
+                attributes: ["id", "quantity"],
                 include: [
                   {
                     model: Barang,

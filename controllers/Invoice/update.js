@@ -30,7 +30,7 @@ const updateInvoice = async (req, res) => {
 
       const { id, ...restData } = iterator;
       const resultDetailInv = await UpdateDetailInvoice(req, id, restData, t);
-      console.log(id);
+
       exception.push(resultDetailInv[1][0].toJSON().id);
     }
 
@@ -55,7 +55,6 @@ const updateInvoice = async (req, res) => {
 
     return successResponse(res, httpStatus.accepted, "Success Update Invoice");
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

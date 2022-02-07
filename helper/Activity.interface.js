@@ -21,9 +21,15 @@ class InfoReport {
   static OUT = "Pengeluaran";
 }
 
+class StatsInvoice {
+  static DRAFT = "DRAFT";
+  static DONE = "DONE";
+}
+
 module.exports = {
   ActivityUser,
   Description,
   StatsItem,
   InfoReport,
+  StatsInvoice,
 };

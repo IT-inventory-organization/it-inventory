@@ -43,7 +43,7 @@ const fetchAllBillThatNotBeenUsedYet = async (req, res) => {
 
     for (const iterator of result) {
       const json = iterator.toJSON();
-
+      console.log(json);
       if (
         !iterator?.BillPayment ||
         iterator?.BillPayment?.id == idBillPayment
@@ -52,7 +52,7 @@ const fetchAllBillThatNotBeenUsedYet = async (req, res) => {
       }
     }
 
-    return successResponse(res, httpStatus.ok, "", BillTrancationMap, false);
+    return successResponse(res, httpStatus.ok, "", BillTrancationMap);
   } catch (error) {
     return errorResponse(res, httpStatus.internalServerError, "", error);
   }
@@ -66,7 +66,6 @@ const fetchBillFOrAutoComplete = async (req, res) => {
 
     return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
-    console.log(error);
     return errorResponse(res, httpStatus.internalServerError, "", error);
   }
 };
