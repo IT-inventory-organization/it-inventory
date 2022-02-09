@@ -56,7 +56,7 @@ const ListOfSalesOrderThatNotBeenUsedYet = async (req, res) => {
 
     for (const iterator of result) {
       const json = iterator.toJSON();
-
+      // console.log(json);
       if (json?.DeliveryOrder?.id == idDo || !json?.DeliveryOrder) {
         ResultMap.push(json);
       }

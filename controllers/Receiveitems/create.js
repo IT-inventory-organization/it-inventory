@@ -15,6 +15,7 @@ const {
 const { addDataReceiveItem } = require("../../helper/Receiveitems");
 const { addQtyReceiveItem } = require("../../helper/Receiveitems/quantity");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const addReceiveItems = async (req, res) => {
   let t;
@@ -34,7 +35,7 @@ const addReceiveItems = async (req, res) => {
       req,
       res,
       {
-        sourceId: resultReceive.toJSON().id,
+        sourceId: resultReceive.id,
         sourceType: ActivityUser.ReceiveItem,
       },
       t
@@ -68,7 +69,17 @@ const addReceiveItems = async (req, res) => {
     }
 
     // User Activity
-
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Create Receive Items",
+          sourceId: resultReceive.id,
+          sourceType: ActivityUser.ReceiveItem,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
     await t.commit();
 
     return successResponse(

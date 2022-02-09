@@ -75,7 +75,10 @@ const { createListBarang } = require("../../helper/ListBarang");
 const { VListBarang } = require("../../middlewares/validationDataBarang");
 const authentication = require("../../middlewares/authentication");
 const Encryption = require("../../helper/encription");
-const { createUserActivity } = require("../../helper/UserActivity");
+const {
+  createUserActivity,
+  CreateActivityUser,
+} = require("../../helper/UserActivity");
 const { bundleReport } = require("../../helper/bundleReport");
 const { createDataLartas } = require("../../helper/DataLartas");
 const { createPPJK } = require("../../helper/PPJK");
@@ -105,8 +108,17 @@ const addReport = async (req, res) => {
       userId: result.userId,
     };
 
+    // if (req.currentRole !== "Owner") {
+    //   await createUserActivity(req.currentUser, result.id, "Create New Report");
+    // }
+
     if (req.currentRole !== "Owner") {
-      await createUserActivity(req.currentUser, result.id, "Create New Report");
+      await CreateActivityUser({
+        activity: "Create Report",
+        sourceId: result.id,
+        sourceType: ActivityUser.PPFTZ,
+        userId: req.currentUser,
+      });
     }
 
     return successResponse(

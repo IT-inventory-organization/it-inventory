@@ -101,14 +101,6 @@ const getAll = async (req, res) => {
       throw new Error(result.error);
     }
 
-    if (req.currentRole !== "Owner") {
-      await createUserActivity(
-        req.currentUser,
-        null,
-        "Viewing All Data Report"
-      );
-    }
-
     return successResponse(
       res,
       httpStatus.ok,
@@ -142,27 +134,34 @@ const getOne = async (req, res) => {
 
     const data = result.toJSON();
 
-    data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran =
-      convertDate(
-        data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran
+    if (data?.DataPerkiraanTanggalPengeluaran?.perkiraanTanggalPengeluaran) {
+      data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran =
+        convertDate(
+          data.DataPerkiraanTanggalPengeluaran.perkiraanTanggalPengeluaran
+        );
+    }
+    if (data?.IdentitasPengirim?.tanggalIjinBpkPengirim) {
+      data.IdentitasPengirim.tanggalIjinBpkPengirim = convertDate(
+        data.IdentitasPengirim.tanggalIjinBpkPengirim
       );
-    data.IdentitasPengirim.tanggalIjinBpkPengirim = convertDate(
-      data.IdentitasPengirim.tanggalIjinBpkPengirim
-    );
+    }
 
     for (let i = 0; i < data.ListDokumens.length; i++) {
-      data.ListDokumens[i].tanggalDokumen = convertDate(
-        data.ListDokumens[i].tanggalDokumen
-      );
+      if (data?.ListDokumens[i]?.tanggalDokumen) {
+        data.ListDokumens[i].tanggalDokumen = convertDate(
+          data.ListDokumens[i].tanggalDokumen
+        );
+      }
     }
 
     // Remove
-    if (req.currentRole !== "Owner") {
-      await createUserActivity(req.currentUser, id, "View One Report");
-    }
+    // if (req.currentRole !== "Owner") {
+    //   await createUserActivity(req.currentUser, id, "View One Report");
+    // }
 
     return successResponse(res, httpStatus.ok, "", data);
   } catch (error) {
+    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -337,9 +336,9 @@ const getXMLReport = async (req, res) => {
     }
 
     // Remove
-    if (req.currentRole !== "Owner") {
-      await createUserActivity(req.currentUser, id, "Viewing XML Format");
-    }
+    // if (req.currentRole !== "Owner") {
+    //   await createUserActivity(req.currentUser, id, "Viewing XML Format");
+    // }
 
     return successResponse(res, httpStatus.ok, xml, xml);
   } catch (error) {
@@ -357,9 +356,9 @@ const getTotalReport = async (req, res) => {
     const result = await countAllReport(req);
 
     // Remove
-    if (req.currentRole !== "Owner") {
-      await createUserActivity(req.currentUser, null, "Viewing Total Report");
-    }
+    // if (req.currentRole !== "Owner") {
+    //   await createUserActivity(req.currentUser, null, "Viewing Total Report");
+    // }
 
     const total = result[0];
 
@@ -382,14 +381,14 @@ const getDataActivityRedLine = async (req, res) => {
       return successResponse(res, httpStatus.ok, "", result);
     }
 
-    // Remove
-    if (req.currentRole !== "Owner") {
-      await createUserActivity(
-        req.currentUser,
-        null,
-        "Viewing Report Red Line Activity"
-      );
-    }
+    // // Remove
+    // if (req.currentRole !== "Owner") {
+    //   await createUserActivity(
+    //     req.currentUser,
+    //     null,
+    //     "Viewing Report Red Line Activity"
+    //   );
+    // }
 
     const result = await getAllReportByType(req, pageSize, pageNo, type);
 

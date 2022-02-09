@@ -1,10 +1,12 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { createPurchaseOrder } = require("../../helper/PurchaseOrder");
 const {
   createBarangPurchaseOrder,
 } = require("../../helper/PurchaseOrder/barang");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const addPurchaseOrder = async (req, res) => {
   let transaction = null;
@@ -52,6 +54,17 @@ const addPurchaseOrder = async (req, res) => {
     }
 
     // Save Activity User
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Create Purchase Order",
+          sourceId: result.id,
+          sourceType: ActivityUser.PurchaseOrder,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
     await transaction.commit();
     return successResponse(
       res,

@@ -29,6 +29,16 @@ const CashReceive = db.define(
       type: Sequelize.BOOLEAN,
       defaultValue: false,
     },
+    userId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: "Users",
+        key: "id",
+      },
+      onUpdate: "cascade",
+      onDelete: "no action",
+    },
   },
   {
     tableName: "CashReceive",

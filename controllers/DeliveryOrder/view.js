@@ -15,13 +15,13 @@ const FetchAllList = async (req, res) => {
 
     for (const iterator of result) {
       const json = iterator.toJSON();
-      const tempQuantity = json.DeliveryOrderBarangs.reduce(
-        (x, y) =>
-          (+x.quantityReceived ? +x.quantityReceived : 0) +
-          (+y.quantityReceived ? +y.quantityReceived : 0)
-      );
+      let tmpQty = 0;
 
-      DOMap.push({ ...json, quantity: tempQuantity });
+      for (const it of json.DeliveryOrderBarangs) {
+        tmpQty += +it.quantityReceived;
+      }
+
+      DOMap.push({ ...json, quantity: tmpQty });
     }
 
     return successResponse(res, httpStatus.ok, "", DOMap);

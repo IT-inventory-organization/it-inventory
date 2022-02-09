@@ -19,6 +19,7 @@ const { errorResponse, successResponse } = require("../../helper/Response");
 const {
   GetIdBarangFromSalesOrdeBarang,
 } = require("../../helper/SalesOrder/barang");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const updateDeliveryOrder = async (req, res) => {
   let t;
@@ -146,6 +147,18 @@ const updateDeliveryOrder = async (req, res) => {
      * * but with id Exception
      */
     await SoftDeleteDeliveryOrderBarang(req, idDo, exception, t);
+
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Update Delivery Order",
+          sourceId: idDo,
+          sourceType: ActivityUser.DeliveryOrder,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
 
     await t.commit();
 

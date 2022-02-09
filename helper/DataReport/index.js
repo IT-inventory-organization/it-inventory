@@ -352,7 +352,9 @@ const getAllReport = async (
         }
       }
     }
-
+    // console.log(
+    //   `SELECT "RP".id as id, "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", "RP"."nomorAjuan" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, ip."namaPPJK" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP"."id" = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`
+    // );
     const res = await sequelize.query(
       `SELECT "RP".id as id, "RP"."typeReport"||' '||"RP"."BCDocumentType" as "jenisInventory", "RP"."nomorAjuan" as "nomorAjuan", TO_CHAR("RP"."createdAt", 'dd-mm-yyyy HH24:MI:ss') as "tanggalAjuan", "IPG"."namaPengirim" as pengirim, ip."namaPPJK" as penerima, "RP".status as jalur, "RP"."isEditable" as edit FROM "Reports" as "RP" LEFT OUTER JOIN "Users" as "US" ON ("RP"."userId" = "US"."id") LEFT OUTER JOIN "IdentitasPengirim" as "IPG" ON ("RP"."id" = "IPG"."reportId") LEFT OUTER JOIN "IdentitasPPJK" as ip ON ("RP"."id" = ip."reportId") WHERE "RP"."isDelete" = false ${searchUser} ${statusQuery} ${qtSearch} ${typeQuery} ${orderQuery} LIMIT ${limit} OFFSET ${offset}`
     );
@@ -436,7 +438,9 @@ const getAllReportByType = async (req, pageSize, pageNo, type = null) => {
 const getOneReport = async (req, id, statusCheck = false) => {
   try {
     const query = {};
-    query.where = { id };
+    query.where = {
+      id: id,
+    };
 
     query.include = [
       {
@@ -445,15 +449,14 @@ const getOneReport = async (req, id, statusCheck = false) => {
           exclude: ["createdAt", "updatedAt"],
           include: ["quantity", "id"],
         },
+        required: false,
         include: [
           {
             model: Barang,
             attributes: {
               exclude: ["isDelete", "createdAt", "updatedAt", "userId"],
             },
-            where: {
-              isDelete: false,
-            },
+            required: false,
           },
         ],
       },
@@ -462,24 +465,28 @@ const getOneReport = async (req, id, statusCheck = false) => {
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportIdentitasPenerima,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportIdentitasPPJK,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportIdentitasPengirim,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportListDokumen,
@@ -489,54 +496,63 @@ const getOneReport = async (req, id, statusCheck = false) => {
         where: {
           isDelete: false,
         },
+        required: false,
       },
       {
         model: reportDataBeratDanVolume,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportDataPelabuhanMuatBongkar,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportDataPengajuan,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportDataPengangkutan,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportDataPetiKemas,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportDataPetiKemasDanPengemas,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportDataTempatPenimbunan,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: reportTransaksiPerdagangan,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
+        required: false,
       },
       {
         model: User,
@@ -549,12 +565,12 @@ const getOneReport = async (req, id, statusCheck = false) => {
           "username",
         ],
       },
-      {
-        model: reportDataLartas,
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
-        },
-      },
+      // {
+      //   model: reportDataLartas,
+      //   attributes: {
+      //     exclude: ["createdAt", "updatedAt"],
+      //   },
+      // },
     ];
     if (req.currentRole !== "Admin" && req.currentRole !== "Owner") {
       query.where = {
@@ -574,7 +590,7 @@ const getOneReport = async (req, id, statusCheck = false) => {
       ...query.where,
       isDelete: false,
     };
-
+    query.logging = console.log;
     const result = await Report.findOne(query);
 
     return result;

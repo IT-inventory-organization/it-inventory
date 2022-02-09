@@ -74,7 +74,10 @@ const { VListBarang } = require("../../middlewares/validationDataBarang");
 const Http = require("../../helper/Httplib");
 const sequelize = require("../../configs/database");
 const authentication = require("../../middlewares/authentication");
-const { createUserActivity } = require("../../helper/UserActivity");
+const {
+  createUserActivity,
+  CreateActivityUser,
+} = require("../../helper/UserActivity");
 const {
   updateReport,
   updateStatus,
@@ -486,8 +489,16 @@ const updateReportPerId = async (req, res) => {
   try {
     const result = await updateReport(id, req.body.DataToInput, req);
 
+    // if (req.currentRole !== "Owner") {
+    //   await createUserActivity(req.currentUser, id, `Updating Report`);
+    // }
     if (req.currentRole !== "Owner") {
-      await createUserActivity(req.currentUser, id, `Updating Report`);
+      await CreateActivityUser({
+        activity: "Update Report",
+        sourceId: id,
+        sourceType: ActivityUser.PPFTZ,
+        userId: req.currentUser,
+      });
     }
 
     return successResponse(res, Http.created, "Success Update Report");

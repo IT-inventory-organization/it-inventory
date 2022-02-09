@@ -44,8 +44,18 @@ const addZero = (val) => {
   return val;
 };
 
+/**
+ *
+ * @param {string} val
+ * @returns {string}
+ */
+const DateConv = (val) => {
+  return new Date(val).toUTCString();
+};
+
 module.exports = {
   convertStrignToDateUTC,
   convertDate,
   addZero,
+  DateConv,
 };

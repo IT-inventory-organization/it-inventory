@@ -155,7 +155,6 @@ const fetchNoTransaksiForBillPayment = async (req, transaction = null) => {
         },
       },
     ],
-    logging: console.log,
   });
 };
 

@@ -1,4 +1,5 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { UpdateInvoice } = require("../../helper/Invoice");
 const {
@@ -50,6 +51,18 @@ const updateInvoice = async (req, res) => {
     }
 
     await SoftDeleteDetailInvoice(idInv, exception, t);
+
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Update Invoice",
+          sourceId: idInv,
+          sourceType: ActivityUser.Invoice,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
 
     await t.commit();
 

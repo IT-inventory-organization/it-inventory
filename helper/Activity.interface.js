@@ -4,6 +4,18 @@ class ActivityUser {
   static Adjustment = "Adjustment";
   static ReceiveItem = "ReceiveItem";
   static DeliveryOrder = "DeliveryOrder";
+  static PurchaseOrder = "PurchaseOrder";
+  static SalesOrder = "SalesOrder";
+  static Bill = "Bill";
+  static BillPayment = "BillPayment";
+  static Invoice = "Invoice";
+  static ReceivePayment = "ReceivePayment";
+  static CashReceive = "CashReceive";
+  static CashDisbursement = "CashDisbursement";
+  static SaldoAwal = "SaldoAwal";
+  static CardList = "CardList";
+  static PPFTZ = "PPFTZ";
+  static Barang = "Barang";
 }
 
 class Description {

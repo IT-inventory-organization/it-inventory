@@ -1,4 +1,5 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { updatePurchaseOrder } = require("../../helper/PurchaseOrder");
 const {
@@ -11,6 +12,7 @@ const {
   OnePurchaseOrder,
 } = require("../../helper/PurchaseOrder/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 // T0(2N)
 const updatePo = async (req, res) => {
@@ -77,7 +79,17 @@ const updatePo = async (req, res) => {
     await softDeleteBarangPurchaeOrder(req, res, idPo, ResultBrPoMap);
 
     // User Activity
-
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Update Purchase Order",
+          sourceId: idPo,
+          sourceType: ActivityUser.PurchaseOrder,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
     await t.commit();
 
     return successResponse(

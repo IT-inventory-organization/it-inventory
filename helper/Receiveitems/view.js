@@ -34,6 +34,10 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
               },
               attributes: [],
             },
+            {
+              model: CardList,
+              attributes: ["name", "id"],
+            },
           ],
         },
         {
@@ -100,9 +104,6 @@ const ViewOneReceivedItemForBill = async (req, res, idReceive) => {
           {
             model: CardList,
             attributes: ["name"],
-            where: {
-              isDelete: false,
-            },
             required: false,
           },
         ],

@@ -12,6 +12,7 @@ const { errorResponse, successResponse } = require("../../helper/Response");
 const {
   GetIdBarangFromSalesOrdeBarang,
 } = require("../../helper/SalesOrder/barang");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const addDeliveryOrder = async (req, res) => {
   let t;
@@ -40,6 +41,18 @@ const addDeliveryOrder = async (req, res) => {
         status: StatsItem.DEC,
         idBarang: getId.toJSON().idBarang,
       });
+    }
+
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Create Delivery Order",
+          sourceId: result.id,
+          sourceType: ActivityUser.DeliveryOrder,
+          userId: req.currentUser,
+        },
+        t
+      );
     }
 
     await t.commit();

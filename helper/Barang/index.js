@@ -8,7 +8,7 @@ const reportIdentitasPenerima = require("../../database/models/identitaspenerima
 const { Op } = require("sequelize");
 const Histories = require("../../database/models/history");
 
-const findBarang = async (id, idUser = null) => {
+const findBarang = async (id, idUser = null, specificAttr = false) => {
   let query = {
     where: {
       id: id,
@@ -23,7 +23,14 @@ const findBarang = async (id, idUser = null) => {
     };
   }
 
-  return await Barang.findOne(query);
+  if (specificAttr) {
+    query = {
+      ...query,
+      attributes: ["name", "posTarif", "uraian", "stock"],
+    };
+  }
+
+  return Barang.findOne(query);
 };
 
 const countTotal = (arr) => {
@@ -35,6 +42,7 @@ const countTotal = (arr) => {
 };
 
 module.exports = {
+  findBarang,
   createListItem: async (data, transaction = null) => {
     try {
       const result = await Barang.create(data, {

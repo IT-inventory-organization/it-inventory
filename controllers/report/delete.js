@@ -1,8 +1,12 @@
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { deleteReport } = require("../../helper/DataReport");
-const { createUserActivity } = require("../../helper/UserActivity");
+const {
+  createUserActivity,
+  CreateActivityUser,
+} = require("../../helper/UserActivity");
 const Http = require("../../helper/Httplib");
 const authentication = require("../../middlewares/authentication");
+const { ActivityUser } = require("../../helper/Activity.interface");
 
 const deleteReportDoc = async (req, res) => {
   try {
@@ -10,8 +14,17 @@ const deleteReportDoc = async (req, res) => {
 
     await deleteReport(id, req);
 
+    // if (req.currentRole !== "Owner") {
+    //   await createUserActivity(req.currentUser, id, `Deleting Report Document`);
+    // }
+
     if (req.currentRole !== "Owner") {
-      await createUserActivity(req.currentUser, id, `Deleting Report Document`);
+      await CreateActivityUser({
+        activity: "Delete Report",
+        sourceId: id,
+        sourceType: ActivityUser.PPFTZ,
+        userId: req.currentUser,
+      });
     }
 
     return successResponse(res, Http.ok, "Success Deleting Report Document");

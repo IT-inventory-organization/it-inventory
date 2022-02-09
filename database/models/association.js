@@ -154,7 +154,7 @@ const setAssociations = function () {
   Barang.hasMany(SalesOrderBarang, { foreignKey: "id" });
   SalesOrderBarang.belongsTo(Barang, { foreignKey: "idBarang" });
 
-  SalesOrder.hasOne(DeliveryOrder, { foreignKey: "id" });
+  SalesOrder.hasOne(DeliveryOrder, { foreignKey: "idSo" });
   DeliveryOrder.belongsTo(SalesOrder, { foreignKey: "idSo" });
 
   DeliveryOrder.hasMany(DeliveryOrderBarang, { foreignKey: "idDo" });
@@ -163,8 +163,8 @@ const setAssociations = function () {
   SalesOrderBarang.hasOne(DeliveryOrderBarang, { foreignKey: "id" });
   DeliveryOrderBarang.belongsTo(SalesOrderBarang, { foreignKey: "idSOBarang" });
 
-  DeliveryOrder.hasOne(Invoice, { foreignKey: "id" });
-  Invoice.belongsTo(DeliveryOrder, { foreignKey: "idDo" });
+  DeliveryOrder.hasOne(Invoice, { foreignKey: "idDo" });
+  Invoice.belongsTo(DeliveryOrder, { foreignKey: "id" });
 
   Invoice.hasMany(InvoiceDetail, { foreignKey: "idInv" });
   InvoiceDetail.belongsTo(Invoice, { foreignKey: "id" });

@@ -1,4 +1,5 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { UpdateSalesOrder, AddSalesOrder } = require("../../helper/SalesOrder");
@@ -7,6 +8,7 @@ const {
   SoftDeleteSalesOrderBarang,
   AddSalesOrderBarang,
 } = require("../../helper/SalesOrder/barang");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const updateSalesOrder = async (req, res) => {
   let t;
@@ -80,6 +82,18 @@ const updateSalesOrder = async (req, res) => {
 
     await SoftDeleteSalesOrderBarang(req, idSo, exception, t);
 
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Update Sales Order",
+          sourceId: idSo,
+          sourceType: ActivityUser.SalesOrder,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
+
     await t.commit();
 
     return successResponse(
@@ -88,6 +102,7 @@ const updateSalesOrder = async (req, res) => {
       "Success Update Sales Order"
     );
   } catch (error) {
+    console.log(error);
     if (t) {
       await t.rollback();
     }

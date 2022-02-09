@@ -2,7 +2,13 @@ const httpStatus = require("./Httplib");
 const { errorResponse } = require("./Response");
 const Encryption = require("./encription");
 
-const BReceivePayment = (req, res, next) => {
+/**
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Next} next
+ */
+const BCashReceive = (req, res, next) => {
   try {
     if (!req.body) {
       return errorResponse(res, httpStatus.badRequest, "No Input is Provided");
@@ -26,5 +32,5 @@ const BReceivePayment = (req, res, next) => {
 };
 
 module.exports = {
-  BReceivePayment,
+  BCashReceive,
 };

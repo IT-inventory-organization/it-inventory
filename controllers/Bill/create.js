@@ -1,8 +1,10 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const { CreateBill } = require("../../helper/Bill");
 const { AddBillPriceItem } = require("../../helper/Bill/price");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const addBill = async (req, res) => {
   let t;
@@ -18,7 +20,17 @@ const addBill = async (req, res) => {
       }
       await AddBillPriceItem(iterator, t);
     }
-
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Create Bill",
+          sourceId: result.id,
+          sourceType: ActivityUser.Bill,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
     await t.commit();
     return successResponse(res, httpStatus.created, "Success Created Bill");
   } catch (error) {

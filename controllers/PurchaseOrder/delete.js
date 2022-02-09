@@ -1,12 +1,23 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { deletePurchaseOrder } = require("../../helper/PurchaseOrder");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const deletePo = async (req, res) => {
   try {
     const { idPo } = req.params;
 
     await deletePurchaseOrder(req, res, idPo);
+
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser({
+        activity: "Delete Purchase Order",
+        sourceId: idPo,
+        sourceType: ActivityUser.PurchaseOrder,
+        userId: req.currentUser,
+      });
+    }
     return successResponse(
       res,
       httpStatus.accepted,

@@ -1,4 +1,5 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { changeStatus } = require("../../helper/Invoice");
 const { UpdateReceivePayment } = require("../../helper/ReceivePayment");
@@ -8,6 +9,7 @@ const {
   SoftDeleteReceivePaymentDetail,
 } = require("../../helper/ReceivePayment/detail");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const updateReceivePayment = async (r, rs) => {
   let t;
@@ -43,6 +45,18 @@ const updateReceivePayment = async (r, rs) => {
       await changeStatus(r, d.idInv, t);
     }
 
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Update Receive Payment",
+          sourceId: i,
+          sourceType: ActivityUser.ReceivePayment,
+          userId: r.currentUser,
+        },
+        t
+      );
+    }
+
     await t.commit();
 
     return successResponse(
@@ -51,7 +65,6 @@ const updateReceivePayment = async (r, rs) => {
       "Success Update Receive Payment"
     );
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

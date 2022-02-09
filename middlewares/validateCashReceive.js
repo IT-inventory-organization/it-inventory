@@ -1,4 +1,4 @@
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 const CashReceive = require("../database/models/cashReceive");
 const { dateFormat } = require("../helper/checkDateFormat");
 
@@ -39,6 +39,22 @@ const VCashReceive = [
     .withMessage(`Remarks Is Required`),
 ];
 
+const VQueryDate = [
+  query("startDate")
+    .optional()
+    .notEmpty()
+    .withMessage("Search Start Date is Empty")
+    .isDate()
+    .withMessage("Not A Valid Date"),
+  query("endDate")
+    .optional()
+    .notEmpty()
+    .withMessage("Search End Date is Empty")
+    .isDate()
+    .withMessage("Not A Valid Date"),
+];
+
 module.exports = {
   VCashReceive,
+  VQueryDate,
 };

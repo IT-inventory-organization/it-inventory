@@ -19,6 +19,7 @@ const {
   softDeleteQtyReceiveItem,
 } = require("../../helper/Receiveitems/quantity");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const updateReceiveItem = async (req, res) => {
   let t;
@@ -103,6 +104,17 @@ const updateReceiveItem = async (req, res) => {
 
     await softDeleteQtyReceiveItem(res, idReceive, exception, t);
 
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Update Receive Items",
+          sourceId: idReceive,
+          sourceType: ActivityUser.ReceiveItem,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
     await t.commit();
 
     return successResponse(

@@ -1,3 +1,4 @@
+const sequelize = require("../../configs/database");
 const Histories = require("../../database/models/history");
 const httpStatus = require("../Httplib");
 const { errorResponse } = require("../Response");
@@ -45,4 +46,17 @@ const removeHistories = async (
 module.exports = {
   insertHistoryBarang,
   removeHistories,
+  historyBarang: async (idBarang, transaction = null) => {
+    return sequelize.query(`
+      SELECT 
+        h.status as status,
+        h."sourceType" as deskripsi,
+        h."quantityItem" as quantity,
+        0 as balance,
+        h."createdAt" as tanggal
+      FROM histories h
+      LEFT OUTER JOIN "Barang" b ON h."idBarang" = b."id"
+      WHERE h."idBarang" = ${idBarang}
+    `);
+  },
 };

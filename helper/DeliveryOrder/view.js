@@ -39,6 +39,7 @@ const ViewList = async (req, transaction = null) => {
         },
       },
     ],
+    logging: console.log,
     transaction: transaction,
   });
 };
@@ -88,6 +89,7 @@ const ViewOneList = async (req, idDo, transaction = null) => {
         ],
       },
     ],
+
     transaction: transaction,
   });
 };

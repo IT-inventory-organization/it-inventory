@@ -43,7 +43,6 @@ const fetchAllBillThatNotBeenUsedYet = async (req, res) => {
 
     for (const iterator of result) {
       const json = iterator.toJSON();
-      console.log(json);
       if (
         !iterator?.BillPayment ||
         iterator?.BillPayment?.id == idBillPayment

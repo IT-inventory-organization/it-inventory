@@ -1,8 +1,10 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { AddSalesOrder } = require("../../helper/SalesOrder");
 const { AddSalesOrderBarang } = require("../../helper/SalesOrder/barang");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const addSalesOrder = async (req, res) => {
   let t;
@@ -16,7 +18,17 @@ const addSalesOrder = async (req, res) => {
 
       await AddSalesOrderBarang(res, iterator, t);
     }
-
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Create Sales Order",
+          sourceId: result.id,
+          sourceType: ActivityUser.SalesOrder,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
     await t.commit();
 
     return successResponse(

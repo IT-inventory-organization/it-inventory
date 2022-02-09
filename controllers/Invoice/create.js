@@ -1,8 +1,10 @@
 const sequelize = require("../../configs/database");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { AddInvoice } = require("../../helper/Invoice");
 const { AddDetailInvoice } = require("../../helper/Invoice/detail");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const addInvoice = async (req, res) => {
   let t;
@@ -19,6 +21,17 @@ const addInvoice = async (req, res) => {
       await AddDetailInvoice(iterator, t);
     }
 
+    if (req.currentRole !== "Owner") {
+      await CreateActivityUser(
+        {
+          activity: "Create Invoice",
+          sourceId: resultInv.id,
+          sourceType: ActivityUser.Invoice,
+          userId: req.currentUser,
+        },
+        t
+      );
+    }
     await t.commit();
     return successResponse(res, httpStatus.created, "Success Create Invoice");
   } catch (error) {

@@ -9,6 +9,7 @@ const getBarang = async (req, res) => {
         stock: {
           [Op.gte]: 0,
         },
+        isDelete: false,
       },
     });
   } catch (error) {
