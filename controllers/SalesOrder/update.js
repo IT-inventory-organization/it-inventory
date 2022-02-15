@@ -102,7 +102,6 @@ const updateSalesOrder = async (req, res) => {
       "Success Update Sales Order"
     );
   } catch (error) {
-    console.log(error);
     if (t) {
       await t.rollback();
     }

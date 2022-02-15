@@ -29,7 +29,6 @@ module.exports = {
 
       return successResponse(res, httpStatus.ok, "", temp);
     } catch (error) {
-      console.log(error);
       return errorResponse(
         res,
         httpStatus.internalServerError,

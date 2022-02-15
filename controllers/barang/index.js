@@ -52,10 +52,11 @@ const bundle = (req, res, next) => {
       ...Decrypt,
       userId: req.currentUser,
     };
-
+    //
+    // return;
     next();
   } catch (error) {
-    throw errorResponse(res, Http.badRequest, "Failed To Add List Item");
+    return errorResponse(res, Http.badRequest, "Failed To Add List Item");
   }
 };
 
@@ -68,17 +69,13 @@ const createItemBarang = async (req, res) => {
     }
     const { dataItem } = req.body;
     t = await sequelize.transaction();
-    const result = await createListItem(dataItem, t);
-
-    // if (req.currentRole != "Owner") {
-    //   await createUserActivity(req.currentUser, null, "Create New List Item");
-    // }
+    const result = await createListItem(dataItem);
 
     if (req.currentRole !== "Owner") {
       await CreateActivityUser(
         {
           activity: "Create New Item",
-          sourceId: result.id,
+          sourceId: result.toJSON().id,
           sourceType: ActivityUser.Barang,
           userId: req.currentUser,
         },

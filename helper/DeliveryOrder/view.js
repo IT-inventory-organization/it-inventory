@@ -39,7 +39,6 @@ const ViewList = async (req, transaction = null) => {
         },
       },
     ],
-    logging: console.log,
     transaction: transaction,
   });
 };

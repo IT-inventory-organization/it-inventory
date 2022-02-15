@@ -161,7 +161,6 @@ const getOne = async (req, res) => {
 
     return successResponse(res, httpStatus.ok, "", data);
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,

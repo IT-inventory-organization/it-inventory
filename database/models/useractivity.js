@@ -3,7 +3,7 @@ const Sequelize = require("sequelize");
 const db = require("../../configs/database");
 
 const UserActivity = db.define(
-  "UserActivity",
+  "UserActivities",
   {
     userId: {
       type: Sequelize.INTEGER,

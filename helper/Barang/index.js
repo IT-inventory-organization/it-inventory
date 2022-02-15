@@ -69,6 +69,7 @@ module.exports = {
           "uraian",
         ],
       });
+
       return find;
     } catch (error) {
       throw error;

@@ -20,7 +20,7 @@ const BSaldoAwal = (req, res, next) => {
       ...Decrypt,
       userId: req.currentUser,
     };
-    // console.log(req.body.DataToInput);
+    //
     next();
   } catch (error) {
     return errorResponse(

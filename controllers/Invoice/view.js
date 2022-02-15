@@ -55,9 +55,9 @@ const fetchInvoiceForAutoComplete = async (req, res) => {
 
     const result = await fetchInvoiceForRecievePaymentAutoComplete(req, idInv);
 
-    // for (const iterator of result) {
     const json = result.toJSON();
     let total = 0;
+
     for (const iterator of json.InvoiceDetails) {
       total += +iterator.DeliveryOrderBarang.SalesOrderBarang.jumlah;
     }

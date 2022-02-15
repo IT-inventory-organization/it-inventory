@@ -187,8 +187,8 @@ const setAssociations = function () {
   BillPriceItem.hasOne(BillPaymentItems, { foreignKey: "id" });
   BillPaymentItems.belongsTo(BillPriceItem, { foreignKey: "idBillItem" });
 
-  Invoice.hasOne(ReceivePayment, { foreignKey: "id" });
-  ReceivePayment.belongsTo(Invoice, { foreignKey: "idInv" });
+  Invoice.hasOne(ReceivePayment, { foreignKey: "idInv" });
+  ReceivePayment.belongsTo(Invoice, { foreignKey: "id" });
 
   ReceivePayment.hasOne(ReceivePaymentDetail, {
     foreignKey: "idReceivePayment",

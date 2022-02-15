@@ -36,7 +36,7 @@ module.exports = {
       iterator.tanggal = DateConv(iterator.tanggal);
       History.push(iterator);
     }
-    // console.log(History);
+    //
     if (returning == Returning.BALANCE_ITEM_HISTORY) {
       return History;
     } else if (returning == Returning.CURRENT_STOCK) {

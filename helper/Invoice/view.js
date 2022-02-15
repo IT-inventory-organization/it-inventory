@@ -92,7 +92,7 @@ const ViewAllList = async (req, transaction = null) => {
         },
       },
     ],
-    // logging: console.log,
+    // logging:
   });
 };
 
