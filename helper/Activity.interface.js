@@ -1,4 +1,9 @@
+/**
+ * * Nilai Static yang dipakai untuk
+ * * mengecek,
+ */
 class ActivityUser {
+  static PPFTZ = "PPFTZ";
   static PPFTZ_IN = "PPFTZ_In";
   static PPFTZ_OUT = "PPFTZ_Out";
   static Adjustment = "Adjustment";
@@ -16,6 +21,39 @@ class ActivityUser {
   static CardList = "CardList";
   static PPFTZ = "PPFTZ";
   static Barang = "Barang";
+  static ReportAccounting = "ReportAccounting";
+  static Register = "Register";
+  static Permission = "Permission";
+  static User = "User";
+
+  static LAccessModule = [
+    this.PPFTZ,
+    this.Adjustment,
+    this.ReceiveItem,
+    this.DeliveryOrder,
+    this.PurchaseOrder,
+    this.SalesOrder,
+    this.Bill,
+    this.BillPayment,
+    this.Invoice,
+    this.ReceivePayment,
+    this.CashReceive,
+    this.CashDisbursement,
+    this.SaldoAwal,
+    this.CardList,
+    this.Barang,
+    this.ReportAccounting,
+    this.Register,
+    this.Permission,
+  ];
+}
+
+class Privilages {
+  static Read = "Read";
+  static Ïnsert = "Ïnsert";
+  static Delete = "Delete";
+  static Update = "Update";
+  static Print = "Print";
 }
 
 class Description {
@@ -44,4 +82,5 @@ module.exports = {
   StatsItem,
   InfoReport,
   StatsInvoice,
+  Privilages,
 };
