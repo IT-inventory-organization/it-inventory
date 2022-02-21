@@ -201,8 +201,8 @@ const setAssociations = function () {
   CardList.hasMany(ReceivePayment, { foreignKey: "id" });
   ReceivePayment.belongsTo(CardList, { foreignKey: "idContact" });
 
-  User.hasMany(UserPrivilages, { foreignKey: "id" });
-  UserPrivilages.belongsTo(User, { foreignKey: "userId" });
+  User.hasMany(UserPrivilages, { foreignKey: "userId" });
+  UserPrivilages.belongsTo(User, { foreignKey: "id" });
 };
 
 module.exports = setAssociations;

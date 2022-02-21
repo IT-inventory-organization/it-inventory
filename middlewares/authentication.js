@@ -16,7 +16,10 @@ const authentication = async (req, res, next) => {
 
     const { user_id: id } = decode;
 
-    const user = await User.findOne({ where: { id }, include: [Role] });
+    const user = await User.findOne({
+      where: { id },
+      include: [Role],
+    });
 
     if (user) {
       req.currentUser = user.id;

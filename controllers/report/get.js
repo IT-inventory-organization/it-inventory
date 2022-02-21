@@ -26,7 +26,13 @@ const reportListDokumen = require("../../database/models/listdokumen");
 const reportDataPetiKemas = require("../../database/models/datapetikemas");
 const { getOneUserData } = require("../../helper/DataUser");
 const Report = require("../../database/models/report");
-const { route } = require("express/lib/application");
+const { ActivityUser } = require("../../helper/Activity.interface");
+const {
+  CheckPermissionRead,
+  CheckPermission,
+} = require("../../middlewares/permission");
+
+const Static_Activity = ActivityUser.PPFTZ;
 
 const importExportTotal = (importExportValue, status = null) => {
   let returnValue = {};
@@ -86,6 +92,10 @@ const getCountReportByType = async (req, res) => {
 
 const getAll = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, Static_Activity) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
+
     const { pageSize, pageNo, sortBy, search, type, status } = req.query;
     const result = await getAllReport(
       req,
@@ -634,7 +644,7 @@ const getDashboard = async (req, res) => {
 };
 
 module.exports = (routes) => {
-  routes.get("/", authentication, getAll);
+  routes.get("/", authentication, CheckPermission, getAll);
   routes.get("/total", authentication, getCountReportByType);
   routes.get("/oneReport/:id", authentication, getOne);
   routes.get("/getXML/:id", authentication, getXMLReport);

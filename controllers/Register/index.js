@@ -15,15 +15,12 @@ const authentication = require("../../middlewares/authentication");
 const sequelize = require("../../configs/database");
 const UserPrivilages = require("../../database/models/userPrivilages");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermission } = require("../../middlewares/permission");
 
 const checkInputRegister = [
   body("name").notEmpty().trim().withMessage("Name Is Required"),
   body("npwp").notEmpty().trim().withMessage("NPWP Is Required"),
-  body("address")
-    .notEmpty()
-    .trim()
-    .withMessage("Address Is Required")
-    .isLength({ min: 10 }),
+  body("address").notEmpty().trim().withMessage("Address Is Required"),
   body("email").notEmpty().isEmail().withMessage("Email is Required").trim(),
   body("mobile_phone")
     .notEmpty()
@@ -34,9 +31,9 @@ const checkInputRegister = [
   body("password")
     .optional()
     .notEmpty()
+    .withMessage("Password is Required")
     .trim()
-    .custom((value) => passwordFormat(value))
-    .withMessage("Password is Required"),
+    .custom((value) => passwordFormat(value)),
   body("phone")
     .notEmpty()
     .custom(checkPhoneNumber)
@@ -51,7 +48,6 @@ const checkInputRegister = [
       if (value !== req.body.password) {
         throw new Error("Password Confirmation dose not match password");
       }
-
       return true;
     })
     .trim(),
@@ -91,7 +87,7 @@ const bundleReg = (req, res, next) => {
 
     next();
   } catch (error) {
-    throw error;
+    return errorResponse(res, httpStatus.badRequest, "Falied");
   }
 };
 
@@ -102,7 +98,7 @@ const Register = async (req, res) => {
     if (typeof validation.array()[i] === "undefined") {
       i = 0;
     }
-
+    console.log(validation.array());
     return errorResponse(res, httpStatus.badRequest, validation.array()[i].msg);
   }
 
@@ -174,7 +170,9 @@ const Register = async (req, res) => {
  *
  * @param {Request} req
  * @param {Response} res
+ * @param {number | string} idUser
  * @param {Transaction} transaction
+ * @param {Boolean} Update
  * @returns
  */
 const _savePrivilages = async (
@@ -252,6 +250,76 @@ const GetDetaUser = async (req, res) => {
   }
 };
 
+const getUserPerId = async (req, res) => {
+  try {
+    const staticModule = ActivityUser.LAccessModule;
+    const { idUser } = req.params;
+
+    const result = await User.findOne({
+      where: {
+        id: idUser,
+        is_active: true,
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password"],
+      },
+      include: [
+        {
+          model: UserPrivilages,
+          where: {
+            isDelete: false,
+          },
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "id", "userId"],
+          },
+          required: false,
+        },
+      ],
+    });
+
+    const permission = {};
+    for (const iterator of result.UserPrivilages) {
+      const jsonResult = iterator.toJSON();
+      permission[jsonResult.accessModule] = { ...jsonResult };
+    }
+
+    let temp = result.toJSON(); // Temporary Pointer
+    delete temp.UserPrivilages;
+    temp = { ...temp, permission: permission };
+
+    return successResponse(res, httpStatus.ok, "", temp);
+  } catch (error) {
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed TO Fetch One User"
+    );
+  }
+};
+
+const ListUser = async (req, res) => {
+  try {
+    const result = await User.findAll({
+      where: {
+        is_active: true,
+      },
+      include: [
+        {
+          model: UserPrivilages,
+          where: { isDelete: false },
+          attributes: [],
+          required: false,
+        },
+      ],
+      attributes: ["id", "name", "username", "email"],
+    });
+
+    return successResponse(res, httpStatus.ok, "", result);
+  } catch (error) {
+    return errorResponse(res, httpStatus.internalServerError, "");
+  }
+};
+
 const UpdateUser = async (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
@@ -281,6 +349,8 @@ const UpdateUser = async (req, res) => {
 
   let t;
   try {
+    const { idUser } = req.params;
+
     // Ambil Data User
     const data = await User.findOne({
       where: {
@@ -293,17 +363,11 @@ const UpdateUser = async (req, res) => {
     });
 
     // Jika Sudah ada
-    if (data) {
-      return errorResponse(
-        res,
-        httpStatus.badRequest,
-        "User is already exists"
-      );
+    if (!data) {
+      return errorResponse(res, httpStatus.badRequest, "User is Not Exist");
     }
 
     t = await sequelize.transaction();
-
-    const { idUser } = req.params;
 
     const result = await User.update(dataToInput, {
       where: {
@@ -314,7 +378,7 @@ const UpdateUser = async (req, res) => {
       returning: true,
     });
 
-    const boll = await _savePrivilages(req, res, result.id, t);
+    const boll = await _savePrivilages(req, res, idUser, t, true);
 
     if (req.currentRole !== "Owner") {
       await CreateActivityUser(
@@ -352,7 +416,7 @@ const UpdateUser = async (req, res) => {
 
 module.exports = (routes) => {
   routes.post("/", bundleReg, checkInputRegister, Register);
-  routes.get("/:idUser", authentication, GetDetaUser);
+  routes.get("/:idUser", authentication, getUserPerId);
   routes.put(
     "/:idUser",
     authentication,
@@ -360,4 +424,5 @@ module.exports = (routes) => {
     checkInputRegister,
     UpdateUser
   );
+  routes.get("/list/user", authentication, ListUser);
 };
