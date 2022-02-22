@@ -8,10 +8,14 @@ const {
   SoftDeleteDetailInvoice,
 } = require("../../helper/Invoice/detail");
 const { successResponse, errorResponse } = require("../../helper/Response");
+const { CheckPermissionUpdate } = require("../../middlewares/permission");
 
 const updateInvoice = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionUpdate(req, res, ActivityUser.Invoice) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idInv } = req.params;
     const { InvoiceDetail, ...restOfData } = req.body.DataToInput;
 

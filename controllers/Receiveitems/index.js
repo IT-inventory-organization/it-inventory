@@ -1,5 +1,6 @@
 const { BReceiveItems } = require("../../helper/bundleReceiveItems");
 const authentication = require("../../middlewares/authentication");
+const { CheckPermission } = require("../../middlewares/permission");
 const VReceive = require("../../middlewares/validationReceiveItems");
 const { validationResponse } = require("../../middlewares/validationResponse");
 const { addReceiveItems } = require("./create");
@@ -14,23 +15,30 @@ const {
 } = require("./view");
 
 module.exports = (routes) => {
-  routes.get("/", authentication, listReceiveItem);
+  routes.get("/", authentication, CheckPermission, listReceiveItem);
   routes.get("/:idReceive", authentication, fetchReceiveItemForUpdate);
 
   routes.post(
     "/",
     authentication,
+    CheckPermission,
     BReceiveItems,
     VReceive,
     validationResponse,
     addReceiveItems
   );
 
-  routes.delete("/:idReceive", authentication, deleteReceiveItem);
+  routes.delete(
+    "/:idReceive",
+    authentication,
+    CheckPermission,
+    deleteReceiveItem
+  );
 
   routes.put(
     "/:idReceive",
     authentication,
+    CheckPermission,
     BReceiveItems,
     VReceive,
     validationResponse,

@@ -5,6 +5,7 @@ const { errorResponse, successResponse } = require("../../helper/Response");
 const { DeleteSaldoAwal, AddSaldoAwal } = require("../../helper/SaldoAwal");
 const { ViewOne } = require("../../helper/SaldoAwal/view");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 /**
  *
@@ -14,6 +15,9 @@ const { CreateActivityUser } = require("../../helper/UserActivity");
 const addSaldoAwal = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionRead(req, res, ActivityUser.SaldoAwal) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     t = await sequelize.transaction();
     await DeleteSaldoAwal(t);
 

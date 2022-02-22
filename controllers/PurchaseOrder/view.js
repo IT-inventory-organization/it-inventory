@@ -1,3 +1,4 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const { getBarang } = require("../../helper/Barang/view");
 const httpStatus = require("../../helper/Httplib");
 const {
@@ -7,9 +8,13 @@ const {
   fetchForReceiveItem,
 } = require("../../helper/PurchaseOrder/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 const viewPurchaseOrder = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, ActivityUser.PurchaseOrder) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const resultList = await ViewPurchaseOrder(req, res);
 
     return successResponse(res, httpStatus.ok, "", resultList);

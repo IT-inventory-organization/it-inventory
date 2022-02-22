@@ -24,6 +24,16 @@ const { historyBarang } = require("../../helper/Histories/barang");
 const { calculateBalance, Returning } = require("../../helper/calculateStock");
 const httpStatus = require("../../helper/Httplib");
 const { ActivityUser } = require("../../helper/Activity.interface");
+const {
+  CheckPermission,
+  CheckPermissionRead,
+  CheckPermissionInsert,
+  CheckPermissionDelete,
+  CheckPermissionUpdate,
+} = require("../../middlewares/permission");
+
+const BarangActivity = ActivityUser.Barang;
+const AdjustmentActivity = ActivityUser.Adjustment;
 
 const validationItem = [
   body("dataItem.name").trim().notEmpty().withMessage(`Name is Not Provided`),
@@ -63,6 +73,9 @@ const bundle = (req, res, next) => {
 const createItemBarang = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionInsert(req, res, BarangActivity) === false) {
+      return errorResponse(req, httpStatus.unauthorized, "Unauthorized User");
+    }
     const validation = validationResult(req);
     if (!validation.isEmpty()) {
       return errorResponse(res, Http.badRequest, validation.array()[0].msg);
@@ -99,6 +112,9 @@ const createItemBarang = async (req, res) => {
 
 const deleteItemBarang = async (req, res) => {
   try {
+    if (CheckPermissionDelete(req, res, BarangActivity) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { id } = req.params;
 
     await softDeleteListItem(req, id);
@@ -125,6 +141,9 @@ const deleteItemBarang = async (req, res) => {
 const editItemBarang = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionUpdate(req, res, BarangActivity) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const validation = validationResult(req);
     if (!validation.isEmpty()) {
       return errorResponse(res, Http.badRequest, validation.array()[0].msg);
@@ -163,6 +182,9 @@ const editItemBarang = async (req, res) => {
 
 const getAnItem = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, BarangActivity) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { id } = req.params;
     const { pageSize, pageNo, search } = req.query;
 
@@ -216,6 +238,9 @@ const getAnItem = async (req, res) => {
 const updateStock = async (req, res) => {
   let transaction;
   try {
+    if (CheckPermissionInsert(req, res, AdjustmentActivity) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unathorized User");
+    }
     const { total } = Crypt.AESDecrypt(req.body.Total);
 
     if (total == null) {
@@ -339,11 +364,12 @@ const historyDataBarang = async (req, res) => {
 };
 
 module.exports = (routes) => {
-  routes.get("/", authentication, getAnItem); // Get All
+  routes.get("/", authentication, CheckPermission, getAnItem); // Get All
   routes.get("/:id", authentication, getAnItem); // Get One
   routes.post(
     "/save",
     authentication,
+    CheckPermission,
     bundle,
     validationItem,
     createItemBarang
@@ -351,6 +377,7 @@ module.exports = (routes) => {
   routes.put(
     "/update/:id",
     authentication,
+    CheckPermission,
     bundle,
     validationItem,
     editItemBarang
@@ -358,9 +385,10 @@ module.exports = (routes) => {
   routes.delete(
     "/delete/:id",
     authentication,
+    CheckPermission,
     validationItem,
     deleteItemBarang
   );
-  routes.put("/update-stock/:id", authentication, updateStock);
+  routes.put("/update-stock/:id", authentication, CheckPermission, updateStock);
   routes.get("/history/:id", authentication, historyDataBarang);
 };

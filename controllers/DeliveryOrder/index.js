@@ -1,5 +1,6 @@
 const { BDeliveryOrder } = require("../../helper/bundleDeliveryOrder");
 const authentication = require("../../middlewares/authentication");
+const { CheckPermission } = require("../../middlewares/permission");
 const { VDeliveryOrder } = require("../../middlewares/validateDeliveryOrder");
 const { validationResponse } = require("../../middlewares/validationResponse");
 const { addDeliveryOrder } = require("./create");
@@ -13,12 +14,13 @@ const {
 } = require("./view");
 
 module.exports = (routes) => {
-  routes.get("/", authentication, FetchAllList);
+  routes.get("/", authentication, CheckPermission, FetchAllList);
   routes.get("/:idDo", authentication, FetchOneList);
 
   routes.post(
     "/",
     authentication,
+    CheckPermission,
     BDeliveryOrder,
     VDeliveryOrder,
     validationResponse,
@@ -28,13 +30,14 @@ module.exports = (routes) => {
   routes.put(
     "/:idDo",
     authentication,
+    CheckPermission,
     BDeliveryOrder,
     VDeliveryOrder,
     validationResponse,
     updateDeliveryOrder
   );
 
-  routes.delete("/:idDo", authentication, deleteDeliveryOrder);
+  routes.delete("/:idDo", authentication, CheckPermission, deleteDeliveryOrder);
 
   // Api For Invoice
 

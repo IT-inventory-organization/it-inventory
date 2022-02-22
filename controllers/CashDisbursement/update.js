@@ -4,6 +4,7 @@ const { UpdateCashDisbursement } = require("../../helper/CashDisbursement");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionUpdate } = require("../../middlewares/permission");
 
 /**
  *
@@ -13,6 +14,11 @@ const { CreateActivityUser } = require("../../helper/UserActivity");
 const updateCashDisbursement = async (req, res) => {
   let t;
   try {
+    if (
+      CheckPermissionUpdate(req, res, ActivityUser.CashDisbursement) === false
+    ) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idCashDisbursement } = req.params;
 
     t = await sequelize.transaction();

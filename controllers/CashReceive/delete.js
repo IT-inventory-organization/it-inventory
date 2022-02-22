@@ -3,6 +3,7 @@ const { DeleteCashReceive } = require("../../helper/CashReceive");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionDelete } = require("../../middlewares/permission");
 
 /**
  *
@@ -11,6 +12,9 @@ const { CreateActivityUser } = require("../../helper/UserActivity");
  */
 const deleteCashReceive = async (req, res) => {
   try {
+    if (CheckPermissionDelete(req, res, ActivityUser.CashReceive) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idCashReceive } = req.params;
 
     await DeleteCashReceive(idCashReceive);

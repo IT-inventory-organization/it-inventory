@@ -16,10 +16,14 @@ const { addDataReceiveItem } = require("../../helper/Receiveitems");
 const { addQtyReceiveItem } = require("../../helper/Receiveitems/quantity");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionInsert } = require("../../middlewares/permission");
 
 const addReceiveItems = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionInsert(req, res, ActivityUser.ReceiveItem) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     t = await sequelize.transaction();
 
     const { ReceivedItemsQty, ...restOfData } = req.body.DataToInput;

@@ -1,5 +1,6 @@
 const { BCardList } = require("../../helper/bundleCardList");
 const authentication = require("../../middlewares/authentication");
+const { CheckPermission } = require("../../middlewares/permission");
 const VCardList = require("../../middlewares/validationCardList");
 const { validationResponse } = require("../../middlewares/validationResponse");
 const { addContactCardList } = require("./create");
@@ -13,12 +14,13 @@ const {
 } = require("./view");
 
 module.exports = (routes) => {
-  routes.get("/", authentication, viewAllCardList);
+  routes.get("/", authentication, CheckPermission, viewAllCardList);
   routes.get("/:idContact", authentication, FetchOneList);
 
   routes.post(
     "/",
     authentication,
+    CheckPermission,
     BCardList,
     VCardList,
     validationResponse,
@@ -28,13 +30,14 @@ module.exports = (routes) => {
   routes.put(
     "/:idContact",
     authentication,
+    CheckPermission,
     BCardList,
     VCardList,
     validationResponse,
     updateCardList
   );
 
-  routes.delete("/:idContact", authentication, deleteCardList);
+  routes.delete("/:idContact", authentication, CheckPermission, deleteCardList);
 
   // API For Purchase Order
 

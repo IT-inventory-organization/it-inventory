@@ -3,9 +3,13 @@ const httpStatus = require("../../helper/Httplib");
 const { deleteDataReceiveItem } = require("../../helper/Receiveitems");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionDelete } = require("../../middlewares/permission");
 
 const deleteReceiveItem = async (req, res) => {
   try {
+    if (CheckPermissionDelete(req, res, ActivityUser.ReceiveItem) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idReceive } = req.params;
     await deleteDataReceiveItem(req, res, idReceive);
 

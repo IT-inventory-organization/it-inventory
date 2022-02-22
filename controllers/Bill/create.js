@@ -5,10 +5,14 @@ const { AddBillPriceItem } = require("../../helper/Bill/price");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionInsert } = require("../../middlewares/permission");
 
 const addBill = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionInsert(req, res, ActivityUser.Bill) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { BillPriceItem, ...restOfData } = req.body.DataToInput;
     t = await sequelize.transaction();
     const result = await CreateBill(res, restOfData, t);

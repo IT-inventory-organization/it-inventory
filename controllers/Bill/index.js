@@ -1,5 +1,6 @@
 const { BBill } = require("../../helper/bundleBill");
 const authentication = require("../../middlewares/authentication");
+const { CheckPermission } = require("../../middlewares/permission");
 const VBill = require("../../middlewares/validateBill");
 const { validationResponse } = require("../../middlewares/validationResponse");
 const { addBill } = require("./create");
@@ -14,20 +15,29 @@ const {
 
 module.exports = (routes) => {
   routes.get("/:idBill", authentication, fetchOneBill);
-  routes.get("/", authentication, fetchAllBill);
+  routes.get("/", authentication, CheckPermission, fetchAllBill);
 
-  routes.post("/", authentication, BBill, VBill, validationResponse, addBill);
+  routes.post(
+    "/",
+    authentication,
+    CheckPermission,
+    BBill,
+    VBill,
+    validationResponse,
+    addBill
+  );
 
   routes.put(
     "/:idBill",
     authentication,
+    CheckPermission,
     BBill,
     VBill,
     validationResponse,
     updateBill
   );
 
-  routes.delete("/:idBill", authentication, deleteBill);
+  routes.delete("/:idBill", authentication, CheckPermission, deleteBill);
 
   // Api For Bill Payment
 

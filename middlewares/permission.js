@@ -46,9 +46,15 @@ module.exports = {
     return req?.permission[accessModule]?.canInsert ? true : false;
   },
   CheckPermissionUpdate: (req, res, accessModule) => {
+    if (this.CheckPermissionRead(req, res, accessModule) === false) {
+      return false;
+    }
     return req?.permission[accessModule]?.canUpdate ? true : false;
   },
   CheckPermissionDelete: (req, res, accessModule) => {
+    if (this.CheckPermissionRead(req, res, accessModule) === false) {
+      return false;
+    }
     return req?.permission[accessModule]?.canDelete ? true : false;
   },
 };

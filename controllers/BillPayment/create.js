@@ -6,10 +6,14 @@ const { internalServerError } = require("../../helper/Httplib");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionInsert } = require("../../middlewares/permission");
 
 const addBillPayment = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionInsert(req, res, ActivityUser.BillPayment) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { BillPaymentItems, ...restOfData } = req.body.DataToInput;
 
     t = await sequelize.transaction();

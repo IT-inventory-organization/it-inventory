@@ -1,14 +1,19 @@
 const sequelize = require("../../configs/database");
 const { ActivityUser } = require("../../helper/Activity.interface");
+const { unauthorized } = require("../../helper/Httplib");
 const httpStatus = require("../../helper/Httplib");
 const { AddInvoice } = require("../../helper/Invoice");
 const { AddDetailInvoice } = require("../../helper/Invoice/detail");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionInsert } = require("../../middlewares/permission");
 
 const addInvoice = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionInsert(req, res, ActivityUser.Invoice) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { InvoiceDetail, ...restOfData } = req.body.DataToInput;
 
     t = await sequelize.transaction();

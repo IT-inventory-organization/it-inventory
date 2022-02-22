@@ -1,3 +1,4 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const {
   ViewAll,
   ViewOne,
@@ -6,9 +7,13 @@ const {
 } = require("../../helper/CardList/view");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 const viewAllCardList = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, ActivityUser.CardList) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const result = await ViewAll(req, res);
 
     return successResponse(res, httpStatus.ok, "", result);

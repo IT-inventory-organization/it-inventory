@@ -6,6 +6,9 @@ const { CreateActivityUser } = require("../../helper/UserActivity");
 
 const deleteBill = async (req, res) => {
   try {
+    if (CheckPermissionDelete(req, res, ActivityUser.Bill) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idBill } = req.params;
 
     await DeleteBill(idBill);

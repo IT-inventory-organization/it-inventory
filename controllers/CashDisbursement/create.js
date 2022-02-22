@@ -4,6 +4,7 @@ const { AddCashDisbursement } = require("../../helper/CashDisbursement");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionInsert } = require("../../middlewares/permission");
 
 /**
  *
@@ -14,6 +15,11 @@ const { CreateActivityUser } = require("../../helper/UserActivity");
 const addCashDisbursement = async (req, res) => {
   let t;
   try {
+    if (
+      CheckPermissionInsert(req, res, ActivityUser.CashDisbursement) === false
+    ) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     t = await sequelize.transaction();
     const result = await AddCashDisbursement(req.body.DataToInput, t);
 

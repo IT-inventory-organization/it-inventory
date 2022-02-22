@@ -9,10 +9,14 @@ const {
   AddSalesOrderBarang,
 } = require("../../helper/SalesOrder/barang");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionUpdate } = require("../../middlewares/permission");
 
 const updateSalesOrder = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionUpdate(req, res, ActivityUser.SalesOrder) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idSo } = req.params;
 
     const { SalesOrderBarang, ...restOfData } = req.body.DataToInput;

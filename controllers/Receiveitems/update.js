@@ -20,10 +20,14 @@ const {
 } = require("../../helper/Receiveitems/quantity");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionUpdate } = require("../../middlewares/permission");
 
 const updateReceiveItem = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionUpdate(req, res, ActivityUser.ReceiveItem) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idReceive } = req.params;
 
     const { ReceivedItemsQty, ...restOfData } = req.body.DataToInput;

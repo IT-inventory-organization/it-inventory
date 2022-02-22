@@ -1,7 +1,9 @@
 const { matchedData } = require("express-validator");
+const { ActivityUser } = require("../../helper/Activity.interface");
 const { ViewAll, ViewOne } = require("../../helper/CashDisbursement/view");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 /**
  *
@@ -10,6 +12,11 @@ const { errorResponse, successResponse } = require("../../helper/Response");
  */
 const viewAll = async (req, res) => {
   try {
+    if (
+      CheckPermissionRead(req, res, ActivityUser.CashDisbursement) === false
+    ) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const date = matchedData(req);
 
     if (Object.keys(date).length != 0) {

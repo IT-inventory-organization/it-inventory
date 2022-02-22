@@ -1,11 +1,15 @@
 const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { DeleteInvoice } = require("../../helper/Invoice");
-const { successResponse } = require("../../helper/Response");
+const { successResponse, errorResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionDelete } = require("../../middlewares/permission");
 
 const deleteInvoice = async (req, res) => {
   try {
+    if (CheckPermissionDelete(req, res, ActivityUser.Invoice) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idInv } = req.params;
 
     await DeleteInvoice(req, idInv);

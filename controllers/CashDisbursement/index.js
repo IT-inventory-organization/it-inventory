@@ -1,5 +1,6 @@
 const { BCashDisbursement } = require("../../helper/bundleCashDisbursement");
 const authentication = require("../../middlewares/authentication");
+const { CheckPermission } = require("../../middlewares/permission");
 const {
   VCashDisbursement,
 } = require("../../middlewares/validateCashDisbursement");
@@ -18,6 +19,7 @@ module.exports = (routes) => {
   routes.post(
     "/",
     authentication,
+    CheckPermission,
     BCashDisbursement,
     VCashDisbursement,
     validationResponse,
@@ -27,14 +29,27 @@ module.exports = (routes) => {
   routes.put(
     "/:idCashDisbursement",
     authentication,
+    CheckPermission,
     BCashDisbursement,
     VCashDisbursement,
     updateCashDisbursement
   );
 
-  routes.delete("/:idCashDisbursement", authentication, deleteCashDisbursement);
+  routes.delete(
+    "/:idCashDisbursement",
+    authentication,
+    CheckPermission,
+    deleteCashDisbursement
+  );
 
-  routes.get("/", authentication, VQueryDate, validationResponse, viewAll);
+  routes.get(
+    "/",
+    authentication,
+    CheckPermission,
+    VQueryDate,
+    validationResponse,
+    viewAll
+  );
 
   routes.get("/:idCashDisbursement", authentication, viewOne);
 };

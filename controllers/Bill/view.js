@@ -1,3 +1,4 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const {
   ViewOneBill,
   ViewListOfBill,
@@ -6,6 +7,9 @@ const {
 } = require("../../helper/Bill/view");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
+
+const BillActivity = ActivityUser.Bill;
 
 const fetchOneBill = async (req, res) => {
   try {
@@ -25,6 +29,9 @@ const fetchOneBill = async (req, res) => {
 
 const fetchAllBill = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, BillActivity) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const result = await ViewListOfBill(req);
 
     return successResponse(res, httpStatus.ok, "", result);

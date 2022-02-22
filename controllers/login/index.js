@@ -7,6 +7,9 @@ const { checkHashText } = require("../../helper/bcrypt");
 const User = require("../../database/models/user");
 const Role = require("../../database/models/role");
 const Encryption = require("../../helper/encription");
+const UserPrivilages = require("../../database/models/userPrivilages");
+const { AESEncrypt } = require("../../helper/encription");
+const { ConvertPermission } = require("../../helper/permissionConvert");
 
 const validationBody = [
   body("DataToInput.email")
@@ -24,10 +27,20 @@ const getUserData = async (email) => {
         [Op.or]: [{ email: email }, { npwp: email }, { username: email }],
         is_active: true,
       },
-      include: {
-        model: Role,
-        attributes: ["name"],
-      },
+      include: [
+        {
+          model: Role,
+          attributes: ["name"],
+        },
+        {
+          model: UserPrivilages,
+          required: false,
+          where: { isDelete: false },
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "isDelete", "id", "userId"],
+          },
+        },
+      ],
     });
   } catch (error) {
     throw error;
@@ -77,10 +90,18 @@ const loginAction = async (req, res) => {
         );
       }
       // if the password is correct
-      const token = generateToken({ email: result.email, user_id: result.id });
-      return res
-        .status(httpStatus.ok)
-        .json({ success: true, message: "Success login", data: token });
+      const token = generateToken({
+        email: result.email,
+        user_id: result.id,
+      });
+      return res.status(httpStatus.ok).json({
+        success: true,
+        message: "Success login",
+        data: {
+          token: token,
+          permission: AESEncrypt(ConvertPermission(result.UserPrivilages)),
+        },
+      });
     } else {
       // if the password is not correct
       return errorResponse(

@@ -1,3 +1,4 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const {
   viewOneReceive,
@@ -6,6 +7,7 @@ const {
   ViewOneReceivedItemForBill,
 } = require("../../helper/Receiveitems/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 const fetchReceiveItemForUpdate = async (req, res) => {
   try {
@@ -24,6 +26,9 @@ const fetchReceiveItemForUpdate = async (req, res) => {
 
 const listReceiveItem = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, ActivityUser.ReceiveItem) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const result = await listOfReceiveItem(req, res);
     return successResponse(res, httpStatus.accepted, "", result);
   } catch (error) {

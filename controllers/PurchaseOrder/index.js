@@ -1,5 +1,6 @@
 const { BPurchaseOrder } = require("../../helper/bundlePurchaseORder");
 const authentication = require("../../middlewares/authentication");
+const { CheckPermission } = require("../../middlewares/permission");
 const VPurchaseOrder = require("../../middlewares/validationPurchaseOrder");
 const { validationResponse } = require("../../middlewares/validationResponse");
 const { addPurchaseOrder } = require("./create");
@@ -14,21 +15,23 @@ const {
 } = require("./view");
 
 module.exports = (routes) => {
-  routes.get("/", authentication, viewPurchaseOrder);
+  routes.get("/", authentication, CheckPermission, viewPurchaseOrder);
   routes.get("/:idPo", authentication, viewOnePurchaseOrder);
   routes.post(
     "/",
     authentication,
+    CheckPermission,
     BPurchaseOrder,
     VPurchaseOrder,
     validationResponse,
     addPurchaseOrder
   );
-  routes.delete("/:idPo", authentication, deletePo);
+  routes.delete("/:idPo", authentication, CheckPermission, deletePo);
   routes.get("/get/barang", authentication, getAllBarang);
   routes.put(
     "/:idPo",
     authentication,
+    CheckPermission,
     BPurchaseOrder,
     VPurchaseOrder,
     validationResponse,

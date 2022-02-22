@@ -13,11 +13,15 @@ const {
 } = require("../../helper/PurchaseOrder/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionUpdate } = require("../../middlewares/permission");
 
 // T0(2N)
 const updatePo = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionUpdate(req, res, ActivityUser.PurchaseOrder) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { idPo } = req.params;
 
     t = await sequelize.transaction();

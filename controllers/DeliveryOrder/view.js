@@ -1,3 +1,4 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const {
   ViewList,
   ViewOneList,
@@ -6,9 +7,13 @@ const {
 } = require("../../helper/DeliveryOrder/view");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 const FetchAllList = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, ActivityUser.DeliveryOrder) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const result = await ViewList(req);
 
     const DOMap = [];

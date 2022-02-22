@@ -13,10 +13,14 @@ const {
   GetIdBarangFromSalesOrdeBarang,
 } = require("../../helper/SalesOrder/barang");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionInsert } = require("../../middlewares/permission");
 
 const addDeliveryOrder = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionInsert(req, res, ActivityUser.DeliveryOrder) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { DeliveryOrderBarang, ...restOfData } = req.body.DataToInput;
 
     t = await sequelize.transaction();

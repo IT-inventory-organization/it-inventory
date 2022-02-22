@@ -574,7 +574,7 @@ const getOneReport = async (req, id, statusCheck = false) => {
     ];
     if (req.currentRole !== "Admin" && req.currentRole !== "Owner") {
       query.where = {
-        [Op.and]: [{ id }, { userId: req.currentUser }],
+        [Op.and]: [{ id }],
       };
     }
     if (statusCheck) {

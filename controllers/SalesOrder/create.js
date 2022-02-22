@@ -5,10 +5,14 @@ const { errorResponse, successResponse } = require("../../helper/Response");
 const { AddSalesOrder } = require("../../helper/SalesOrder");
 const { AddSalesOrderBarang } = require("../../helper/SalesOrder/barang");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionInsert } = require("../../middlewares/permission");
 
 const addSalesOrder = async (req, res) => {
   let t;
   try {
+    if (CheckPermissionInsert(req, res, ActivityUser.SalesOrder) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const { SalesOrderBarang, ...restOfData } = req.body.DataToInput;
     t = await sequelize.transaction();
     const result = await AddSalesOrder(res, restOfData, t);

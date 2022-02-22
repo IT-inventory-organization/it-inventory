@@ -164,13 +164,9 @@ const getOne = async (req, res) => {
       }
     }
 
-    // Remove
-    // if (req.currentRole !== "Owner") {
-    //   await createUserActivity(req.currentUser, id, "View One Report");
-    // }
-
     return successResponse(res, httpStatus.ok, "", data);
   } catch (error) {
+    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
@@ -201,6 +197,9 @@ const getXMLReport = async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (CheckPermissionRead(req, res, Static_Activity) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const found = await getOneReport(req, id);
 
     let xml = ``;
@@ -647,7 +646,7 @@ module.exports = (routes) => {
   routes.get("/", authentication, CheckPermission, getAll);
   routes.get("/total", authentication, getCountReportByType);
   routes.get("/oneReport/:id", authentication, getOne);
-  routes.get("/getXML/:id", authentication, getXMLReport);
+  routes.get("/getXML/:id", authentication, CheckPermission, getXMLReport);
   routes.get("/getTotalReport", authentication, getTotalReport);
   routes.get("/dataJalurMerah", authentication, getDataActivityRedLine);
   routes.get("/data-header/:idReport", authentication, getDataHeaderReport);

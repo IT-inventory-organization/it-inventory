@@ -1,6 +1,8 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const { ViewOne, ViewAll } = require("../../helper/ReceivePayment/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 module.exports = {
   viewOne: async (r, rs) => {
@@ -15,6 +17,10 @@ module.exports = {
   },
   viewList: async (r, rs) => {
     try {
+      if (
+        CheckPermissionRead(req, res, ActivityUser.ReceivePayment) === false
+      ) {
+      }
       const res = await ViewAll(r);
 
       return successResponse(rs, httpStatus.ok, "", res);

@@ -1,3 +1,4 @@
+const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const {
   ViewAllList,
@@ -6,9 +7,13 @@ const {
   fetchNoInvoiceForReceivePayment,
 } = require("../../helper/Invoice/view");
 const { errorResponse, successResponse } = require("../../helper/Response");
+const { CheckPermissionRead } = require("../../middlewares/permission");
 
 const ViewAll = async (req, res) => {
   try {
+    if (CheckPermissionRead(req, res, ActivityUser.Invoice) === false) {
+      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+    }
     const result = await ViewAllList(req);
 
     return successResponse(res, httpStatus.ok, "", result);

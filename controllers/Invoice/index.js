@@ -1,5 +1,6 @@
 const { BInvoice } = require("../../helper/bundleInvoice");
 const authentication = require("../../middlewares/authentication");
+const { CheckPermission } = require("../../middlewares/permission");
 const { VInvoice } = require("../../middlewares/validateInvoice");
 const { validationResponse } = require("../../middlewares/validationResponse");
 const { addInvoice } = require("./create");
@@ -13,12 +14,13 @@ const {
 } = require("./view");
 
 module.exports = (routes) => {
-  routes.get("/", authentication, ViewAll);
+  routes.get("/", authentication, CheckPermission, ViewAll);
   routes.get("/:idInv", authentication, ViewOne);
 
   routes.post(
     "/",
     authentication,
+    CheckPermission,
     BInvoice,
     VInvoice,
     validationResponse,
@@ -28,13 +30,14 @@ module.exports = (routes) => {
   routes.put(
     "/:idInv",
     authentication,
+    CheckPermission,
     BInvoice,
     VInvoice,
     validationResponse,
     updateInvoice
   );
 
-  routes.delete("/:idInv", authentication, deleteInvoice);
+  routes.delete("/:idInv", authentication, CheckPermission, deleteInvoice);
 
   // Api For Receive Payment
 
