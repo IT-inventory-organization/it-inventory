@@ -17,9 +17,8 @@ module.exports = {
   },
   viewList: async (r, rs) => {
     try {
-      if (
-        CheckPermissionRead(req, res, ActivityUser.ReceivePayment) === false
-      ) {
+      if (CheckPermissionRead(r, rs, ActivityUser.ReceivePayment) === false) {
+        return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
       }
       const res = await ViewAll(r);
 

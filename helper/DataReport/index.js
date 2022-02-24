@@ -100,7 +100,7 @@ const updateReport = async (id, data, req) => {
     // }
 
     const checkForExistingReport = await Report.findOne({
-      where: { id: id, userId: req.currentUser },
+      where: { id: id },
       transaction,
     });
 
@@ -134,7 +134,7 @@ const countAllReport = async (req) => {
   try {
     let searchBasedUserId = "";
     if (req.currentRole !== "Admin" && req.currentRole !== "Owner") {
-      searchBasedUserId = `AND "userId" = ${req.currentUser}`;
+      // searchBasedUserId = `AND "userId" = ${req.currentUser}`;
     }
     const res = sequelize.query(
       `SELECT "count"("jenisPemberitahuan"),"jenisPemberitahuan" FROM "Reports" WHERE "isDelete" = false ${searchBasedUserId} GROUP BY "jenisPemberitahuan"`
@@ -393,7 +393,7 @@ const getAllReportByType = async (req, pageSize, pageNo, type = null) => {
 
     if (req.currentRole !== "Admin" && req.currentRole !== "Owner") {
       // Jika User
-      searchUser += `AND "RP"."userId" = ${req.currentUser}`;
+      // searchUser += `AND "RP"."userId" = ${req.currentUser}`;
     }
 
     if (type != null) {
@@ -677,7 +677,7 @@ const getOneSpecificReport = async (req, id) => {
       where: {
         id: id,
         isDelete: false,
-        userId: req.currentUser,
+        // userId: req.currentUser,
       },
     });
   } catch (error) {

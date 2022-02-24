@@ -8,7 +8,7 @@ module.exports = {
     for (const iterator of data) {
       mapPermission[iterator.accessModule] = { ...iterator };
     }
-    // console.log(mapPermission);
+
     return mapPermission;
   },
 };

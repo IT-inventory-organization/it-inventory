@@ -44,8 +44,12 @@ const fetchAllInvoiceThatNotBeenUsedYet = async (req, res) => {
 
     for (const iterator of result) {
       const json = iterator.toJSON();
-
-      ReceiveTrancationMap.push(json);
+      if (
+        !json?.ReceivePayment ||
+        json?.ReceivePayment?.id == idReceivePayment
+      ) {
+        ReceiveTrancationMap.push(json);
+      }
     }
 
     return successResponse(res, httpStatus.ok, "", ReceiveTrancationMap);

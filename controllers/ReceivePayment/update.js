@@ -21,8 +21,6 @@ const updateReceivePayment = async (r, rs) => {
 
     const res = await UpdateReceivePayment(r, i, d, t);
 
-    // const x = [];
-
     // Update
     // for (const iterator of ReceivePaymentDetail) {
     if (!ReceivePaymentDetail.id || ReceivePaymentDetail.id == "") {
@@ -45,7 +43,7 @@ const updateReceivePayment = async (r, rs) => {
       await changeStatus(r, d.idInv, t);
     }
 
-    if (req.currentRole !== "Owner") {
+    if (r.currentRole !== "Owner") {
       await CreateActivityUser(
         {
           activity: "Update Receive Payment",

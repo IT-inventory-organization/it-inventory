@@ -66,7 +66,7 @@ const addPurchaseOrder = async (req, res) => {
           sourceType: ActivityUser.PurchaseOrder,
           userId: req.currentUser,
         },
-        t
+        transaction
       );
     }
     await transaction.commit();

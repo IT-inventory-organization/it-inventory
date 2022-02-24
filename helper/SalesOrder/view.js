@@ -98,7 +98,6 @@ const FetchListOfSalesOrder = async (req, transaction) => {
         required: false,
       },
     ],
-    // logging:
     transaction: transaction,
   });
 };

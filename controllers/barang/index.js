@@ -152,6 +152,7 @@ const editItemBarang = async (req, res) => {
     const { id } = req.params;
     const { dataItem } = req.body;
     delete dataItem.id;
+
     t = await sequelize.transaction();
     const result = await updateListItem(req, id, dataItem, t);
 
@@ -182,10 +183,12 @@ const editItemBarang = async (req, res) => {
 
 const getAnItem = async (req, res) => {
   try {
-    if (CheckPermissionRead(req, res, BarangActivity) === false) {
-      return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
-    }
     const { id } = req.params;
+    if (!id) {
+      if (CheckPermissionRead(req, res, BarangActivity) === false) {
+        return errorResponse(res, httpStatus.unauthorized, "Unauthorized User");
+      }
+    }
     const { pageSize, pageNo, search } = req.query;
 
     const param = {

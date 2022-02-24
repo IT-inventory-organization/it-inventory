@@ -99,6 +99,7 @@ const loginAction = async (req, res) => {
         message: "Success login",
         data: {
           token: token,
+          username: result.username,
           permission: AESEncrypt(ConvertPermission(result.UserPrivilages)),
         },
       });

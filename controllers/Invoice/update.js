@@ -8,6 +8,7 @@ const {
   SoftDeleteDetailInvoice,
 } = require("../../helper/Invoice/detail");
 const { successResponse, errorResponse } = require("../../helper/Response");
+const { CreateActivityUser } = require("../../helper/UserActivity");
 const { CheckPermissionUpdate } = require("../../middlewares/permission");
 
 const updateInvoice = async (req, res) => {

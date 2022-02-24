@@ -140,10 +140,10 @@ const validationTransaksiPerdagangan = [
     .trim()
     .notEmpty()
     .withMessage(`"CIF" Is Required`),
-  body("DataToInput.transaksiPerdagangan.voluntaryDeclaration")
-    .trim()
-    .notEmpty()
-    .withMessage(`"Voluntary Declaration" Is Required`),
+  // body("DataToInput.transaksiPerdagangan.voluntaryDeclaration")
+  //   .trim()
+  //   .notEmpty()
+  //   .withMessage(`"Voluntary Declaration" Is Required`),
   body("DataToInput.transaksiPerdagangan.freight")
     .trim()
     .notEmpty()

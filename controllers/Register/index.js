@@ -16,6 +16,7 @@ const sequelize = require("../../configs/database");
 const UserPrivilages = require("../../database/models/userPrivilages");
 const { CreateActivityUser } = require("../../helper/UserActivity");
 const { CheckPermission } = require("../../middlewares/permission");
+const { json } = require("express/lib/response");
 
 const checkInputRegister = [
   body("name").notEmpty().trim().withMessage("Name Is Required"),
@@ -98,7 +99,7 @@ const Register = async (req, res) => {
     if (typeof validation.array()[i] === "undefined") {
       i = 0;
     }
-    console.log(validation.array());
+
     return errorResponse(res, httpStatus.badRequest, validation.array()[i].msg);
   }
 
@@ -278,9 +279,21 @@ const getUserPerId = async (req, res) => {
     });
 
     const permission = {};
-    for (const iterator of result.UserPrivilages) {
-      const jsonResult = iterator.toJSON();
-      permission[jsonResult.accessModule] = { ...jsonResult };
+
+    // Jika User Privilages Kosong Maka Buat Baru Dengan Default
+    if (!result.UserPrivilages || result.UserPrivilages.length == 0) {
+      setPermissionDefault(staticModule, permission);
+    } else {
+      const tempPermission = [];
+      for (const iterator of result.UserPrivilages) {
+        const jsonResult = iterator.toJSON();
+        permission[jsonResult.accessModule] = { ...jsonResult };
+        tempPermission.push(jsonResult.accessModule);
+      }
+
+      if (tempPermission.length !== staticModule.length) {
+        setMissingPermission(staticModule, tempPermission, permission);
+      }
     }
 
     let temp = result.toJSON(); // Temporary Pointer
@@ -292,8 +305,39 @@ const getUserPerId = async (req, res) => {
     return errorResponse(
       res,
       httpStatus.internalServerError,
-      "Failed TO Fetch One User"
+      "Failed To Fetch One User"
     );
+  }
+};
+
+const setPermissionDefault = (staticModule, permission) => {
+  for (const iterator of staticModule) {
+    const objPermission = {
+      accessModule: iterator,
+      canRead: false,
+      canInsert: false,
+      canUpdate: false,
+      canDelete: false,
+      canPrint: false,
+    };
+    permission[iterator] = objPermission;
+  }
+};
+
+const setMissingPermission = (staticModule, tempPermission, permission) => {
+  for (const iterator of staticModule) {
+    const find = tempPermission.find((fn) => fn === iterator);
+    if (!find) {
+      const objPermission = {
+        accessModule: iterator,
+        canRead: false,
+        canInsert: false,
+        canUpdate: false,
+        canDelete: false,
+        canPrint: false,
+      };
+      permission[iterator] = objPermission;
+    }
   }
 };
 

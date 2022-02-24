@@ -50,6 +50,7 @@ const fetchAllBillThatNotBeenUsedYet = async (req, res) => {
 
     for (const iterator of result) {
       const json = iterator.toJSON();
+
       if (
         !iterator?.BillPayment ||
         iterator?.BillPayment?.id == idBillPayment

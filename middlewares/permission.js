@@ -3,6 +3,25 @@ const UserPrivilages = require("../database/models/userPrivilages");
 const httpStatus = require("../helper/Httplib");
 const { errorResponse } = require("../helper/Response");
 
+const CheckPermissionRead = (req, res, accessModule) => {
+  return req?.permission[accessModule]?.canRead ? true : false;
+};
+const CheckPermissionInsert = (req, res, accessModule) => {
+  return req?.permission[accessModule]?.canInsert ? true : false;
+};
+const CheckPermissionUpdate = (req, res, accessModule) => {
+  if (CheckPermissionRead(req, res, accessModule) === false) {
+    return false;
+  }
+  return req?.permission[accessModule]?.canUpdate ? true : false;
+};
+const CheckPermissionDelete = (req, res, accessModule) => {
+  if (CheckPermissionRead(req, res, accessModule) === false) {
+    return false;
+  }
+  return req?.permission[accessModule]?.canDelete ? true : false;
+};
+
 module.exports = {
   /**
    * @param {Requres} req
@@ -39,22 +58,8 @@ module.exports = {
       );
     }
   },
-  CheckPermissionRead: (req, res, accessModule) => {
-    return req?.permission[accessModule]?.canRead ? true : false;
-  },
-  CheckPermissionInsert: (req, res, accessModule) => {
-    return req?.permission[accessModule]?.canInsert ? true : false;
-  },
-  CheckPermissionUpdate: (req, res, accessModule) => {
-    if (this.CheckPermissionRead(req, res, accessModule) === false) {
-      return false;
-    }
-    return req?.permission[accessModule]?.canUpdate ? true : false;
-  },
-  CheckPermissionDelete: (req, res, accessModule) => {
-    if (this.CheckPermissionRead(req, res, accessModule) === false) {
-      return false;
-    }
-    return req?.permission[accessModule]?.canDelete ? true : false;
-  },
+  CheckPermissionRead,
+  CheckPermissionInsert,
+  CheckPermissionUpdate,
+  CheckPermissionDelete,
 };

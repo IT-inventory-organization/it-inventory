@@ -108,10 +108,6 @@ module.exports = {
 
   updateListItem: async (req, id, data, transaction = null) => {
     try {
-      if (!(await authUser(Barang, req.currentUser, req, true))) {
-        throw new Error(`User is not authorized to Edit List Item`);
-      }
-
       const findItem = await findBarang(id, req.currentUser);
 
       if (!findItem) {
@@ -121,10 +117,11 @@ module.exports = {
       if (data.id) {
         delete data.id;
       }
+
       const result = await Barang.update(data, {
         where: {
           id: id,
-          userId: req.currentUser,
+          // userId: req.currentUser,
         },
         transaction: transaction,
         returning: true,
@@ -210,11 +207,7 @@ module.exports = {
       }
 
       if (id) {
-        if (!(await authUser(Barang, id, req, true))) {
-          throw new Error(`User Is Not Authorized to Access Data`);
-        }
-
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false `;
 
         const result = await sequelize.query(sql);
         return result[0];

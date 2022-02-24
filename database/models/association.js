@@ -165,19 +165,23 @@ const setAssociations = function () {
   DeliveryOrderBarang.belongsTo(SalesOrderBarang, { foreignKey: "idSOBarang" });
 
   DeliveryOrder.hasOne(Invoice, { foreignKey: "idDo" });
-  Invoice.belongsTo(DeliveryOrder, { foreignKey: "id" });
+  Invoice.belongsTo(DeliveryOrder, { foreignKey: "idDo" });
 
   Invoice.hasMany(InvoiceDetail, { foreignKey: "idInv" });
   InvoiceDetail.belongsTo(Invoice, { foreignKey: "id" });
 
+  // 24-02-2022
+  User.hasMany(Invoice, { foreignKey: "userId" });
+  Invoice.belongsTo(User, { foreignKey: "userId" });
+
   DeliveryOrderBarang.hasOne(InvoiceDetail, { foreignKey: "id" });
   InvoiceDetail.belongsTo(DeliveryOrderBarang, { foreignKey: "idDOBarang" });
 
-  CardList.hasOne(Invoice, { foreignKey: "id" });
+  CardList.hasOne(Invoice, { foreignKey: "idContact" });
   Invoice.belongsTo(CardList, { foreignKey: "idContact" });
 
   Bill.hasOne(BillPayment, { foreignKey: "idBill" });
-  BillPayment.belongsTo(Bill, { foreignKey: "id" });
+  BillPayment.belongsTo(Bill, { foreignKey: "idBill" });
 
   CardList.hasOne(BillPayment, { foreignKey: "id" });
   BillPayment.belongsTo(CardList, { foreignKey: "idContact" });
@@ -189,16 +193,16 @@ const setAssociations = function () {
   BillPaymentItems.belongsTo(BillPriceItem, { foreignKey: "idBillItem" });
 
   Invoice.hasOne(ReceivePayment, { foreignKey: "idInv" });
-  ReceivePayment.belongsTo(Invoice, { foreignKey: "id" });
+  ReceivePayment.belongsTo(Invoice, { foreignKey: "idInv" });
 
   ReceivePayment.hasOne(ReceivePaymentDetail, {
     foreignKey: "idReceivePayment",
   });
   ReceivePaymentDetail.belongsTo(ReceivePayment, {
-    foreignKey: "id",
+    foreignKey: "idReceivePayment",
   });
 
-  CardList.hasMany(ReceivePayment, { foreignKey: "id" });
+  CardList.hasMany(ReceivePayment, { foreignKey: "idContact" });
   ReceivePayment.belongsTo(CardList, { foreignKey: "idContact" });
 
   User.hasMany(UserPrivilages, { foreignKey: "userId" });
