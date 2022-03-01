@@ -176,14 +176,13 @@ const countReportByType = async (type, req) => {
 const deleteReport = async (idType, req) => {
   let transaction;
   try {
-    if (!(await authorization(Report, idType, req))) {
-      throw new Error("User Is Not Authorized To Delete This Data");
-    }
+    // if (!(await authorization(Report, idType, req))) {
+    //   throw new Error("User Is Not Authorized To Delete This Data");
+    // }
     transaction = await sequelize.transaction();
     const query = {
       where: {
         id: idType,
-        userId: req.currentUser,
         isDelete: false,
       },
     };
@@ -262,7 +261,9 @@ const deleteReport = async (idType, req) => {
 
     return result;
   } catch (error) {
-    await transaction.rollback();
+    if (transaction) {
+      await transaction.rollback();
+    }
     throw error;
   }
 };

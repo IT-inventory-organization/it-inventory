@@ -37,8 +37,8 @@ const checkInputRegister = [
     .custom((value) => passwordFormat(value)),
   body("phone")
     .notEmpty()
-    .custom(checkPhoneNumber)
     .withMessage("Phone Number is Required")
+    .custom(checkPhoneNumber)
     .trim(),
   body("confirmPassword")
     .optional()

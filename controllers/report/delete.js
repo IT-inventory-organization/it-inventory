@@ -29,6 +29,7 @@ const deleteReportDoc = async (req, res) => {
 
     return successResponse(res, Http.ok, "Success Deleting Report Document");
   } catch (error) {
+    console.log(error);
     return errorResponse(res, Http.internalServerError, "Gagal");
   }
 };
