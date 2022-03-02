@@ -69,7 +69,7 @@ const ViewOneSalesOrder = async (req, idSo, transaction = null) => {
               where: {
                 isDelete: false,
               },
-              attributes: ["name", "satuanKemasan", "id"],
+              attributes: ["name", "satuanKemasan", "id", "cbm"],
             },
           ],
         },
@@ -131,7 +131,7 @@ const FetchingDataForDeliveryOrder = async (req, idSo, transaction = null) => {
             where: {
               isDelete: false,
             },
-            attributes: ["name", "satuanKemasan", "id"],
+            attributes: ["name", "satuanKemasan", "id", "cbm"],
           },
         ],
       },

@@ -213,9 +213,9 @@ module.exports = {
         const result = await sequelize.query(sql);
         return result[0];
       } else {
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`;
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${searchQuery} LIMIT ${limit} OFFSET ${offset}`;
 
-        let countBarang = `SELECT count(*) FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery}`;
+        let countBarang = `SELECT count(*) FROM "Barang" AS barang WHERE barang."isDelete" = false ${searchQuery}`;
 
         const result = await sequelize.query(sql);
         const count = await sequelize.query(countBarang);
