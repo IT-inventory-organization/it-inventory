@@ -4,7 +4,7 @@ const Barang = require("../../database/models/barang");
 const getBarang = async (req, res) => {
   try {
     return Barang.findAll({
-      attributes: ["id", "name", "satuanKemasan"],
+      attributes: ["id", "name", "satuanKemasan", "cbm"],
       where: {
         stock: {
           [Op.gte]: 0,

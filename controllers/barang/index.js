@@ -52,6 +52,12 @@ const validationItem = [
     .notEmpty()
     .withMessage(`"Satuan Kemasan" Is Required`),
   body("dataItem.stock").trim().notEmpty().withMessage(`Quantity is Required`),
+  body("dataItem.cbm")
+    .notEmpty()
+    .withMessage("CBM Field is Empty")
+    .trim()
+    .isNumeric()
+    .withMessage("Field Must Be Fill By Number"),
 ];
 
 const bundle = (req, res, next) => {

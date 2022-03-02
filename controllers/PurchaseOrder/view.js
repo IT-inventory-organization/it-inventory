@@ -31,6 +31,7 @@ const viewOnePurchaseOrder = async (req, res) => {
   try {
     const { idPo } = req.params;
     const result = await OnePurchaseOrder(req, res, idPo);
+
     return successResponse(res, httpStatus.ok, "", result);
   } catch (error) {
     return errorResponse(

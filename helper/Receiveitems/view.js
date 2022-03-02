@@ -60,7 +60,7 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
               include: [
                 {
                   model: Barang,
-                  attributes: ["satuanKemasan", "name"],
+                  attributes: ["satuanKemasan", "name", "cbm"],
                 },
               ],
             },
@@ -120,7 +120,7 @@ const ViewOneReceivedItemForBill = async (req, res, idReceive) => {
             include: [
               {
                 model: Barang,
-                attributes: ["name", "satuanKemasan"],
+                attributes: ["name", "satuanKemasan", "cbm"],
               },
             ],
           },
@@ -158,7 +158,7 @@ const listOfReceiveItem = async (req, res) => {
               include: [
                 {
                   model: Barang,
-                  attributes: ["name"],
+                  attributes: ["name", "cbm"],
                   required: true,
                 },
               ],

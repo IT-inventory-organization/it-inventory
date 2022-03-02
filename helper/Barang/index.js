@@ -82,9 +82,9 @@ module.exports = {
       if (!findItem) {
         throw new Error(`Data Not Found`);
       }
-      if (!(await authUser(Barang, id, req, true))) {
-        throw new Error("User Is Not Authorized To Delete List Item");
-      }
+      // if (!(await authUser(Barang, id, req, true))) {
+      //   throw new Error("User Is Not Authorized To Delete List Item");
+      // }
       const result = await Barang.update(
         {
           isDelete: true,
@@ -185,6 +185,7 @@ module.exports = {
           "satuanKemasan",
           "nettoBrutoVolume",
           "stock",
+          "cbm",
         ];
         searchQuery += `AND (`;
         for (let i = 0; i < column.length; i++) {
@@ -207,12 +208,12 @@ module.exports = {
       }
 
       if (id) {
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false `;
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false `;
 
         const result = await sequelize.query(sql);
         return result[0];
       } else {
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`;
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery} LIMIT ${limit} OFFSET ${offset}`;
 
         let countBarang = `SELECT count(*) FROM "Barang" AS barang WHERE barang."isDelete" = false ${user} ${searchQuery}`;
 

@@ -122,7 +122,7 @@ const setAssociations = function () {
   PurchaseOrder.belongsTo(User, { foreignKey: "id" });
 
   // Success
-  Barang.hasMany(BarangPurchaseOrder, { foreignKey: "id" });
+  Barang.hasMany(BarangPurchaseOrder, { foreignKey: "idBarang" });
   BarangPurchaseOrder.belongsTo(Barang, { foreignKey: "idBarang" });
 
   PurchaseOrder.hasOne(ReceiveItems, { foreignKey: "idPo" });

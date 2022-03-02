@@ -16,7 +16,7 @@ const {
 
 module.exports = (routes) => {
   routes.get("/", authentication, CheckPermission, viewPurchaseOrder);
-  routes.get("/:idPo", authentication, viewOnePurchaseOrder);
+  routes.get("/:idPo", authentication, viewOnePurchaseOrder); // Fetch Api For Receive Item too
   routes.post(
     "/",
     authentication,
@@ -27,7 +27,10 @@ module.exports = (routes) => {
     addPurchaseOrder
   );
   routes.delete("/:idPo", authentication, CheckPermission, deletePo);
+  // Api For Get All Barang
   routes.get("/get/barang", authentication, getAllBarang);
+  // End Api
+
   routes.put(
     "/:idPo",
     authentication,
@@ -37,6 +40,8 @@ module.exports = (routes) => {
     validationResponse,
     updatePo
   );
+
+  // Get Receive Item
   routes.get(
     "/get/list/:idReceive?",
     authentication,

@@ -57,7 +57,7 @@ const ViewOneBill = async (req, idBill, transaction = null) => {
                 include: [
                   {
                     model: Barang,
-                    attributes: [["satuanKemasan", "item"], "name"],
+                    attributes: [["satuanKemasan", "item"], "name", "cbm"],
                   },
                 ],
               },
@@ -210,7 +210,12 @@ const fetchBillForBillPaymentAutoComplete = async (
                 include: [
                   {
                     model: Barang,
-                    attributes: [["satuanKemasan", "item"], "name", "id"],
+                    attributes: [
+                      ["satuanKemasan", "item"],
+                      "name",
+                      "id",
+                      "cbm",
+                    ],
                     // where: { isDelete: false }, // Double Check
                     required: false,
                   },

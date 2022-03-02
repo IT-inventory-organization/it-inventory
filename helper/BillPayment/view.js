@@ -149,7 +149,7 @@ const ViewItemQuery = async (req, idBillPayment, transaction = null) => {
   return sequelize.query(`
     SELECT 
       bpi."id", bpi."idBillItem", b."name", b."satuanKemasan", bpit."hargaSatuan", 
-      riq."quantityReceived", bpit.jumlah  
+      riq."quantityReceived", bpit.jumlah, b.cbm 
     FROM "BillPaymentItems"  as bpi
     INNER JOIN "BillPriceItem" as bpit ON bpi."idBillItem" = bpit."id" AND bpi."isDelete" = false
     INNER JOIN "ReceivedItemsQty" as riq ON bpit."idReceiveQtyItem" = riq."id" AND riq."isDelete" = false

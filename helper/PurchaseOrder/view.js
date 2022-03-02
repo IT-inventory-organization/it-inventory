@@ -67,7 +67,7 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
             include: [
               {
                 model: Barang,
-                attributes: ["name", "satuanKemasan"],
+                attributes: ["name", "satuanKemasan", "cbm"],
               },
             ],
           },
@@ -106,7 +106,7 @@ const OnePurchaseOrder = async (req, res, idPo, forUpdate = false) => {
           include: [
             {
               model: Barang,
-              attributes: ["name", "satuanKemasan"],
+              attributes: ["name", "satuanKemasan", "cbm"],
             },
           ],
         },
