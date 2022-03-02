@@ -3,6 +3,7 @@ const { DeleteBill } = require("../../helper/Bill");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CreateActivityUser } = require("../../helper/UserActivity");
+const { CheckPermissionDelete } = require("../../middlewares/permission");
 
 const deleteBill = async (req, res) => {
   try {
@@ -22,6 +23,7 @@ const deleteBill = async (req, res) => {
     }
     return successResponse(res, httpStatus.ok, "Success Delete Bill");
   } catch (error) {
+    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
