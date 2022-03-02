@@ -30,5 +30,5 @@ module.exports = (routes) => {
     updateReceivePayment
   );
 
-  routes.delete("/:i", authentication, deleteReceivePayment);
+  routes.delete("/:i", authentication, CheckPermission, deleteReceivePayment);
 };

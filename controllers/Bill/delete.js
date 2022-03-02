@@ -23,7 +23,6 @@ const deleteBill = async (req, res) => {
     }
     return successResponse(res, httpStatus.ok, "Success Delete Bill");
   } catch (error) {
-    console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
