@@ -1,4 +1,4 @@
-const { BPurchaseOrder } = require("../../helper/bundlePurchaseORder");
+const { BPurchaseOrder } = require("../../helper/bundlePurchaseOrder");
 const authentication = require("../../middlewares/authentication");
 const { CheckPermission } = require("../../middlewares/permission");
 const VPurchaseOrder = require("../../middlewares/validationPurchaseOrder");
