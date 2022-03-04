@@ -35,10 +35,10 @@ const addPurchaseOrder = async (req, res) => {
     for (const iterator of BarangPo) {
       iterator.idPo = result.id;
 
-      if (iterator.id) {
+      if (iterator.id == '' || iterator.id) {
         delete iterator.id;
       }
-
+      
       const resultItemPo = await createBarangPurchaseOrder(
         req,
         res,
@@ -47,7 +47,7 @@ const addPurchaseOrder = async (req, res) => {
       );
       ResultItemMap.push(resultItemPo);
     }
-
+    
     if (ResultItemMap.length !== BarangPo.length) {
       await transaction.rollback();
       return errorResponse(
@@ -76,7 +76,7 @@ const addPurchaseOrder = async (req, res) => {
       "Success Creating New Purchase Order"
     );
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return errorResponse(
       res,
       httpStatus.internalServerError,
