@@ -15,7 +15,9 @@ const VBill = [
         return Promise.resolve();
       }
 
-      return Bill.findOne({ where: { noTransaksi: value } }).then((d) => {
+      return Bill.findOne({
+        where: { noTransaksi: value, isDelete: false },
+      }).then((d) => {
         if (d) {
           return Promise.reject(`No Transaksi Is Duplicate`);
         }

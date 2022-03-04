@@ -15,7 +15,9 @@ const VReceive = [
         return Promise.resolve();
       }
 
-      return ReceiveItems.findOne({ where: { noReceive: value } }).then((d) => {
+      return ReceiveItems.findOne({
+        where: { noReceive: value, isDelete: false },
+      }).then((d) => {
         if (d) {
           return Promise.reject(`No Receive Is Already Existed`);
         }

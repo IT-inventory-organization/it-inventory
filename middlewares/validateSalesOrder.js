@@ -12,13 +12,13 @@ const VSalesOrder = [
         return Promise.resolve();
       }
 
-      return SalesOrder.findOne({ where: { noSalesOrder: value } }).then(
-        (d) => {
-          if (d) {
-            return Promise.reject(`Sales Order ${value} is Already Been Taken`);
-          }
+      return SalesOrder.findOne({
+        where: { noSalesOrder: value, isDelete: false },
+      }).then((d) => {
+        if (d) {
+          return Promise.reject(`Sales Order ${value} is Already Been Taken`);
         }
-      );
+      });
     }),
   body("DataToInput.tanggalOrder")
     .trim()

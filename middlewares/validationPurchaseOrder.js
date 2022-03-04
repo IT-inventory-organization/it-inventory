@@ -14,7 +14,9 @@ const VPurchaseOrder = [
       if (req.method === "PUT") {
         return Promise.resolve();
       }
-      return PurchaseOrder.findOne({ where: { nomorPO: value } }).then((d) => {
+      return PurchaseOrder.findOne({
+        where: { nomorPO: value, isDelete: false },
+      }).then((d) => {
         if (d) {
           return Promise.reject(`No. Purchase Order Already Exists`);
         }
