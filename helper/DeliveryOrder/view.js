@@ -81,7 +81,12 @@ const ViewOneList = async (req, idDo, transaction = null) => {
             include: [
               {
                 model: Barang,
-                attributes: ["name", "satuanKemasan", "cbm"],
+                attributes: [
+                  "name",
+                  "satuanKemasan",
+                  "cbm",
+                  ["nettoBrutoVolume", "brt"],
+                ],
               },
             ],
           },

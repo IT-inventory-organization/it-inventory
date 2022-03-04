@@ -69,7 +69,13 @@ const ViewOneSalesOrder = async (req, idSo, transaction = null) => {
               where: {
                 isDelete: false,
               },
-              attributes: ["name", "satuanKemasan", "id", "cbm"],
+              attributes: [
+                "name",
+                "satuanKemasan",
+                "id",
+                "cbm",
+                ["nettoBrutoVolume", "brt"],
+              ],
             },
           ],
         },
@@ -131,7 +137,13 @@ const FetchingDataForDeliveryOrder = async (req, idSo, transaction = null) => {
             where: {
               isDelete: false,
             },
-            attributes: ["name", "satuanKemasan", "id", "cbm"],
+            attributes: [
+              "name",
+              "satuanKemasan",
+              "id",
+              "cbm",
+              ["nettoBrutoVolume", "brt"],
+            ],
           },
         ],
       },

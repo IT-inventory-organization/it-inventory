@@ -35,7 +35,7 @@ const addPurchaseOrder = async (req, res) => {
     for (const iterator of BarangPo) {
       iterator.idPo = result.id;
 
-      if (iterator.id) {
+      if (iterator.id == "" || iterator.id) {
         delete iterator.id;
       }
 

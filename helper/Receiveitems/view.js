@@ -60,7 +60,12 @@ const viewOneReceive = async (req, res, idReceive, isUpdate = false) => {
               include: [
                 {
                   model: Barang,
-                  attributes: ["satuanKemasan", "name", "cbm"],
+                  attributes: [
+                    "satuanKemasan",
+                    "name",
+                    "cbm",
+                    ["nettoBrutoVolume", "brt"],
+                  ],
                 },
               ],
             },
