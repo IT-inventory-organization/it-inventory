@@ -164,6 +164,7 @@ module.exports = {
       let searchQuery = ``;
 
       const { id, search, pageSize, pageNo } = param;
+
       const limit = pageSize ? +pageSize : 10;
       const offset = pageNo ? (+pageNo - 1) * pageSize : 0;
 
@@ -208,12 +209,18 @@ module.exports = {
       }
 
       if (id) {
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false `;
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
 
         const result = await sequelize.query(sql);
         return result[0];
       } else {
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${searchQuery} LIMIT ${limit} OFFSET ${offset}`;
+        let qry = "";
+        if (pageSize == -1 || pageSize == "-1") {
+          qry = "";
+        } else {
+          qry = `LIMIT ${limit} OFFSET ${offset}`;
+        }
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${searchQuery} ${qry}`;
 
         let countBarang = `SELECT count(*) FROM "Barang" AS barang WHERE barang."isDelete" = false ${searchQuery}`;
 
