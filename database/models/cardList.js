@@ -16,11 +16,11 @@ const CardList = db.define(
     },
     contact: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     officePhone: {
       type: Sequelize.STRING,
@@ -32,15 +32,15 @@ const CardList = db.define(
     },
     address: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     city: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     province: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     postalCode: {
       type: Sequelize.STRING,
@@ -48,7 +48,7 @@ const CardList = db.define(
     },
     country: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     fax: {
       type: Sequelize.STRING,
