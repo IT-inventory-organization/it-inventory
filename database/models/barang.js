@@ -30,6 +30,20 @@ const Barang = db.define(
       type: Sequelize.DECIMAL,
       allowNull: false,
     },
+    tanggal: {
+      type: Sequelize.DATEONLY,
+      allowNull: true,
+    },
+    idCardList: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      references: {
+        model: "CardList",
+        key: "id",
+      },
+      onUpdate: "cascade",
+      onDelete: "cascade",
+    },
   },
   {
     modelName: "Barang",

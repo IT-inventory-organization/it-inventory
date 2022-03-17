@@ -1,3 +1,4 @@
+const { json } = require("express/lib/response");
 const { ActivityUser } = require("../../helper/Activity.interface");
 const {
   ViewAll,
@@ -22,6 +23,32 @@ const viewAllCardList = async (req, res) => {
       res,
       httpStatus.internalServerError,
       "Failed To Fetch List"
+    );
+  }
+};
+
+const ViewCustomer = async (req, res) => {
+  try {
+    const result = await ViewAllCustomer();
+    const CUSTOMER = [];
+
+    for (const iterator of result) {
+      const json = iterator.toJSON();
+      delete json.SalesOrder;
+
+      json.ID = json._ID;
+      delete json._ID;
+
+      CUSTOMER.push(json);
+    }
+
+    return successResponse(res, httpStatus.ok, "", CUSTOMER);
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed Fetch Customer Data"
     );
   }
 };
@@ -108,4 +135,5 @@ module.exports = {
   FetchOneList,
   fetchSupplierForPurchaseOrder,
   fetchCustomerForSalesOrder,
+  ViewCustomer,
 };

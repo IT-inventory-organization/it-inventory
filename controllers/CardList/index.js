@@ -11,11 +11,13 @@ const {
   FetchOneList,
   fetchSupplierForPurchaseOrder,
   fetchCustomerForSalesOrder,
+  ViewCustomer,
 } = require("./view");
 
 module.exports = (routes) => {
   routes.get("/", authentication, CheckPermission, viewAllCardList);
   routes.get("/:idContact", authentication, FetchOneList);
+  routes.get("/get/customer", authentication, ViewCustomer);
 
   routes.post(
     "/",

@@ -160,10 +160,10 @@ module.exports = {
     param = { id: null, search: null, pageSize: 10, pageNo: 1 }
   ) => {
     try {
-      let user = ``;
       let searchQuery = ``;
 
       const { id, search, pageSize, pageNo } = param;
+      let user = `AND barang.id = ${id}`;
 
       const limit = pageSize ? +pageSize : 10;
       const offset = pageNo ? (+pageNo - 1) * pageSize : 0;
@@ -187,6 +187,7 @@ module.exports = {
           "nettoBrutoVolume",
           "stock",
           "cbm",
+          "tanggal",
         ];
         searchQuery += `AND (`;
         for (let i = 0; i < column.length; i++) {
@@ -209,18 +210,20 @@ module.exports = {
       }
 
       if (id) {
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${user}`;
-
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm, barang.tanggal, card.name as customer FROM "Barang" AS barang LEFT JOIN "CardList" as card ON (barang."idCardList" = card.id) WHERE barang."isDelete" = false ${user}`;
+        // console.log(sql);
         const result = await sequelize.query(sql);
         return result[0];
       } else {
         let qry = "";
+
         if (pageSize == -1 || pageSize == "-1") {
           qry = "";
         } else {
           qry = `LIMIT ${limit} OFFSET ${offset}`;
         }
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm FROM "Barang" AS barang WHERE barang."isDelete" = false ${searchQuery} ${qry}`;
+
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm, barang.tanggal, card.name as customer FROM "Barang" AS barang LEFT JOIN "CardList" AS card ON (barang."idCardList" = card.id) WHERE barang."isDelete" = false ${searchQuery} ${qry}`;
 
         let countBarang = `SELECT count(*) FROM "Barang" AS barang WHERE barang."isDelete" = false ${searchQuery}`;
 

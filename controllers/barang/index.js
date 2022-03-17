@@ -240,6 +240,7 @@ const getAnItem = async (req, res) => {
 
     return successResponse(res, Http.ok, "", result);
   } catch (error) {
+    console.log(error);
     return errorResponse(res, Http.internalServerError, "Failed Fetch Item");
   }
 };
