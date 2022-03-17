@@ -210,7 +210,7 @@ module.exports = {
       }
 
       if (id) {
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm, barang.tanggal, card.name as customer FROM "Barang" AS barang LEFT JOIN "CardList" as card ON (barang."idCardList" = card.id) WHERE barang."isDelete" = false ${user}`;
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm, barang.tanggal, card.name as customer, card.id FROM "Barang" AS barang LEFT JOIN "CardList" as card ON (barang."idCardList" = card.id) WHERE barang."isDelete" = false ${user}`;
         // console.log(sql);
         const result = await sequelize.query(sql);
         return result[0];
