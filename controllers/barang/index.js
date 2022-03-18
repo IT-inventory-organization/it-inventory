@@ -87,6 +87,9 @@ const createItemBarang = async (req, res) => {
       return errorResponse(res, Http.badRequest, validation.array()[0].msg);
     }
     const { dataItem } = req.body;
+    if (!dataItem.idCardList || dataItem.idCardList == "") {
+      delete dataItem.idCardList;
+    }
     t = await sequelize.transaction();
     const result = await createListItem(dataItem);
 
@@ -158,6 +161,9 @@ const editItemBarang = async (req, res) => {
     const { id } = req.params;
     const { dataItem } = req.body;
     delete dataItem.id;
+    if (!dataItem.idCardList || dataItem.idCardList == "") {
+      delete dataItem.idCardList;
+    }
 
     t = await sequelize.transaction();
     const result = await updateListItem(req, id, dataItem, t);
