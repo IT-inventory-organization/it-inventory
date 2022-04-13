@@ -28,6 +28,10 @@ const DeliveryOrder = db.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
+    alamat: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
     isDelete: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
