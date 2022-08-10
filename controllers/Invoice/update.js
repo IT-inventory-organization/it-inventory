@@ -1,7 +1,12 @@
+const e = require("express");
 const sequelize = require("../../configs/database");
 const { ActivityUser } = require("../../helper/Activity.interface");
+const { UpdateStatusDeliveryOrderRepo } = require("../../helper/DeliveryOrder");
 const httpStatus = require("../../helper/Httplib");
-const { UpdateInvoice } = require("../../helper/Invoice");
+const {
+  UpdateInvoice,
+  UpdateStatusInvoiceRepo,
+} = require("../../helper/Invoice");
 const {
   UpdateDetailInvoice,
   AddDetailInvoice,
@@ -84,4 +89,48 @@ const updateInvoice = async (req, res) => {
   }
 };
 
-module.exports = { updateInvoice };
+/**
+ *
+ * @param {e.Request} req
+ * @param {e.Response} res
+ */
+const updateInvoiceStatusApprove = async (req, res) => {
+  let t;
+  try {
+    if (req.currentRole !== "Owner") {
+      return errorResponse(res, httpStatus.unauthorized, "Access Not Granted");
+    }
+
+    if (!req.params.idInv) {
+      return errorResponse(
+        res,
+        httpStatus.badRequest,
+        "Invoice is Not Selected"
+      );
+    }
+
+    t = await sequelize.transaction();
+
+    await UpdateStatusInvoiceRepo(req.params.idInv, req.body.status, t);
+
+    await t.commit();
+
+    return successResponse(
+      res,
+      httpStatus.accepted,
+      "Success Update Status Invoice"
+    );
+  } catch (error) {
+    if (t) {
+      t.rollback();
+    }
+
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Update Status Invoice"
+    );
+  }
+};
+
+module.exports = { updateInvoice, updateInvoiceStatusApprove };

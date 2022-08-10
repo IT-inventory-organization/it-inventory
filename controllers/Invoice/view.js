@@ -1,3 +1,4 @@
+const e = require("express");
 const { ActivityUser } = require("../../helper/Activity.interface");
 const httpStatus = require("../../helper/Httplib");
 const {
@@ -6,6 +7,7 @@ const {
   fetchInvoiceForRecievePaymentAutoComplete,
   fetchNoInvoiceForReceivePayment,
 } = require("../../helper/Invoice/view");
+const { FindInvoiceWithABoss } = require("../../helper/Invoice/viewOwner");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CheckPermissionRead } = require("../../middlewares/permission");
 
@@ -77,9 +79,69 @@ const fetchInvoiceForAutoComplete = async (req, res) => {
   }
 };
 
+/**
+ *
+ * @param {e.Request} req
+ * @param {e.Response} res
+ */
+const FetchingWithBoss = async (req, res) => {
+  try {
+    if (req.currentRole !== "Owner") {
+      return errorResponse(res, httpStatus.unauthorized, "Access Not Granted");
+    }
+
+    if (req.params.idInv) {
+      const one = await FindInvoiceWithABoss(req.params.idInv);
+
+      return successResponse(res, httpStatus.accepted, "", one, false);
+    }
+
+    const Remap = {
+      Accept: [],
+      Reject: [],
+      Pending: [],
+    };
+
+    const All = await FindInvoiceWithABoss();
+
+    for (const iterator of All) {
+      switch (iterator.approve) {
+        case true:
+          Remap.Accept.push(iterator);
+          break;
+        case false:
+          Remap.Reject.push(iterator);
+          break;
+        default:
+          Remap.Pending.push(iterator);
+          break;
+      }
+    }
+
+    return successResponse(
+      res,
+      httpStatus.accepted,
+      "",
+      Object.entries(Remap).map((x) => ({
+        name: x[0],
+        payload: x[1],
+        length: x[1].length,
+      }))
+    );
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Fetch Some Invoice"
+    );
+  }
+};
+
 module.exports = {
   ViewAll,
   ViewOne,
   fetchAllInvoiceThatNotBeenUsedYet,
   fetchInvoiceForAutoComplete,
+  FetchingWithBoss,
 };

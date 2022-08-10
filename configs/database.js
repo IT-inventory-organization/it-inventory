@@ -1,14 +1,14 @@
-const config = require('../config.js');
-const Sequelize = require('sequelize');
+const config = require("../config.js");
+const Sequelize = require("sequelize");
 
 const sequelize = new Sequelize(
-  config.get('DB_NAME'),
-  config.get('DB_USER'),
-  config.get('DB_PASS'),
+  config.get("DB_NAME"),
+  config.get("DB_USER"),
+  config.get("DB_PASS"),
   {
-    host: config.get('DB_HOST'),
-    port: config.get('DB_PORT'),
-    dialect: 'postgres',
+    host: config.get("DB_HOST"),
+    port: config.get("DB_PORT"),
+    dialect: "postgres",
     operatorsAliases: Sequelize.Op,
     logging: false,
     pool: {
@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
       acquire: 30000,
       idle: 10000,
     },
-     timezone: '+07:00'
+    timezone: "+07:00",
   }
 );
 

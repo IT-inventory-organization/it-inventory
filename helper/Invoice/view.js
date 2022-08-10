@@ -1,3 +1,4 @@
+const e = require("express");
 const Barang = require("../../database/models/barang");
 const BarangPurchaseOrder = require("../../database/models/barangPurchaseOrder");
 const BillPriceItem = require("../../database/models/billPriceItem");
@@ -12,6 +13,9 @@ const ReceivePaymentDetail = require("../../database/models/receivePaymentDetail
 const SalesOrder = require("../../database/models/salesOrder");
 const SalesOrderBarang = require("../../database/models/salesOrderBarang");
 const { StatsInvoice } = require("../Activity.interface");
+const httpStatus = require("../Httplib");
+const { errorResponse, successResponse } = require("../Response");
+const { FindInvoiceWithABoss } = require("./viewOwner");
 
 const ViewOneList = async (req, idInv, transaction = null) => {
   return Invoice.findOne({
@@ -101,6 +105,7 @@ const fetchNoInvoiceForReceivePayment = async (req, transaction = null) => {
       userId: req.currentUser,
       isDelete: false,
       status: StatsInvoice.DRAFT,
+      approve: true,
     },
     attributes: ["noInvoice", "id"],
     transaction: transaction,

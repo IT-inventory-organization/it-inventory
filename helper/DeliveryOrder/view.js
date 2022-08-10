@@ -1,5 +1,10 @@
+const e = require("express");
+const Seq = require("sequelize");
 const Barang = require("../../database/models/barang");
 const CardList = require("../../database/models/cardList");
+/**
+ * @type {Seq.Model}
+ */
 const DeliveryOrder = require("../../database/models/deliveryOrder");
 const DeliveryOrderBarang = require("../../database/models/deliveryOrderBarang");
 const Invoice = require("../../database/models/invoice");
@@ -103,6 +108,7 @@ const ViewListNoDeliveryOrder = async (req, transaction = null) => {
     where: {
       userId: req.currentUser,
       isDelete: false,
+      approve: true,
     },
     attributes: ["nomorDO", "id"],
     include: [
@@ -166,9 +172,61 @@ const ViewListAutoComplete = async (req, idDo, transaction = null) => {
   });
 };
 
+/**
+ *
+ * @param {e.Request} req
+ * @param {string|number} idDo
+ * @param {Seq.Transaction} transaction
+ */
+const ViewOneListOfDeliveryOrderWithDeliveryOrderBarnag = async (
+  req,
+  idDo,
+  transaction = null
+) => {
+  return DeliveryOrder.findOne({
+    transaction: transaction,
+    where: {
+      id: +idDo,
+      isDelete: false,
+    },
+    attributes: {
+      exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
+    },
+    include: [
+      {
+        model: DeliveryOrderBarang,
+        where: { isDelete: false },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "isDelete"],
+        },
+        include: [
+          {
+            model: SalesOrderBarang,
+            where: { isDelete: false },
+            attributes: ["id"],
+            include: [
+              {
+                model: Barang,
+                attributes: [
+                  "id",
+                  "name",
+                  "satuanKemasan",
+                  "cbm",
+                  ["nettoBrutoVolume", "brt"],
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  });
+};
+
 module.exports = {
   ViewList,
   ViewOneList,
   ViewListNoDeliveryOrder,
   ViewListAutoComplete,
+  ViewOneListOfDeliveryOrderWithDeliveryOrderBarnag,
 };

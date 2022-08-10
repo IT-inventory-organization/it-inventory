@@ -20,6 +20,19 @@ const UpdateInvoice = async (req, idInv, data, transaction = null) => {
   });
 };
 
+const UpdateStatusInvoiceRepo = async (idInv, approve, transaction = null) => {
+  return Invoice.update(
+    { approve: approve },
+    {
+      where: {
+        id: +idInv,
+        isDelete: false,
+      },
+      transaction: transaction,
+    }
+  );
+};
+
 const DeleteInvoice = async (req, idInv, transaction = null) => {
   return Invoice.update(
     {
@@ -56,4 +69,5 @@ module.exports = {
   UpdateInvoice,
   DeleteInvoice,
   changeStatus,
+  UpdateStatusInvoiceRepo,
 };

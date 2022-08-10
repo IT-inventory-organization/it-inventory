@@ -40,6 +40,11 @@ const Invoice = db.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
+    approve: {
+      type: Sequelize.BOOLEAN,
+      allowNull: true,
+      defaultValue: null,
+    },
     noRef: {
       type: Sequelize.STRING,
       allowNull: true,

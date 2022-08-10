@@ -1,3 +1,4 @@
+const e = require("express");
 const { ActivityUser } = require("../../helper/Activity.interface");
 const {
   ViewList,
@@ -5,6 +6,7 @@ const {
   ViewListNoDeliveryOrder,
   ViewListAutoComplete,
 } = require("../../helper/DeliveryOrder/view");
+const { FindDeliveryOrder } = require("../../helper/DeliveryOrder/viewOwner");
 const httpStatus = require("../../helper/Httplib");
 const { errorResponse, successResponse } = require("../../helper/Response");
 const { CheckPermissionRead } = require("../../middlewares/permission");
@@ -58,6 +60,7 @@ const FetchOneList = async (req, res) => {
 const FetchListOfNoDeliveryOrderThatNotBeenUsedYet = async (req, res) => {
   try {
     const { idInv } = req.params;
+
     const result = await ViewListNoDeliveryOrder(req);
 
     const NoDoMap = [];
@@ -96,9 +99,70 @@ const FetcOneDeliveryOrderAutoCompleteInvoice = async (req, res) => {
   }
 };
 
+/**
+ *
+ * @param {e.Request} req
+ * @param {e.Response} res
+ * @returns
+ */
+const FetchForOwner = async (req, res) => {
+  try {
+    if (req.currentRole !== "Owner") {
+      return errorResponse(res, httpStatus.unauthorized, "Access Not Granted");
+    }
+
+    if (req.params.idDo) {
+      const tHeOne = await FindDeliveryOrder(req.params.idDo);
+
+      return successResponse(res, httpStatus.accepted, "", tHeOne);
+    }
+
+    const All = await FindDeliveryOrder();
+
+    const Remap = {
+      Accept: [],
+      Reject: [],
+      Pending: [],
+    };
+
+    for (const iterator of All) {
+      switch (iterator.approve) {
+        case true:
+          Remap.Accept.push(iterator);
+          break;
+        case false:
+          Remap.Reject.push(iterator);
+          break;
+        default:
+          Remap.Pending.push(iterator);
+          break;
+      }
+    }
+
+    return successResponse(
+      res,
+      httpStatus.accepted,
+      "",
+      Object.entries(Remap).map((x) => ({
+        name: x[0],
+        payload: x[1],
+        length: x[1].length,
+      }))
+    );
+  } catch (error) {
+    console.log(error);
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Fetch Delivery Order List"
+    );
+  }
+};
+
 module.exports = {
   FetchAllList,
   FetchOneList,
   FetchListOfNoDeliveryOrderThatNotBeenUsedYet,
   FetcOneDeliveryOrderAutoCompleteInvoice,
+  FetchForOwner,
 };

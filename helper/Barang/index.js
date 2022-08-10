@@ -224,8 +224,8 @@ module.exports = {
           qry = `LIMIT ${limit} OFFSET ${offset}`;
         }
 
-        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm, barang.tanggal, card.name as customer FROM "Barang" AS barang LEFT JOIN "CardList" AS card ON (barang."idCardList" = card.id) WHERE barang."isDelete" = false ${searchQuery} `;
-
+        let sql = `SELECT barang.name, barang.id as "idBarang", barang.uraian, barang."posTarif", barang."hsCode", barang."nettoBrutoVolume", barang."satuanKemasan", barang.stock, barang.cbm, barang.tanggal, card.name as customer FROM "Barang" AS barang LEFT JOIN "CardList" AS card ON (barang."idCardList" = card.id) WHERE barang."isDelete" = false ${searchQuery}`;
+        console.log(sql);
         let countBarang = `SELECT count(*) FROM "Barang" AS barang LEFT JOIN "CardList" as card ON (barang."idCardList" = card.id) WHERE barang."isDelete" = false ${searchQuery}`;
 
         const result = await sequelize.query(sql);
@@ -234,8 +234,8 @@ module.exports = {
         return {
           data: result[0],
           data_size: +countTotal(count[0]),
-          page_size: +limit,
-          page: +pageSize || 1,
+          page_size: +pageSize,
+          page: +pageNo || 1,
         };
       }
     } catch (error) {

@@ -204,7 +204,7 @@ const getAnItem = async (req, res) => {
     const { pageSize, pageNo, search } = req.query;
 
     const param = {
-      id: id,
+      id: id ?? "",
       search: search,
       pageSize: pageSize,
       pageNo: pageNo,
@@ -240,13 +240,11 @@ const getAnItem = async (req, res) => {
         data: temp,
         ...restOfData,
       };
-
       return successResponse(res, httpStatus.ok, "", mergeMap);
     }
 
     return successResponse(res, Http.ok, "", result);
   } catch (error) {
-    console.log(error);
     return errorResponse(res, Http.internalServerError, "Failed Fetch Item");
   }
 };

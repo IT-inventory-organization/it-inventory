@@ -1,5 +1,8 @@
 "use strict";
 const Sequelize = require("sequelize");
+/**
+ * @type {Sequelize}
+ */
 const db = require("../../configs/database");
 
 const DeliveryOrder = db.define(
@@ -35,6 +38,10 @@ const DeliveryOrder = db.define(
     isDelete: {
       type: Sequelize.BOOLEAN,
       defaultValue: false,
+    },
+    approve: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: null,
     },
     userId: {
       type: Sequelize.INTEGER,

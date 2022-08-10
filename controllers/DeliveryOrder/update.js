@@ -1,15 +1,22 @@
+const e = require("express");
 const sequelize = require("../../configs/database");
 const {
   ActivityUser,
   Description,
   StatsItem,
 } = require("../../helper/Activity.interface");
-const { UpdateDeliveryOrder } = require("../../helper/DeliveryOrder");
+const {
+  UpdateDeliveryOrder,
+  UpdateStatusDeliveryOrderRepo,
+} = require("../../helper/DeliveryOrder");
 const {
   UpdateDeliveryOrderBarang,
   AddDeliveryOrderBarang,
   SoftDeleteDeliveryOrderBarang,
 } = require("../../helper/DeliveryOrder/barang");
+const {
+  ViewOneListOfDeliveryOrderWithDeliveryOrderBarnag,
+} = require("../../helper/DeliveryOrder/view");
 const {
   removeHistories,
   insertHistoryBarang,
@@ -39,10 +46,10 @@ const updateDeliveryOrder = async (req, res) => {
      * * Remove All Quantity That been record for
      * * With Specific Condition
      **/
-    await removeHistories(req, res, {
-      sourceId: idDo,
-      sourceType: ActivityUser.DeliveryOrder,
-    });
+    // await removeHistories(req, res, {
+    //   sourceId: idDo,
+    //   sourceType: ActivityUser.DeliveryOrder,
+    // });
     /**
      * * Used for saving a succcessful update
      * * and successful create. And used for delete
@@ -88,27 +95,27 @@ const updateDeliveryOrder = async (req, res) => {
         t
       );
 
-      await insertHistoryBarang(
-        req,
-        res,
-        {
-          desc: Description.MINUS,
-          userId: req.currentUser,
-          idBarang: getId.toJSON().idBarang,
-          quantityItem: iterator.quantityReceived,
-          sourceId: idDo,
-          sourceType: ActivityUser.DeliveryOrder,
-          status: StatsItem.DEC,
-        },
-        t
-      );
+      // await insertHistoryBarang(
+      //   req,
+      //   res,
+      //   {
+      //     desc: Description.MINUS,
+      //     userId: req.currentUser,
+      //     idBarang: getId.toJSON().idBarang,
+      //     quantityItem: iterator.quantityReceived,
+      //     sourceId: idDo,
+      //     sourceType: ActivityUser.DeliveryOrder,
+      //     status: StatsItem.DEC,
+      //   },
+      //   t
+      // );
       /**
        * * Save The Id For Later Use
        */
       exception.push(result[1][0].toJSON().id);
     }
 
-    // Create
+    // Create Barang
     for (const iterator of DeliveryOrderBarang) {
       if (iterator.id) {
         continue;
@@ -183,6 +190,83 @@ const updateDeliveryOrder = async (req, res) => {
   }
 };
 
+/**
+ *
+ * @param {e.Request} req
+ * @param {e.Response} res
+ */
+const updateStatusDeliveryOrder = async (req, res) => {
+  let t;
+  try {
+    if (req.currentRole !== "Owner") {
+      return errorResponse(res, httpStatus.unauthorized, "Access Not Granted");
+    }
+
+    if (!req.params.idDo) {
+      return errorResponse(
+        res,
+        httpStatus.badRequest,
+        "Gagal Melakukan Update Status"
+      );
+    }
+    const params = req.params;
+    // Get Delivery Order With Delivry Order Items (Barang)
+    const DO = await ViewOneListOfDeliveryOrderWithDeliveryOrderBarnag(
+      req,
+      params.idDo,
+      null
+    );
+    const { DeliveryOrderBarangs } = DO.toJSON();
+
+    t = await sequelize.transaction();
+
+    await UpdateStatusDeliveryOrderRepo(params.idDo, req.body.status, t);
+
+    if (req.body.status) {
+      for (const iterator of DeliveryOrderBarangs) {
+        const {
+          quantityReceived,
+          idDo,
+          SalesOrderBarang: {
+            Barang: { id },
+          },
+        } = iterator;
+
+        const PayloadInsertHistory = {
+          userId: req.currentUser,
+          desc: Description.MINUS,
+          quantityItem: quantityReceived,
+          sourceId: idDo,
+          sourceType: ActivityUser.DeliveryOrder,
+          status: StatsItem.DEC,
+          idBarang: +id,
+        };
+
+        await insertHistoryBarang(req, res, PayloadInsertHistory, t);
+      }
+    }
+
+    await t.commit();
+
+    return successResponse(
+      res,
+      httpStatus.created,
+      "Success Update Status Delivery Order"
+    );
+  } catch (error) {
+    if (t) {
+      t.rollback();
+    }
+
+    return errorResponse(
+      res,
+      httpStatus.internalServerError,
+      "Failed To Update Status Approve"
+    );
+  }
+};
+
 module.exports = {
   updateDeliveryOrder,
+  updateStatusDeliveryOrder,
 };

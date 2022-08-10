@@ -2,6 +2,8 @@ const Http = require("./Httplib");
 const { errorResponse } = require("./Response");
 const Encryption = require("./encription");
 const { addZero } = require("./convert");
+const e = require("express");
+const httpStatus = require("./Httplib");
 
 const BInvoice = (req, res, next) => {
   try {
@@ -34,6 +36,31 @@ const BInvoice = (req, res, next) => {
   }
 };
 
+/**
+ *
+ * @param {e.Request} req
+ * @param {e.Response} res
+ * @param {e.NextFunction} next
+ */
+const BUpdateStatusInvoice = (req, res, next) => {
+  try {
+    if (!req.body) {
+      return errorResponse(res, httpStatus.badRequest, "Body Value Is Empty");
+    }
+
+    const Decrypt = Encryption.AESDecrypt(req.body.dataStatus);
+
+    if (Decrypt.status.toString() !== "") {
+      req.body = Decrypt;
+
+      return next();
+    }
+
+    return errorResponse(res, httpStatus.badRequest, "Status Value Is Empty");
+  } catch (error) {}
+};
+
 module.exports = {
   BInvoice,
+  BUpdateStatusInvoice,
 };

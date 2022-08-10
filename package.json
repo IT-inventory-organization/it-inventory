@@ -7,9 +7,9 @@
     "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon app.js",
-    "migrate": "sequelize db:migrate",
-    "migrate-undo-all": "sequelize db:migrate:undo:all",
-    "migrate-undo-file": "sequelize db:migrate:undo"
+    "migrate": "npx sequelize db:migrate",
+    "migrate-undo-all": "npx sequelize db:migrate:undo:all",
+    "migrate-undo-file": "npx sequelize db:migrate:undo"
   },
   "repository": {
     "type": "git",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "eslint": "^8.8.0",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "sequelize-cli": "^6.4.1"
   }
 }

@@ -36,15 +36,15 @@ const addDeliveryOrder = async (req, res) => {
         t
       );
 
-      await insertHistoryBarang(req, res, {
-        userId: req.currentUser,
-        desc: Description.MINUS,
-        quantityItem: iterator.quantityReceived,
-        sourceId: iterator.idDo,
-        sourceType: ActivityUser.DeliveryOrder,
-        status: StatsItem.DEC,
-        idBarang: getId.toJSON().idBarang,
-      });
+      // await insertHistoryBarang(req, res, {
+      //   userId: req.currentUser,
+      //   desc: Description.MINUS,
+      //   quantityItem: iterator.quantityReceived,
+      //   sourceId: iterator.idDo,
+      //   sourceType: ActivityUser.DeliveryOrder,
+      //   status: StatsItem.DEC,
+      //   idBarang: getId.toJSON().idBarang,
+      // });
     }
 
     if (req.currentRole !== "Owner") {
