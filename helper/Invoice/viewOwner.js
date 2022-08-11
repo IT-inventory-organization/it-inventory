@@ -18,10 +18,14 @@ module.exports = {
     const DeliveryOrderInclude = {
       model: DeliveryOrder,
       required: false,
-      where: {
-        isDelete: false,
-      },
+
       attributes: ["nomorDO", "id"],
+      include: [
+        {
+          model: SalesOrder,
+          attributes: ["total"],
+        },
+      ],
     };
     const Include = [
       {
@@ -47,7 +51,12 @@ module.exports = {
                 include: [
                   {
                     model: Barang,
-                    attributes: [["satuanKemasan", "item"], "name", "cbm"],
+                    attributes: [
+                      "id",
+                      ["satuanKemasan", "item"],
+                      "name",
+                      "cbm",
+                    ],
                   },
                 ],
               },
@@ -70,6 +79,8 @@ module.exports = {
         where: {
           id: +idInv,
           isDelete: false,
+          "$DeliveryOrder.isDelete$": false,
+          "$DeliveryOrder.SalesOrder.isDelete$": false,
         },
         attributes: {
           exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
@@ -81,11 +92,13 @@ module.exports = {
     return Invoice.findAll({
       where: {
         isDelete: false,
+        "$DeliveryOrder.isDelete$": false,
+        "$DeliveryOrder.SalesOrder.isDelete$": false,
       },
       attributes: {
         exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
       },
-      include: [DeliveryOrderInclude],
+      include: [...Include],
     });
   },
 };

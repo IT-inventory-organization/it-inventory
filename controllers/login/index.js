@@ -81,7 +81,7 @@ const loginAction = async (req, res) => {
 
     // Check password
     if (checkHashText(result.password, req.body.DataToInput.password)) {
-      // User Biasa
+      // // User Biasa
       if (result.Role.name !== "User") {
         return errorResponse(
           res,
@@ -194,7 +194,11 @@ const loginActionOwner = async (req, res) => {
       const token = generateToken({ email: result.email, user_id: result.id });
       return res
         .status(httpStatus.ok)
-        .json({ success: true, message: "Login Success", data: token });
+        .json({
+          success: true,
+          message: "Login Success",
+          data: { token: token, username: result.username },
+        });
     } else {
       return errorResponse(
         res,

@@ -15,10 +15,10 @@ Add Approve Function On System And The System it`s Expand To Usage Of Mobile
 - [x] Owner Can Change Approve Status Of Delivery Order
 - [x] Owner Can Change Approve Status Of Invoice
 - [x] Get Delivery Order For A Boss
-- [ ] Fetch Recent Dashbord
+- [x] Fetch Recent Dashbord
 - [x] Get Invoice For A Boss
-- [ ] Get Items (Barang) For A Boss
-- [ ] Get Activities Only Related To Delivery Order And Invoice
+- [x] Get Items (Barang) For A Boss (Menggunakan Api Web Yang Lama)
+- [x] Get Activities Only Related To Delivery Order And Invoice
 - [ ] Change Password
 - [x] If It`s Approve The Item Will Be Added To History Item
 

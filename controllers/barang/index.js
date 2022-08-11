@@ -31,6 +31,7 @@ const {
   CheckPermissionDelete,
   CheckPermissionUpdate,
 } = require("../../middlewares/permission");
+const e = require("express");
 
 const BarangActivity = ActivityUser.Barang;
 const AdjustmentActivity = ActivityUser.Adjustment;
@@ -216,7 +217,7 @@ const getAnItem = async (req, res) => {
       await createUserActivity(
         req.currentUser,
         null,
-        `Fetch Item ${id ? "All" : "One"} Data`
+        `Fetch Item ${id ? "One" : "All"} Data`
       );
     }
 

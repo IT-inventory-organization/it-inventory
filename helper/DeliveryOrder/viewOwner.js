@@ -34,6 +34,7 @@ const FindDeliveryOrder = async (idDo = null, transaction = null) => {
       {
         model: Barang,
         attributes: [
+          "id",
           "name",
           "satuanKemasan",
           "cbm",
@@ -57,6 +58,7 @@ const FindDeliveryOrder = async (idDo = null, transaction = null) => {
       where: {
         id: +idDo,
         isDelete: false,
+        "$SalesOrder.isDelete$": false,
       },
       attributes: {
         exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
@@ -68,6 +70,7 @@ const FindDeliveryOrder = async (idDo = null, transaction = null) => {
   return DeliveryOrder.findAll({
     where: {
       isDelete: false,
+      "$SalesOrder.isDelete$": false,
     },
     attributes: {
       exclude: ["createdAt", "updatedAt", "isDelete", "userId"],
