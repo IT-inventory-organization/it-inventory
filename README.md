@@ -19,7 +19,7 @@ Add Approve Function On System And The System it`s Expand To Usage Of Mobile
 - [x] Get Invoice For A Boss
 - [x] Get Items (Barang) For A Boss (Menggunakan Api Web Yang Lama)
 - [x] Get Activities Only Related To Delivery Order And Invoice
-- [ ] Change Password
+- [x] Change Password
 - [x] If It`s Approve The Item Will Be Added To History Item
 
 ### Web

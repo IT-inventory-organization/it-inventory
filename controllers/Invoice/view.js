@@ -93,7 +93,7 @@ const FetchingWithBoss = async (req, res) => {
     if (req.params.idInv) {
       const one = await FindInvoiceWithABoss(req.params.idInv);
 
-      return successResponse(res, httpStatus.accepted, "", one, false);
+      return successResponse(res, httpStatus.accepted, "", one);
     }
 
     const Remap = {

@@ -88,7 +88,7 @@ const bundleReg = (req, res, next) => {
 
     next();
   } catch (error) {
-    return errorResponse(res, httpStatus.badRequest, "Falied");
+    return errorResponse(res, httpStatus.badRequest, "Failed To Register");
   }
 };
 

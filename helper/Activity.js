@@ -35,6 +35,7 @@ module.exports = {
         where: {
           id: +it.sourceId,
           isDelete: false,
+          "$SalesOrder.isDelete$": false,
         },
         transaction,
         attributes: ["id", "tanggal", "approve"],
@@ -59,6 +60,7 @@ module.exports = {
               {
                 model: SalesOrderBarang,
                 attributes: ["quantity", "hargaSatuan", "jumlah"],
+                where: { isDelete: false },
                 include: [
                   {
                     model: Barang,
@@ -114,6 +116,8 @@ module.exports = {
         where: {
           id: +it.sourceId,
           isDelete: false,
+          "$DeliveryOrder.SalesOrder.isDelete$": false,
+          "$DeliveryOrder.isDelete$": false,
         },
         transaction,
         attributes: ["id", "tanggalInvoice", "approve"],
@@ -137,14 +141,17 @@ module.exports = {
           {
             model: InvoiceDetail,
             attributes: ["id"],
+            where: { isDelete: false },
             include: [
               {
                 model: DeliveryOrderBarang,
                 attributes: ["id"],
+                where: { isDelete: false },
                 include: [
                   {
                     model: SalesOrderBarang,
                     attributes: ["hargaSatuan", "jumlah"],
+                    where: { isDelete: false },
                     include: [
                       {
                         model: Barang,

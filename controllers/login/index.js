@@ -192,13 +192,11 @@ const loginActionOwner = async (req, res) => {
       }
 
       const token = generateToken({ email: result.email, user_id: result.id });
-      return res
-        .status(httpStatus.ok)
-        .json({
-          success: true,
-          message: "Login Success",
-          data: { token: token, username: result.username },
-        });
+      return res.status(httpStatus.ok).json({
+        success: true,
+        message: "Login Success",
+        data: { token: token, username: result.username },
+      });
     } else {
       return errorResponse(
         res,
